@@ -18,3 +18,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Sculpin
+      fonts:
+         - asset: assets/fonts/fonnts.com-Sculpin_Regular.otf
+        
+      
+
+      
