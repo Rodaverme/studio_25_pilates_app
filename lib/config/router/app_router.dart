@@ -11,6 +11,14 @@ final appRouter = GoRouter(
       builder: (context, state) => ResetPasswordScreen(),
     ),
     GoRoute(path: '/register', builder: (context, state) => RegisterScreen()),
-    GoRoute(path: '/home-screen',builder: (context, state) => HomeScreen(),)
+
+    GoRoute(
+      path: '/home-screen/:page',
+      name: HomeScreen.name,
+      builder: (context, state) {
+        final pageIndex = int.parse(state.pathParameters['page'] ?? '0');
+        return HomeScreen(pageIndex: pageIndex);
+      },
+    ),
   ],
 );

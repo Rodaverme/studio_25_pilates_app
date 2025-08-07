@@ -90,7 +90,7 @@ class _LoginForm extends StatelessWidget {
                 registerCubit.onSubmit();
                 // TODO: Validar login y navegar al home
                 if (email.isValid & password.isValid ) {
-                  context.go('/home-screen');
+                  context.go('/home-screen/0');
                   
                 }
               },
