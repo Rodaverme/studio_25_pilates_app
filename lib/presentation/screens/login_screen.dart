@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 import 'package:studio_25_pilates_app/presentation/blocs/register/register_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
@@ -50,11 +54,14 @@ class LoginScreen extends StatelessWidget {
 
 class _LoginForm extends StatelessWidget {
   const _LoginForm({required this.textStyle});
+
   final TextTheme textStyle;
 
   @override
   Widget build(BuildContext context) {
-     final registerCubit = context.watch<RegisterCubit>();
+    final authRepo = AuthRespositoryImpl(datasource: AuthDatasourceImpl());
+
+    final registerCubit = context.watch<RegisterCubit>();
     final password = registerCubit.state.password;
     final email = registerCubit.state.email;
     return Form(
@@ -67,7 +74,7 @@ class _LoginForm extends StatelessWidget {
             decoration: InputDecorations.authInputDecoration(
               hintText: 'Correoelectrónico@dominio.com',
               labelText: 'Ingrese su correo',
-              errorText: email.errorMessage
+              errorText: email.errorMessage,
             ),
           ),
           const SizedBox(height: 20),
@@ -79,19 +86,34 @@ class _LoginForm extends StatelessWidget {
             decoration: InputDecorations.authInputDecoration(
               hintText: '*********',
               labelText: 'Ingrese su contraseña',
-              errorText: password.errorMessage
+              errorText: password.errorMessage,
             ),
           ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 registerCubit.onSubmit();
-                // TODO: Validar login y navegar al home
-                if (email.isValid & password.isValid ) {
+                if (!email.isValid || !password.isValid) return;
+                try {
+                  final loginResponse = await authRepo.login(
+                    email.value,
+                    password.value,
+                  );
+
                   context.go('/home-screen/0');
-                  
+
+                  if (loginResponse == 'Login exitoso') {
+                  } else {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(loginResponse)));
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Error al iniciar sesión')),
+                  );
                 }
               },
               style: ButtonStyle(

@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
     SizedBox(),
     SizedBox(),
     SizedBox(),
-    SizedBox(),
+    PerfilView()
   ];
 
   @override
