@@ -12,7 +12,7 @@ class AuthRespositoryImpl extends AuthRepository {
 
 
   @override
-  Future<String> login(String email, String password) {
+  Future<bool> login(String email, String password) {
     return datasource.login(email, password);
   }
 

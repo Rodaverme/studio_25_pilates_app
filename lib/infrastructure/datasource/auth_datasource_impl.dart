@@ -12,36 +12,19 @@ class AuthDatasourceImpl extends AuthDatasource {
   );
 
   @override
-  Future<String> login(String email, String password) async {
-    try {
-      final response = await dio.post(
-        '/api/client/login',
-        data: {"email": email, "password": password},
-      );
+  Future<bool> login(String email, String password) async {
+    final response = await dio.post(
+      '/api/client/login',
+      data: {"email": email, "password": password},
+    );
 
-      if (response.statusCode == 200) {
-        // Imprimir para depuración
-        
+    if (response.statusCode == 200) {
+      final user = LoginResponse.fromJson(response.data);
+      print('Bienvenida ${user.client.name} Token ${user.token}');
 
-        // final token = response.data['token'];
-        final clientData = response.data['client'];
-
-        if (clientData != null) {
-          final user = Client.fromJson(clientData);
-
-          // Aquí podrías guardar el token para futuras peticiones
-          // Ejemplo: await secureStorage.write(key: 'token', value: token);
-
-          return 'Bienvenido ${user.name}';
-        }
-        throw Exception('Datos del cliente no encontrados');
-      } else {
-        throw Exception(response.data['message'] ?? 'Error en la solicitud');
-      }
-    } on DioException catch (e) {
-      final errorMsg = e.response?.data['message'] ?? 'Error de conexión';
-      throw Exception(errorMsg);
+      return true;
     }
+    return true;
   }
 
   @override

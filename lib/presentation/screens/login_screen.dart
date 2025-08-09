@@ -97,19 +97,8 @@ class _LoginForm extends StatelessWidget {
                 registerCubit.onSubmit();
                 if (!email.isValid || !password.isValid) return;
                 try {
-                  final loginResponse = await authRepo.login(
-                    email.value,
-                    password.value,
-                  );
-
+                  await authRepo.login(email.value, password.value);
                   context.go('/home-screen/0');
-
-                  if (loginResponse == 'Login exitoso') {
-                  } else {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(loginResponse)));
-                  }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Error al iniciar sesión')),
