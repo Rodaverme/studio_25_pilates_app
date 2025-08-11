@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studio_25_pilates_app/presentation/views/views.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/views.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 
 class HomeScreen extends StatelessWidget {
