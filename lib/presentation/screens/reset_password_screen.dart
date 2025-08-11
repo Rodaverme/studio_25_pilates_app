@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/presentation/blocs/register/register_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/register/register_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class ResetPasswordScreen extends StatelessWidget {

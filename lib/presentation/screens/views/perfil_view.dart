@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
 
 class PerfilView extends StatelessWidget {
-  const PerfilView({super.key});
+  final Client? client;
+
+  const PerfilView({super.key, this.client});
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +35,8 @@ class PerfilView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Ronald Vera'),
-                        Text('ronald15043@gmail.com'),
+                        Text(client?.name ?? ''),
+                        Text(client?.email ?? ''),
 
                         CustomCards(
                           width: 250,
@@ -107,14 +110,21 @@ class PerfilView extends StatelessWidget {
               ),
             ),
             SizedBox(height: 50),
-            _PerfilOptions(Icons.class_outlined, 'Mis clases',(){}),
-            _PerfilOptions(Icons.payments_outlined, 'Pagos y Planes',(){}),
+            _PerfilOptions(Icons.class_outlined, 'Mis clases', () {}),
+            _PerfilOptions(Icons.payments_outlined, 'Pagos y Planes', () {}),
             _PerfilOptions(
               Icons.privacy_tip_outlined,
-              'Politicas y Privacidad',(){}
+              'Politicas y Privacidad',
+              () {},
             ),
-            _PerfilOptions(Icons.contact_support_outlined, 'Ayuda y Soporte',(){}),
-            _PerfilOptions(Icons.logout_outlined, 'Cerrar Sesión',(){context.go('/');}),
+            _PerfilOptions(
+              Icons.contact_support_outlined,
+              'Ayuda y Soporte',
+              () {},
+            ),
+            _PerfilOptions(Icons.logout_outlined, 'Cerrar Sesión', () {
+              context.go('/');
+            }),
           ],
         ),
       ),

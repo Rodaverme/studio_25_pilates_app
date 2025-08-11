@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
-import 'package:studio_25_pilates_app/presentation/blocs/register/register_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/login/login_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/register/register_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -14,35 +16,66 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-    return BlocProvider(
-      create: (context) => RegisterCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => RegisterCubit()),
+        BlocProvider(
+          create: (context) => LoginCubit(
+            authCubit: context.read<AuthCubit>(),
+            authRepository: AuthRespositoryImpl(
+              datasource: AuthDatasourceImpl(),
+            ),
+          ),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(title: const Text('Login'), centerTitle: true),
         body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 30),
-                          Text('Bienvenida', style: textStyle.titleLarge),
-                          const SizedBox(height: 8),
-                          const Text('Inicia sesión para continuar'),
-                          const SizedBox(height: 70),
-                          Expanded(child: _LoginForm(textStyle: textStyle)),
-                        ],
+          child: BlocConsumer<LoginCubit, LoginState>(
+            listener: (context, state) {
+              if (state is LoginSuccess) {
+                context.go('/home-screen/0');
+              }
+              if (state is LoginError) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+            },
+            builder: (context, state) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: IntrinsicHeight(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 30),
+                              Text('Bienvenida', style: textStyle.titleLarge),
+                              const SizedBox(height: 8),
+                              const Text('Inicia sesión para continuar'),
+                              const SizedBox(height: 70),
+                              Expanded(
+                                child: _LoginForm(
+                                  textStyle: textStyle,
+                                  isLoading: state is LoginLoading,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           ),
@@ -53,14 +86,13 @@ class LoginScreen extends StatelessWidget {
 }
 
 class _LoginForm extends StatelessWidget {
-  const _LoginForm({required this.textStyle});
+  const _LoginForm({required this.textStyle, required this.isLoading});
 
   final TextTheme textStyle;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final authRepo = AuthRespositoryImpl(datasource: AuthDatasourceImpl());
-
     final registerCubit = context.watch<RegisterCubit>();
     final password = registerCubit.state.password;
     final email = registerCubit.state.email;
@@ -96,14 +128,7 @@ class _LoginForm extends StatelessWidget {
               onPressed: () async {
                 registerCubit.onSubmit();
                 if (!email.isValid || !password.isValid) return;
-                try {
-                  await authRepo.login(email.value, password.value);
-                  context.go('/home-screen/0');
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Error al iniciar sesión')),
-                  );
-                }
+                context.read<LoginCubit>().login(email.value, password.value);
               },
               style: ButtonStyle(
                 padding: const WidgetStatePropertyAll(
@@ -115,7 +140,9 @@ class _LoginForm extends StatelessWidget {
                   ),
                 ),
               ),
-              child: const Text('Continuar', style: TextStyle(fontSize: 15)),
+              child: isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text('Continuar', style: TextStyle(fontSize: 15)),
             ),
           ),
           const SizedBox(height: 10),

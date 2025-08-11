@@ -1,4 +1,7 @@
+// home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/views.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 
@@ -7,16 +10,19 @@ class HomeScreen extends StatelessWidget {
   final int pageIndex;
 
   const HomeScreen({super.key, required this.pageIndex});
-  final viewRoutes = const <Widget>[
-    HomeView(),
-    SizedBox(),
-    SizedBox(),
-    SizedBox(),
-    PerfilView()
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final client = context.watch<AuthCubit>().state.client;
+
+    final viewRoutes = [
+      HomeView(client: client ),
+      const SizedBox(),
+      const SizedBox(),
+      const SizedBox(),
+      PerfilView(client: client),
+    ];
+
     return Scaffold(
       body: IndexedStack(index: pageIndex, children: viewRoutes),
       bottomNavigationBar: CustomBottomNavigation(currentIndex: pageIndex),

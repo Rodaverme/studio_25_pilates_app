@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  const HomeView({super.key, this.client});
+  final Client? client;
 
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: Text('Hola, Cliente')),
+      appBar: AppBar(title: Text('Hola, ${client?.name}')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,32 +5,31 @@ import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.
 import 'package:studio_25_pilates_app/presentation/services/Auth/token_service.dart';
 
 class AuthDatasourceImpl extends AuthDatasource {
-  final Dio dio = DioClient.Dio_create(); 
+  final Dio dio = DioClient.Dio_create();
 
   @override
-  Future<bool> login(String email, String password) async {
+  Future<LoginResponse> login(String email, String password) async {
     try {
-    final response = await dio.post(
-      '/api/client/login',
-      data: {"email": email, "password": password},
-    );
+      final response = await dio.post(
+        '/api/client/login',
+        data: {"email": email, "password": password},
+      );
 
-    if (response.statusCode == 200 && response.data != null ) {
-      final user = LoginResponse.fromJson(response.data);
-      //TODO GUARDAR EL TOKEN PARA UTILIZARLO EN LA APP
-       await TokenService.saveToken(user.token);
-      print('Bienvenida ${user.client.name} Token ${user.token}');
-      return true;
-    }
-    
-    return false;
-    }on DioException catch (e){
-      print('Erro en el Login : ${e.response?.data ?? e.message}');
-      return false;
-      
-    }catch(e){
-      print('Error inseperado: $e');
-      return false;
+      if (response.statusCode == 200 && response.data != null) {
+        final user = LoginResponse.fromJson(response.data);
+
+        // Guardar token
+        await TokenService.saveToken(user.token);
+
+        print('Bienvenida ${user.client.name} Token ${user.token}');
+        return user;
+      }
+
+      throw Exception('Error en el login');
+    } on DioException catch (e) {
+      throw Exception('Error en el Login: ${e.response?.data ?? e.message}');
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
     }
   }
 
@@ -42,5 +41,31 @@ class AuthDatasourceImpl extends AuthDatasource {
   @override
   Future<String> register(String name, String email, String password) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Client> getCurrentClient() async {
+    try {
+      final token = await TokenService.getToken();
+      if (token == null) throw Exception('No hay token guardado');
+
+      final response = await dio.get(
+        '/api/client/me',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        // Aquí asumo que tu backend devuelve algo compatible con Client
+        return Client.fromJson(response.data['client']);
+      }
+
+      throw Exception('No se pudo obtener el cliente');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener el cliente: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 }
