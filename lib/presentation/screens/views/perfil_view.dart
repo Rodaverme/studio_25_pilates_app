@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
 
 class PerfilView extends StatelessWidget {
@@ -10,6 +12,7 @@ class PerfilView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logOutCubit = context.watch<LogoutCubit>();
     return Scaffold(
       appBar: AppBar(title: Text('Perfil')),
       body: SingleChildScrollView(
@@ -35,8 +38,22 @@ class PerfilView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(client?.name ?? ''),
-                        Text(client?.email ?? ''),
+                        SizedBox(
+                          width: 300,
+                          child: Text(
+                            client?.name ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 300,
+                          child: Text(
+                            client?.email ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
 
                         CustomCards(
                           width: 250,
@@ -123,6 +140,7 @@ class PerfilView extends StatelessWidget {
               () {},
             ),
             _PerfilOptions(Icons.logout_outlined, 'Cerrar Sesión', () {
+              logOutCubit.logOut();
               context.go('/');
             }),
           ],

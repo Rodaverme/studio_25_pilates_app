@@ -7,7 +7,8 @@ import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/login/login_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/register/register_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/forms/forms_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -18,10 +19,17 @@ class LoginScreen extends StatelessWidget {
     final textStyle = Theme.of(context).textTheme;
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => RegisterCubit()),
+        BlocProvider(create: (context) => FormsCubit()),
         BlocProvider(
           create: (context) => LoginCubit(
             authCubit: context.read<AuthCubit>(),
+            authRepository: AuthRespositoryImpl(
+              datasource: AuthDatasourceImpl(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => LogoutCubit(
             authRepository: AuthRespositoryImpl(
               datasource: AuthDatasourceImpl(),
             ),
@@ -93,14 +101,14 @@ class _LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final registerCubit = context.watch<RegisterCubit>();
-    final password = registerCubit.state.password;
-    final email = registerCubit.state.email;
+    final formsCubit = context.watch<FormsCubit>();
+    final password = formsCubit.state.password;
+    final email = formsCubit.state.email;
     return Form(
       child: Column(
         children: [
           TextFormField(
-            onChanged: registerCubit.emailChange,
+            onChanged: formsCubit.emailChange,
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecorations.authInputDecoration(
@@ -111,7 +119,7 @@ class _LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           TextFormField(
-            onChanged: registerCubit.passwordChange,
+            onChanged: formsCubit.passwordChange,
             autocorrect: false,
             obscureText: true,
             keyboardType: TextInputType.visiblePassword,
@@ -126,7 +134,7 @@ class _LoginForm extends StatelessWidget {
             width: double.infinity,
             child: FilledButton(
               onPressed: () async {
-                registerCubit.onSubmit();
+                formsCubit.onSubmit();
                 if (!email.isValid || !password.isValid) return;
                 context.read<LoginCubit>().login(email.value, password.value);
               },

@@ -39,8 +39,32 @@ class AuthDatasourceImpl extends AuthDatasource {
   }
 
   @override
-  Future<String> register(String name, String email, String password) {
-    throw UnimplementedError();
+  Future<void> register(
+    String name,
+    String email,
+    String password,
+    String confirmedPassword,
+  ) async {
+    try {
+      final response = await dio.post(
+        '/api/client/register',
+        data: {
+          "name": name,
+          "email": email,
+          "password": password,
+          "password_confirmation": confirmedPassword,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final user = LoginResponse.fromJson(response.data);
+
+        // Guardar token
+        await TokenService.saveToken(user.token);
+      }
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 
   @override
@@ -63,6 +87,25 @@ class AuthDatasourceImpl extends AuthDatasource {
     } on DioException catch (e) {
       throw Exception(
         'Error al obtener el cliente: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
+  }
+
+  @override
+  Future<void> logOut() async {
+    try {
+      final response = await dio.post('/api/client/logout');
+
+      if (response.statusCode == 200 && response.data != null) {
+        print('Logout Exitoso');
+      }
+
+      throw Exception('Error al iniciar Sesion');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al iniciar Sesion: ${e.response?.data ?? e.message}',
       );
     } catch (e) {
       throw Exception('Error inesperado: $e');

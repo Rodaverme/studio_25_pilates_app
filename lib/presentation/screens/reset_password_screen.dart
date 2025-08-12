@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/register/register_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/forms/forms_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class ResetPasswordScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: BlocProvider(
-        create: (context) => RegisterCubit(),
+        create: (context) => FormsCubit(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -45,8 +45,8 @@ class _ResetPassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final registerCubit = context.watch<RegisterCubit>();
-    final email = registerCubit.state.email;
+    final formsCubit = context.watch<FormsCubit>();
+    final email = formsCubit.state.email;
     return Form(
       child: Column(
         children: [
@@ -55,7 +55,7 @@ class _ResetPassword extends StatelessWidget {
           Text('Recupera tu cuenta', style: textStyle.titleLarge),
           const SizedBox(height: 20),
           TextFormField(
-            onChanged: registerCubit.emailChange,
+            onChanged: formsCubit.emailChange,
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecorations.authInputDecoration(
@@ -74,7 +74,7 @@ class _ResetPassword extends StatelessWidget {
                   //TODO ENVIAR CORREO PARA RECUPERAR CONTRASEÑA 
                   
                 }
-                  registerCubit.onSubmit();
+                  formsCubit.onSubmit();
               },
               style: ButtonStyle(
                 padding: const WidgetStatePropertyAll(

@@ -1,7 +1,9 @@
 // home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
+
 import 'package:studio_25_pilates_app/presentation/screens/views/views.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 
@@ -16,7 +18,7 @@ class HomeScreen extends StatelessWidget {
     final client = context.watch<AuthCubit>().state.client;
 
     final viewRoutes = [
-      HomeView(client: client ),
+      HomeView(client: client),
       const SizedBox(),
       const SizedBox(),
       const SizedBox(),
@@ -28,4 +30,8 @@ class HomeScreen extends StatelessWidget {
       bottomNavigationBar: CustomBottomNavigation(currentIndex: pageIndex),
     );
   }
+
+
+
+  
 }

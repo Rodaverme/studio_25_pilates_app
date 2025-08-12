@@ -1,36 +1,22 @@
 part of 'register_cubit.dart';
 
-enum FormStauts { invalid, valid, validating, posting }
-
-class RegisterFormState extends Equatable {
-  final bool isValid;
-  final FormStauts formStauts;
-  final Username username;
-  final Email email;
-  final Password password;
-
-  const RegisterFormState({
-    this.formStauts = FormStauts.invalid,
-    this.username = const Username.pure(),
-    this.email = const Email.pure(),
-    this.password = const Password.pure(),
-    this.isValid = false
-  });
-
-  RegisterFormState copyWith({
-    FormStauts? formStauts,
-    bool? isValid,
-    Username? username,
-    Email? email,
-    Password? password,
-  }) => RegisterFormState(
-    isValid: isValid ?? this.isValid,
-    formStauts: formStauts ?? this.formStauts,
-    username: username ?? this.username,
-    email: email ?? this.email,
-    password: password ?? this.password,
-  );
+sealed class RegisterState extends Equatable {
+  const RegisterState();
 
   @override
-  List<Object?> get props => [formStauts, username, email, password,isValid];
+  List<Object> get props => [];
+}
+
+class RegisterInitial extends RegisterState {}
+
+class RegisterLoading extends RegisterState {}
+
+class RegisterSuccess extends RegisterState {}
+
+class RegisterError extends RegisterState {
+  final String message;
+  const RegisterError(this.message);
+
+  @override
+  List<Object> get props => [message];
 }
