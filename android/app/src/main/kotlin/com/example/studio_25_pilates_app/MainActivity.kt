@@ -1,4 +1,4 @@
-package com.example.studio_25_pilates_app
+package co.bitsolar.pilates
 
 import io.flutter.embedding.android.FlutterActivity
 

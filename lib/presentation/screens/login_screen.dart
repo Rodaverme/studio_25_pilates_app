@@ -8,7 +8,8 @@ import 'package:studio_25_pilates_app/infrastructure/repositories/auth_resposito
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/login/login_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/forms/forms_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
+
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -28,13 +29,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
-        BlocProvider(
-          create: (context) => LogoutCubit(
-            authRepository: AuthRespositoryImpl(
-              datasource: AuthDatasourceImpl(),
-            ),
-          ),
-        ),
+       
       ],
       child: Scaffold(
         appBar: AppBar(title: const Text('Login'), centerTitle: true),
@@ -101,6 +96,7 @@ class _LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     final formsCubit = context.watch<FormsCubit>();
     final password = formsCubit.state.password;
     final email = formsCubit.state.email;
@@ -137,6 +133,7 @@ class _LoginForm extends StatelessWidget {
                 formsCubit.onSubmit();
                 if (!email.isValid || !password.isValid) return;
                 context.read<LoginCubit>().login(email.value, password.value);
+                context.read<NotificationsBloc>().requestPermission();
               },
               style: ButtonStyle(
                 padding: const WidgetStatePropertyAll(
