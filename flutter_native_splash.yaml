@@ -1,0 +1,9 @@
+flutter_native_splash:
+  color: "#F5F3EB"
+  image: assets/icon/logo_estudio25_512x512.png
+  android: true
+  ios : true
+  web: false
+  android_12:
+    image: assets/icon/logo_estudio25_512x512.png
+    icon_background_color: "#F5F3EB"

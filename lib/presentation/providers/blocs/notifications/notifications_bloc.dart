@@ -1,5 +1,7 @@
 
 
+// import 'dart:io';
+
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -96,12 +98,13 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   void requestPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
-      announcement: false,
+      announcement: true,
       badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: true,
       sound: true,
+
     );
     add(NotificationStatusChanged(settings.authorizationStatus));
   }
