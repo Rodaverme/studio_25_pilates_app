@@ -17,7 +17,9 @@ class AuthDatasourceImpl extends AuthDatasource {
         data: {"email": email, "password": password},
       );
       if (response.statusCode == 200 && response.data != null) {
-        final loginResponse = LoginResponse.fromJson(response.data);// Guardar token
+        final loginResponse = LoginResponse.fromJson(
+          response.data,
+        ); // Guardar token
         await TokenService.saveToken(loginResponse.token);
         final user = ClientMapper.clientApitoEntity(loginResponse.client);
         print('Bienvenida ${user.name} Token ${loginResponse.token}');
@@ -109,10 +111,9 @@ class AuthDatasourceImpl extends AuthDatasource {
       throw Exception('Error inesperado: $e');
     }
   }
-  
+
   @override
   Future<User> getCurrentClient() {
-  
     throw UnimplementedError();
   }
 }

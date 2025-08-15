@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/planes_view.dart';
 
 import 'package:studio_25_pilates_app/presentation/screens/views/views.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
@@ -20,7 +21,7 @@ class HomeScreen extends StatelessWidget {
     final viewRoutes = [
       HomeView(client: client),
       const SizedBox(),
-      const SizedBox(),
+      PlanesView(),
       const SizedBox(),
       PerfilView(client: client),
     ];

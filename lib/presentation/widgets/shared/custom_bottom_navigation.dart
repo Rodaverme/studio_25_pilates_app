@@ -42,7 +42,7 @@ class CustomBottomNavigation extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.star_border),
-          label: 'Favoritos',
+          label: 'Planes',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.notifications_active_outlined),
