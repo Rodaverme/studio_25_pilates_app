@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
+import 'package:studio_25_pilates_app/domain/entities/user.dart';
+
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key, this.client});
-  final Client? client;
+  final User? client;
 
   @override
   Widget build(BuildContext context) {

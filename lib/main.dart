@@ -9,19 +9,18 @@ import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cub
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await NotificationsBloc.initializeFCM();
-  // RemoteMessage? initialMessage = await FirebaseMessaging.instance
-  //     .getInitialMessage();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) =>
-              NotificationsBloc()..handleRemoteMessageIfNotNull(RemoteMessage()),
+          create: (_) => NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
         ),
         BlocProvider(create: (_) => AuthCubit()),
         BlocProvider(
@@ -35,20 +34,9 @@ void main() async {
       child: const MainApp(),
     ),
   );
-  
-}
-
-extension on NotificationsBloc {
-  void handleRemoteMessageIfNotNull(RemoteMessage? message) {
-    if (message != null) {
-      handleRemoteMessage(message);
-      // Aquí podrías guardar un estado para redirigir en el router
-    }
-  }
 }
 
 class MainApp extends StatelessWidget {
-  
   const MainApp({super.key});
 
   @override
@@ -57,59 +45,54 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: AppTheme().getTheme(),
-      // builder: (context, child) =>
-      //     HandleNotificationInteractions(child: child!),
+      builder: (context, child) =>
+          HandleNotificationInteractions(child: child!),
     );
   }
 }
 
-  // class HandleNotificationInteractions extends StatefulWidget {
-  //   final Widget child;
-  //   const HandleNotificationInteractions({super.key, required this.child});
+class HandleNotificationInteractions extends StatefulWidget {
+  final Widget child;
+  const HandleNotificationInteractions({super.key, required this.child});
 
-  //   @override
-  //   State<HandleNotificationInteractions> createState() =>
-  //       _HandleNotificationInteractionsState();
-  // }
+  @override
+  State<HandleNotificationInteractions> createState() =>
+      _HandleNotificationInteractionsState();
+}
 
-  // class _HandleNotificationInteractionsState
-  //     extends State<HandleNotificationInteractions> {
-  //   Future<void> setupInteractedMessage() async {
-  //     // Get any messages which caused the application to open from
-  //     // a terminated state.
-  //     RemoteMessage? initialMessage = await FirebaseMessaging.instance
-  //         .getInitialMessage();
+class _HandleNotificationInteractionsState
+    extends State<HandleNotificationInteractions> {
+  Future<void> setupInteractedMessage() async {
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) _handleMessage(initialMessage);
 
-  //     // If the message also contains a data property with a "type" of "chat",
-  //     // navigate to a chat screen5
-  //     if (initialMessage != null) {
-  //       _handleMessage(initialMessage);
-  //     }
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
 
-  //     // Also handle any interaction when the app is in the background via a
-  //     // Stream listener
-  //     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
-  //   }
+  void _handleMessage(RemoteMessage message) {
+    context.read<NotificationsBloc>().handleRemoteMessage(message);
 
-  //   void _handleMessage(RemoteMessage message) {
-  //     context.read<NotificationsBloc>().handleRemoteMessage(message);
-  //     //TODO MANEJO POR SI QUIERO OBTERNER EL ID PARA NAVEGAR A OTRO LUGAR
-  //     final messageId=message.messageId?.replaceAll(':', '').replaceAll('%', '');
-  //     appRouter.push('/');
-  //   }
+    final messageId = message.messageId?.replaceAll(':', '').replaceAll('%', '');
+    // TODO: usar messageId para navegación condicional
+    appRouter.go('/');
+  }
 
-  //   @override
-  //   void initState() {
-  //     super.initState();
+  @override
+  void initState() {
+    super.initState();
+    setupInteractedMessage();
+  }
 
-  //     // Run code required to handle interacted messages in an async function
-  //     // as initState() must not be async
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
 
-  //     setupInteractedMessage();
-  //   }
-
-  //   @override
-  //   Widget build(BuildContext context) {
-  //     return widget.child;
-  //   }
-  // }
+extension NotificationsBlocX on NotificationsBloc {
+  void handleRemoteMessageIfNotNull(RemoteMessage? message) {
+    if (message != null) {
+      handleRemoteMessage(message);
+    }
+  }
+}

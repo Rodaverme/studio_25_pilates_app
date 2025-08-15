@@ -2,8 +2,9 @@
 
 
 import 'package:studio_25_pilates_app/domain/datasources/auth_datasource.dart';
+import 'package:studio_25_pilates_app/domain/entities/user.dart';
 import 'package:studio_25_pilates_app/domain/repositories/auth_repository.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
+
 
 
 
@@ -15,7 +16,7 @@ class AuthRespositoryImpl extends AuthRepository {
 
 
   @override
-  Future<LoginResponse> login(String email, String password) {
+  Future<User> login(String email, String password) {
     return datasource.login(email, password);
   }
 
@@ -30,7 +31,7 @@ class AuthRespositoryImpl extends AuthRepository {
   }
   
   @override
-  Future<Client> getCurrentClient() {
+  Future<User> getCurrentClient() {
     return datasource.getCurrentClient();
   }
   

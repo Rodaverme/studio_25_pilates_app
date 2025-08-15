@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
+import 'package:studio_25_pilates_app/domain/entities/user.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
 
 class PerfilView extends StatelessWidget {
-  final Client? client;
+  final User? client;
 
   const PerfilView({super.key, this.client});
 

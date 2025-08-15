@@ -1,7 +1,7 @@
 part of 'auth_cubit.dart';
 
 class AuthState extends Equatable {
-  final Client? client;
+  final User? client;
   final bool isAuthenticated;
 
   const AuthState({
@@ -10,7 +10,7 @@ class AuthState extends Equatable {
   });
 
 AuthState copyWith({
-    Client? client,
+    User? client,
     bool? isAuthenticated,
   }) {
     return AuthState(

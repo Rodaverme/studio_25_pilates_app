@@ -16,7 +16,7 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       final user = await authRepository.login(email, password);
 
-      authCubit.setUser(user.client);
+      authCubit.setUser(user);
       emit(LoginSuccess());
         } catch (e) {
       emit(LoginError("Error inesperado: $e"));
