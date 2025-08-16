@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
           child: BlocConsumer<LoginCubit, LoginState>(
             listener: (context, state) {
               if (state is LoginSuccess) {
-                context.go('/home-screen/0');
+                context.go('/Home');
               }
               if (state is LoginError) {
                 ScaffoldMessenger.of(

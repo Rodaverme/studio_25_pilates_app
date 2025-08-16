@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:studio_25_pilates_app/domain/entities/user.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key, this.client});
-  final User? client;
+  const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final client = context.watch<AuthCubit>().state.client;
     final textStyle = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(title: Text('Hola, ${client?.name}')),
@@ -37,8 +39,19 @@ class HomeView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text('Clases de Hoy'),
             ),
-            _LessonsToday(textStyle: textStyle),
-            _LessonsToday(textStyle: textStyle),
+            //TODO CUANDO LA INFO DE LA API VENGE ESTO SERA UN LISVIEW BUILDER
+            _LessonsToday(
+              textStyle: textStyle,
+              onTap: () {
+                context.push('/class');
+              },
+            ),
+            _LessonsToday(
+              textStyle: textStyle,
+              onTap: () {
+                context.push('/class');
+              },
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text('Acciones Rapidas'),
@@ -63,9 +76,10 @@ class HomeView extends StatelessWidget {
 }
 
 class _LessonsToday extends StatelessWidget {
-  const _LessonsToday({required this.textStyle});
+  const _LessonsToday({required this.textStyle, required this.onTap});
 
   final TextTheme textStyle;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -135,19 +149,22 @@ class _LessonsToday extends StatelessWidget {
                   Spacer(),
                   Text('5/10 Cupos'),
                   Spacer(),
-                  Container(
-                    alignment: Alignment.topCenter,
-                    width: 120,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Reservar',
-                        style: TextStyle(color: Colors.white),
+                  GestureDetector(
+                    onTap: onTap,
+                    child: Container(
+                      alignment: Alignment.topCenter,
+                      width: 120,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Reservar',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),

@@ -14,13 +14,15 @@ Future<void> main() async {
   await NotificationsBloc.initializeFCM();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance
+      .getInitialMessage();
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
+          create: (_) =>
+              NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
         ),
         BlocProvider(create: (_) => AuthCubit()),
         BlocProvider(
@@ -63,7 +65,8 @@ class HandleNotificationInteractions extends StatefulWidget {
 class _HandleNotificationInteractionsState
     extends State<HandleNotificationInteractions> {
   Future<void> setupInteractedMessage() async {
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance
+        .getInitialMessage();
     if (initialMessage != null) _handleMessage(initialMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
@@ -72,8 +75,8 @@ class _HandleNotificationInteractionsState
   void _handleMessage(RemoteMessage message) {
     context.read<NotificationsBloc>().handleRemoteMessage(message);
 
-    final messageId = message.messageId?.replaceAll(':', '').replaceAll('%', '');
-    // TODO: usar messageId para navegación condicional
+    // final messageId = message.messageId?.replaceAll(':', '').replaceAll('%', '');
+    // // TODO: usar messageId para navegación condicional
     appRouter.go('/');
   }
 

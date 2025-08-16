@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class CustomCards extends StatelessWidget {
   const CustomCards({
     super.key,
-    required this.width,
+    this.width ,
     required this.height,
     required this.child,
   });
 
-  final double width;
+  final double? width;
   final double height;
   final Widget child;
 

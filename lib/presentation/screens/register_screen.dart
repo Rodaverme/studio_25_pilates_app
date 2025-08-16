@@ -78,7 +78,7 @@ class RegisterScreen extends StatelessWidget {
                                   Text('Volver al'),
                                   TextButton(
                                     onPressed: () {
-                                      context.go('/');
+                                      context.go('/Home');
                                     },
                                     child: Text('Login'),
                                   ),

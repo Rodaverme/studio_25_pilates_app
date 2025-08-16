@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/domain/entities/user.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
 
 class PerfilView extends StatelessWidget {
-  final User? client;
-
-  const PerfilView({super.key, this.client});
+  const PerfilView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final client = context.watch<AuthCubit>().state.client;
     final logOutCubit = context.watch<LogoutCubit>();
     return Scaffold(
       appBar: AppBar(title: Text('Perfil')),
