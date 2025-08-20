@@ -1,11 +1,15 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/class_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/class_respository_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
@@ -32,6 +36,11 @@ Future<void> main() async {
             ),
           ),
         ),
+        BlocProvider(
+          create: (context) => ClassCubit(
+            ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
+          ),
+        ),
       ],
       child: const MainApp(),
     ),
@@ -46,6 +55,12 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
+      localizationsDelegates: [
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('es', ''), Locale('en', '')],
       theme: AppTheme().getTheme(),
       builder: (context, child) =>
           HandleNotificationInteractions(child: child!),

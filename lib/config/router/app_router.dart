@@ -21,14 +21,19 @@ final appRouter = GoRouter(
           builder: (context, state) {
             return const HomeView();
           },
+          routes: [
+            GoRoute(
+              name: ClassView.name,
+              path: '/class/:id',
+              builder: (context, state) {
+                return ClassView(
+                  classId: state.pathParameters['id'] ?? 'no id',
+                );
+              },
+            ),
+          ],
         ),
-        GoRoute(
-          name: ClassView.name,
-          path: '/class',
-          builder: (context, state) {
-            return ClassView();
-          },
-        ),
+
         GoRoute(
           path: '/calendar',
           builder: (context, state) {

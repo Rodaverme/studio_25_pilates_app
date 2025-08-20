@@ -3,16 +3,18 @@ import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.da
 
 class ClassView extends StatelessWidget {
   static const name = 'class_screen';
-  const ClassView({super.key, });
+  const ClassView({super.key, required this.classId, });
+   final String classId;
 
   final int current = 7;
   final int total = 10;
 
   @override
   Widget build(BuildContext context) {
+    //todo implementacion de API buscar clase por ID
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nombre de la clase'),
+        title:  Text(classId),
         actions: [
           const Padding(
             padding: EdgeInsets.all(8.0),
