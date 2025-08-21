@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,11 +6,13 @@ import 'package:studio_25_pilates_app/domain/clases.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 
+
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+   
     final client = context.watch<AuthCubit>().state.client;
     final textStyle = Theme.of(context).textTheme;
 
@@ -49,7 +50,7 @@ class HomeView extends StatelessWidget {
           ),
           SizedBox(
             height: 380,
-             // 👈 altura fija para tarjetas
+            // 👈 altura fija para tarjetas
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: (listClass.length / 2).ceil(),
@@ -89,7 +90,8 @@ class HomeView extends StatelessWidget {
 }
 
 class LessonsToday extends StatelessWidget {
-  const LessonsToday({super.key, 
+  const LessonsToday({
+    super.key,
     required this.textStyle,
     required this.onTap,
     required this.pilatesClass,

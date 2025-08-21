@@ -1,4 +1,6 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart';
@@ -6,6 +8,7 @@ import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart'
 import 'package:studio_25_pilates_app/presentation/screens/views/notifications_views.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/perfil_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/planes_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/reservation_view.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -26,10 +29,27 @@ final appRouter = GoRouter(
               name: ClassView.name,
               path: '/class/:id',
               builder: (context, state) {
-                return ClassView(
-                  classId: state.pathParameters['id'] ?? 'no id',
+                final classId = state.pathParameters['id']!;
+
+                return BlocProvider.value(
+                  value: context.read<ClassCubit>()..loadClassesById(classId),
+                  child: ClassView(classId: classId),
                 );
               },
+              routes: [
+                GoRoute(
+                  path: '/reservation/:id',
+                  builder: (context, state) {
+                    final classId = state.pathParameters['id']!;
+
+                    return BlocProvider.value(
+                      value: context.read<ClassCubit>()
+                        ..loadClassesById(classId),
+                      child: ReservationView(classId: classId),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

@@ -11,6 +11,7 @@ class ClassDatasourceImpl extends ClassDatasource {
 
   @override
   Future<List<PilatesClass>> getClassesByDay(DateTime day) async {
+    //TODO REMPLAZAR CON LA INFORMACION DE LA API , IGU
     await Future.delayed(const Duration(milliseconds: 500));
     final selectedDate = DateTime(day.year, day.month, day.day);
 
@@ -24,5 +25,16 @@ class ClassDatasourceImpl extends ClassDatasource {
     }).toList();
 
     return filteredClasses;
+  }
+
+  @override
+  Future<PilatesClass> getClassesById(String id) async {
+    await Future.delayed(Duration(milliseconds: 500));
+
+    final classResult = listClass.firstWhere(
+      (clase) => clase.id == id,
+      orElse: () => throw Exception('Clase con id $id no encontrada'),
+    );
+    return classResult;
   }
 }

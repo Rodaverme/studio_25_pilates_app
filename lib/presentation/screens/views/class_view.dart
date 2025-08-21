@@ -1,46 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:studio_25_pilates_app/config/router/app_router.dart';
+import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
 
 class ClassView extends StatelessWidget {
   static const name = 'class_screen';
-  const ClassView({super.key, required this.classId, });
-   final String classId;
-
-  final int current = 7;
-  final int total = 10;
+  const ClassView({super.key, required this.classId});
+  final String classId;
 
   @override
   Widget build(BuildContext context) {
     //todo implementacion de API buscar clase por ID
-    return Scaffold(
-      appBar: AppBar(
-        title:  Text(classId),
-        actions: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CustomCards(
-              width: 90,
-              height: 40,
-              child: Center(child: Text('Experto')),
+    return BlocBuilder<ClassCubit, ClassState>(
+      builder: (context, state) {
+        if (state is ClassLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is ClassByIdLoaded) {
+          final PilatesClass clase = state.clase;
+          final fechaFormateada = DateFormat(
+            "d MMMM ",
+            'es_ES',
+          ).format(clase.fechaHora);
+          final horaInicio = DateFormat("HH:mm").format(clase.fechaHora);
+          final horaFinal = DateFormat(
+            "HH:mm",
+          ).format(clase.fechaHora.add(clase.duracion));
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(clase.nombre),
+
+
+              actions: [
+                 Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: CustomCards(
+                    width: 150,
+                    height: 40,
+                    child: Center(child: Text(clase.nivel)),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildInfoCard(['15 Julio', '18:00 - 19:30', 'Sala 1']),
-            _buildProgressSection(),
-            _buildProfessorSection(),
-            _buildBenefitSection(['Fuerza', 'Flexibilidad', 'Relajación']),
-            _buildTextCardSection('Descripción', 'Mini bio profesor'),
-            _buildTextCardSection('Qué traer', 'Agua'),
-            _buildTextCardSection('Precio por clase', '120.000'),
-            _buildActionButtons(),
-            const SizedBox(height: 80),
-          ],
-        ),
-      ),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildInfoCard([
+                    fechaFormateada,
+                    '$horaInicio - $horaFinal',
+                    clase.sala,
+                  ]),
+                  _buildProgressSection(clase.cuposOcupados,clase.cupoMaximo),
+                  _buildProfessorSection(),
+                  _buildBenefitSection([
+                    'Fuerza',
+                    'Flexibilidad',
+                    'Relajación',
+                  ]),
+                  _buildTextCardSection('Descripción', 'Mini bio profesor'),
+                  _buildTextCardSection('Qué traer', 'Agua'),
+                  _buildTextCardSection('Precio por clase', '120.000'),
+                  _buildActionButtons(classId),
+                  const SizedBox(height: 80),
+                ],
+              ),
+            ),
+          );
+        } else if (state is ClassError) {
+          return Center(child: Text(state.message));
+        }
+        return SizedBox.shrink();
+      },
     );
   }
 
@@ -55,7 +87,17 @@ class ClassView extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: texts.map((text) => Text(text)).toList(),
+            children: texts
+                .map(
+                  (text) => Flexible(
+                    child: Text(
+                      text,
+                      style: const TextStyle(fontSize: 18),
+                      overflow: TextOverflow.ellipsis, // pone "..." si se pasa
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),
@@ -63,7 +105,7 @@ class ClassView extends StatelessWidget {
   }
 
   /// Sección con barra de progreso
-  Widget _buildProgressSection() {
+  Widget _buildProgressSection(int current, int total) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -185,10 +227,16 @@ class ClassView extends StatelessWidget {
   }
 
   /// Botones de acción
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(String id) {
     return Column(
       children: [
-        _blackButton('Reservar', width: 120),
+        _blackButton(
+          'Reservar',
+          width: 120,
+          onTap: () {
+            appRouter.push('/Home/class/$classId/reservation/$id');
+          },
+        ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -203,19 +251,19 @@ class ClassView extends StatelessWidget {
   }
 
   /// Botón negro reutilizable
-  Widget _blackButton(String text, {double? width}) {
-    return Container(
-      alignment: Alignment.center,
-      width: width,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.white),
+  Widget _blackButton(String text, {double? width, void Function()? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        width: width,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey),
+        ),
+        child: Text(text, style: const TextStyle(color: Colors.white)),
       ),
     );
   }

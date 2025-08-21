@@ -17,6 +17,11 @@ class ClassLoaded extends ClassState {
   const ClassLoaded(this.classes, this.selectedDate);
 }
 
+class ClassByIdLoaded extends ClassState {
+  final PilatesClass clase;
+  const ClassByIdLoaded({required this.clase});
+}
+
 class ClassError extends ClassState {
   final String message;
   const ClassError({required this.message});

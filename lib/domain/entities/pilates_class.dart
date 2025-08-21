@@ -1,15 +1,20 @@
+
+
 class PilatesClass {
   final String id;
   final String nombre;
+  final String descripcion;
   final DateTime fechaHora;
   final Duration duracion;
   final String instructor;
   final int cupoMaximo;
   final String nivel;
   final int cuposOcupados;
+  final String sala;
+  final String price;
   
 
-  PilatesClass({
+  PilatesClass( {
     required this.id,
     required this.nombre,
     required this.fechaHora,
@@ -18,5 +23,8 @@ class PilatesClass {
     required this.cupoMaximo,
     required this.nivel,
     required this.cuposOcupados,
+    required this.sala,
+    required this.descripcion,
+    required this.price
   });
 }

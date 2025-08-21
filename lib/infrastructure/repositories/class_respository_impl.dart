@@ -14,6 +14,10 @@ class ClassRespositoryImpl extends ClassRespository {
   @override
   Future<List<PilatesClass>> getClassesByDay(DateTime day) {
     return datasource.getClassesByDay(day);
-    
+  }
+
+  @override
+  Future<PilatesClass> getClassesById(String id) {
+    return datasource.getClassesById(id);
   }
 }
