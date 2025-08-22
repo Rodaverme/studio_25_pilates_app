@@ -25,14 +25,7 @@ class PerfilView extends StatelessWidget {
                 height: 150,
                 child: Row(
                   children: [
-                    SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: Image.asset(
-                        'assets/images/EjercicioP.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,

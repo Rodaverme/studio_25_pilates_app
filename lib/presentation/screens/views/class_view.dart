@@ -145,11 +145,7 @@ class ClassView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  height: 90,
-                  width: 80,
-                  child: Image.asset('assets/images/EjercicioP.png'),
-                ),
+                
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,

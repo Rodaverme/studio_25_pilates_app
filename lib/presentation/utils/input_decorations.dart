@@ -9,10 +9,10 @@ class InputDecorations {
   }) {
     return InputDecoration(
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.green),
+        borderSide: BorderSide(color: Color.fromRGBO(137, 107, 90, 1),),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.green, width: 2),
+        borderSide: BorderSide(color: Color.fromRGBO(137, 107, 90, 1), width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Colors.red, width: 2),

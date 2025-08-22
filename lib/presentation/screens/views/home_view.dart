@@ -5,218 +5,97 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:studio_25_pilates_app/domain/clases.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
-
+import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-   
     final client = context.watch<AuthCubit>().state.client;
     final textStyle = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Hola, ${client?.name}')),
-      body: ListView(
-        padding: EdgeInsets.zero,
+      appBar: AppBar(),
+      body: Stack(
         children: [
-          // ---- Info Cards ----
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _InfoCard(label: 'Clases este mes', value: '12'),
-                const SizedBox(width: 20),
-                _InfoCard(value: '4', label: 'Racha Actual'),
-              ],
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/Logo6.png',
+              fit: BoxFit.cover,
+              color: Colors.white.withValues(alpha: 0.2), // aclarado
+              colorBlendMode: BlendMode.lighten, // modo de mezcla
             ),
           ),
-          const SizedBox(height: 20),
-
-          // ---- Próxima Clase ----
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Mi Próxima Clase'),
-          ),
-          _NextClass(textStyle: textStyle, pilatesClass: listClass.first),
-          const SizedBox(height: 20),
-
-          // ---- Clases de Hoy ----
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Clases de Hoy'),
-          ),
-          SizedBox(
-            height: 380,
-            // 👈 altura fija para tarjetas
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: (listClass.length / 2).ceil(),
-
-              itemBuilder: (context, index) {
-                final size = MediaQuery.of(context).size.width;
-                return SizedBox(
-                  width: size, // 👈 ancho de cada tarjeta
-                  child: ClassesCarousel(),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // ---- Acciones rápidas ----
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Acciones Rápidas'),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                TextButton(onPressed: () {}, child: const Text('Mis Clases')),
-                const Spacer(),
-                TextButton(onPressed: () {}, child: const Text('Calendario')),
-                const Spacer(),
-                TextButton(onPressed: () {}, child: const Text('Tarjetas')),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LessonsToday extends StatelessWidget {
-  const LessonsToday({
-    super.key,
-    required this.textStyle,
-    required this.onTap,
-    required this.pilatesClass,
-  });
-
-  final TextTheme textStyle;
-  final void Function()? onTap;
-  final PilatesClass pilatesClass;
-
-  @override
-  Widget build(BuildContext context) {
-    final horaInicio =
-        "${pilatesClass.fechaHora.hour}:${pilatesClass.fechaHora.minute.toString().padLeft(2, '0')}";
-    final horaFin =
-        "${pilatesClass.fechaHora.add(pilatesClass.duracion).hour}:"
-        "${pilatesClass.fechaHora.add(pilatesClass.duracion).minute.toString().padLeft(2, '0')}";
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: double.maxFinite,
-        height: 150,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.grey),
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 80,
-                  width: 80,
-                  child: Image.asset(
-                    'assets/images/EjercicioP.png',
-                    fit: BoxFit.cover,
-                  ),
+          ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Hola, ${client?.name}',
+                  style: textStyle.titleLarge,
                 ),
-                Expanded(
-                  // 👈 para que el texto se adapte
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          pilatesClass.nombre,
-                          style: textStyle.titleLarge,
-                          maxLines: 1, // 👈 máximo una línea
-                          overflow: TextOverflow.ellipsis, // 👈 agrega "..."
-                        ),
-                        Text(
-                          pilatesClass.instructor,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+              ),
+              // ---- Info Cards ----
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        alignment: Alignment.topCenter,
-                        width: 120,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: Center(
-                          child: Text(
-                            pilatesClass.nivel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ),
+                    _InfoCard(label: 'Clases este mes', value: '12'),
+                    const SizedBox(width: 20),
+                    _InfoCard(value: '4', label: 'Racha Actual'),
                   ],
                 ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text('$horaInicio - $horaFin'),
-                  Spacer(),
-                  Text(
-                    '${pilatesClass.cuposOcupados}/${pilatesClass.cupoMaximo} Cupos',
-                  ),
-                  Spacer(),
-                  GestureDetector(
-                    onTap: onTap,
-                    child: Container(
-                      alignment: Alignment.topCenter,
-                      width: 120,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Reservar',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 20),
+
+              // ---- Próxima Clase ----
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text('Mi Próxima Clase'),
+              ),
+              _NextClass(textStyle: textStyle, pilatesClass: listClass.first),
+              const SizedBox(height: 20),
+
+              // ---- Clases de Hoy ----
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text('Clases de Hoy'),
+              ),
+              SizedBox(
+                height: 250, // 👈 altura fija suficiente
+                child: ClassesCarousel(),
+              ),
+              const SizedBox(height: 20),
+
+              // ---- Acciones rápidas ----
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text('Acciones Rápidas'),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text('Mis Clases'),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text('Calendario'),
+                    ),
+                    const Spacer(),
+                    TextButton(onPressed: () {}, child: const Text('Tarjetas')),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -241,14 +120,6 @@ class _NextClass extends StatelessWidget {
         ),
         child: Row(
           children: [
-            SizedBox(
-              height: 80,
-              width: 80,
-              child: Image.asset(
-                'assets/images/EjercicioP.png',
-                fit: BoxFit.cover,
-              ),
-            ),
             Expanded(
               // 👈 evita desbordes en nombres largos
               child: Column(
@@ -287,7 +158,6 @@ class _InfoCard extends StatelessWidget {
     final textStyle = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size.width;
     return Container(
-      height: 130,
       width: size * 0.45,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -322,8 +192,7 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
 
     return Column(
       children: [
-        SizedBox(
-          height: 350, // alto para tus columnas
+        Expanded( // 👈 ahora el PageView usa todo el espacio disponible
           child: PageView.builder(
             controller: _pageController,
             itemCount: pagesCount,

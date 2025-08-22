@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/week_calendar.dart';
 
 class CalendarView extends StatelessWidget {

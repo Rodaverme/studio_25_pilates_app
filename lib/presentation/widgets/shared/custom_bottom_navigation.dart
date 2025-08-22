@@ -59,10 +59,12 @@ class CustomBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      
       type: BottomNavigationBarType.fixed,
       currentIndex: getCurrentIndex(context),
       onTap: (value) => onItemTapped(context, value),
       elevation: 0,
+      backgroundColor: Color.fromRGBO(228, 214, 188, 1),
 
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'inicio'),

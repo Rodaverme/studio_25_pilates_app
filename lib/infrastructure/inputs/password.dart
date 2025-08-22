@@ -6,7 +6,7 @@ enum PasswordError { empty, length }
 
 class Password extends FormzInput<String, PasswordError> {
   const Password.pure() : super.pure('');
-  const Password.dirty(String value) : super.dirty(value);
+  const Password.dirty(super.value) : super.dirty();
 
 
   String? get errorMessage {

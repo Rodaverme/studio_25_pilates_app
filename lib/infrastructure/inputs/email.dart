@@ -10,7 +10,7 @@ class Email extends FormzInput<String, EmailError> {
   const Email.pure() : super.pure('');
 
   // Call super.dirty to represent a modified form input.
-  const Email.dirty(String value) : super.dirty(value);
+  const Email.dirty(super.value) : super.dirty();
 
   String? get errorMessage {
     if (isValid || isPure) return null;
