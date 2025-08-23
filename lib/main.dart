@@ -6,12 +6,15 @@ import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/class_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/class_respository_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +43,10 @@ Future<void> main() async {
           create: (context) => ClassCubit(
             ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
           ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              PlanCubit(PlanRespoitoryImpl(datasource: PlanDatasourceImpl())),
         ),
       ],
       child: const MainApp(),

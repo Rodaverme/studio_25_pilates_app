@@ -33,7 +33,7 @@ class LoginScreen extends StatelessWidget {
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(title: const Text('Login'), centerTitle: true),
+        appBar: AppBar(title: Text('Login',style:textStyle.titleLarge ,), centerTitle: true),
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
             statusBarColor: Color.fromRGBO(137, 107, 90, 1),
@@ -45,8 +45,7 @@ class LoginScreen extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/Logo6.png',
                   fit: BoxFit.cover,
-                  color: Colors.white.withValues(alpha: 0.2), // aclarado
-                  colorBlendMode: BlendMode.lighten,
+                  
 
                   // modo de mezcla
                 ),

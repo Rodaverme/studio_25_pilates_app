@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/clases.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
@@ -20,12 +21,7 @@ class HomeView extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/Logo6.png',
-              fit: BoxFit.cover,
-              color: Colors.white.withValues(alpha: 0.2), // aclarado
-              colorBlendMode: BlendMode.lighten, // modo de mezcla
-            ),
+            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
           ListView(
             padding: EdgeInsets.zero,
@@ -52,9 +48,9 @@ class HomeView extends StatelessWidget {
               const SizedBox(height: 20),
 
               // ---- Próxima Clase ----
-              const Padding(
+               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text('Mi Próxima Clase'),
+                child: Text('Mi Próxima Clase',style: textStyle.titleLarge,),
               ),
               _NextClass(textStyle: textStyle, pilatesClass: listClass.first),
               const SizedBox(height: 20),
@@ -65,7 +61,7 @@ class HomeView extends StatelessWidget {
                 child: Text('Clases de Hoy'),
               ),
               SizedBox(
-                height: 250, // 👈 altura fija suficiente
+                height: 380, // 👈 altura fija suficiente
                 child: ClassesCarousel(),
               ),
               const SizedBox(height: 20),
@@ -110,13 +106,14 @@ class _NextClass extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.maxFinite,
         height: 130,
         decoration: BoxDecoration(
+          color: AppColors.piedra,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.grey),
+          border: Border.all(color: AppColors.cafeNoir),
         ),
         child: Row(
           children: [
@@ -157,18 +154,14 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size.width;
-    return Container(
+    return SizedBox(
       width: size * 0.45,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(value, style: textStyle.titleLarge),
-          Text(label),
+          Text(label, style: textStyle.bodyLarge),
         ],
       ),
     );
@@ -192,7 +185,8 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
 
     return Column(
       children: [
-        Expanded( // 👈 ahora el PageView usa todo el espacio disponible
+        Expanded(
+          // 👈 ahora el PageView usa todo el espacio disponible
           child: PageView.builder(
             controller: _pageController,
             itemCount: pagesCount,
@@ -202,7 +196,6 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
               final second = first + 1;
 
               return Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   LessonsToday(
                     pilatesClass: listClass[first],
@@ -223,12 +216,12 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
             },
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 5),
         SmoothPageIndicator(
           controller: _pageController,
           count: pagesCount,
           effect: ExpandingDotsEffect(
-            activeDotColor: Colors.green,
+            activeDotColor: AppColors.cafeNoir,
             dotHeight: 8,
             dotWidth: 8,
             spacing: 6,

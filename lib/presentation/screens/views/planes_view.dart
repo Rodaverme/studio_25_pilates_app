@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
 
 class PlanesView extends StatelessWidget {
@@ -6,52 +11,74 @@ class PlanesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int current = 22;
-    final int total = 30;
-    final textStyle = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: AppBar(title: Text('Planes'), centerTitle: true),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _CustomPlanes(
-                textStyle: textStyle,
-                current: current,
-                total: total,
-                isActive: true,
-                plan: 'Plan Premium',
-                price: '0',
-                subtitle: 'Se renueva el 15 de agosto',
-              ),
-            ),
+   return BlocProvider(
+  create: (_) => PlanCubit(
+    PlanRespoitoryImpl(datasource: PlanDatasourceImpl()),
+  )..getMyPlan(),
+  child: Scaffold(
+    appBar: AppBar(title: const Text('Planes'), centerTitle: true),
+    body: BlocBuilder<PlanCubit, PlanState>(
+      builder: (context, state) {
+        if (state is PlanLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _CustomPlanes(
-                textStyle: textStyle,
-                current: current,
-                total: total,
-                isActive: false,
-                plan: 'Plan Basico',
-                price: '50.000/mes',
-                subtitle: 'Perfecto para comenzar',
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _CustomPlanes(
-                textStyle: textStyle,
-                current: current,
-                total: total,
-                isActive: false,
-                plan: 'Plan Super',
-                price: '90.000/mes',
-                subtitle: 'El mas popular',
-              ),
-            ),
-          ],
+        if (state is PlanError) {
+          return Center(child: Text("Error: ${state.message}"));
+        }
+
+        if (state is PlanLoaded) {
+          final plan = state.plan;
+          print('Este es el plan: ${plan.name}');
+
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _CustomPlanes(
+                        textStyle: Theme.of(context).textTheme,
+                        current: 7,
+                        total: 30,
+                        isActive: true,
+                        plan: plan.name,
+                        price: plan.price,
+                        subtitle: "Se renueva el ${plan.name}",
+                      ),
+                    ),
+
+                    // 🔹 Otros planes que puede elegir
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _CustomPlanes(
+                        textStyle: Theme.of(context).textTheme,
+                        current: 0,
+                        total: 0,
+                        isActive: false,
+                        plan: plan.name,
+                        price: '${plan.price}/mes',
+                        subtitle: 'Perfecto para comenzar',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _CustomPlanes(
+                        textStyle: Theme.of(context).textTheme,
+                        current: 0,
+                        total: 0,
+                        isActive: false,
+                        plan: 'Plan Super',
+                        price: '90.000/mes',
+                        subtitle: 'El mas popular',
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return const Center(child: Text("No hay información del plan "));
+          },
         ),
       ),
     );

@@ -1,25 +1,87 @@
 import 'package:flutter/material.dart';
 
+/// 🎨 Paleta de colores principal
+class AppColors {
+  static const Color piedra = Color(0xFFF5F3eB); // Amarillo piedra
+  static const Color arena = Color(0xFFD9C9AE); // Beige arena
+  static const Color almendra = Color(0xFF896B5A); // Marrón almendra
+  static const Color cafeNoir = Color(0xFF51382A); // Azul oscuro afe noir
+}
+
 class AppTheme {
   ThemeData getTheme() => ThemeData(
     useMaterial3: true,
     fontFamily: 'Sculpin',
-    colorSchemeSeed: Color.fromRGBO(137, 107, 90, 1),
-    textTheme: TextTheme(
+
+    /// 🌈 Definir el esquema de color con almendra como semilla base
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.almendra,
+      primary: AppColors.almendra,
+      secondary: AppColors.piedra,
+      surface: AppColors.piedra,
+      background: AppColors.piedra,
+      tertiary: AppColors.cafeNoir,
+      brightness: Brightness.light,
+    ),
+
+    /// 📝 Estilos de texto
+    textTheme: const TextTheme(
       titleLarge: TextStyle(
         fontWeight: FontWeight.w900,
         fontSize: 20,
-        color: Colors.brown,
+        color: AppColors.cafeNoir,
       ),
-      bodyMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+      bodyMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w300,
+        color: AppColors.cafeNoir,
+      ),
+      bodySmall: TextStyle(
+        fontSize: 8,
+        fontWeight: FontWeight.w900,
+        color: AppColors.cafeNoir,
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w900,
+        color: AppColors.cafeNoir,
+      ),
     ),
+
+    /// 🔘 Botones elevados
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.brown,
-        minimumSize: Size(140, 55),
+        backgroundColor: AppColors.almendra,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(140, 55),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(15),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
+      ),
+    ),
+
+    /// 🟨 Estilo general de AppBar
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.piedra,
+      foregroundColor: AppColors.piedra,
+      titleTextStyle: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: AppColors.piedra,
+        foregroundColor: AppColors.piedra,
+        textStyle: TextStyle(color: AppColors.cafeNoir),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.piedra,
+        side: BorderSide(color:  AppColors.arena) ,
+        textStyle: TextStyle(color: AppColors.cafeNoir),
       ),
     ),
   );
