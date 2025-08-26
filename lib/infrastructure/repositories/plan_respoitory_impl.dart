@@ -17,4 +17,9 @@ class PlanRespoitoryImpl extends PlanRepository {
    return datasource.getMyPlan();
   }
   
+  @override
+  Future<List<Plan>> getAllPlans() {
+    return datasource.getAllPlans();
+  }
+  
 }

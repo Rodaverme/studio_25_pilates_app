@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 
-class CustomCards extends StatelessWidget {
-  const CustomCards({
+class CustomCardsType1 extends StatelessWidget {
+  const CustomCardsType1({
     super.key,
-    this.width ,
+    this.width,
     required this.height,
     required this.child,
   });
@@ -18,8 +19,9 @@ class CustomCards extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
+        color: AppColors.piedra,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: AppColors.cafeNoir),
       ),
       child: child,
     );

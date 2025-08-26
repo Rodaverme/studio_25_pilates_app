@@ -65,9 +65,9 @@ class AppTheme {
       backgroundColor: AppColors.piedra,
       foregroundColor: AppColors.piedra,
       titleTextStyle: TextStyle(
-        fontSize: 22,
+        fontSize: 30,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: AppColors.cafeNoir,
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(

@@ -1,84 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 
 import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 
 class PlanesView extends StatelessWidget {
   const PlanesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-   return BlocProvider(
-  create: (_) => PlanCubit(
-    PlanRespoitoryImpl(datasource: PlanDatasourceImpl()),
-  )..getMyPlan(),
-  child: Scaffold(
-    appBar: AppBar(title: const Text('Planes'), centerTitle: true),
-    body: BlocBuilder<PlanCubit, PlanState>(
-      builder: (context, state) {
-        if (state is PlanLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return BlocProvider(
+      create: (_) =>
+          PlanCubit(PlanRespoitoryImpl(datasource: PlanDatasourceImpl()))
+            ..getAllPlans(),
 
-        if (state is PlanError) {
-          return Center(child: Text("Error: ${state.message}"));
-        }
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Planes'), centerTitle: true),
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+            ),
 
-        if (state is PlanLoaded) {
-          final plan = state.plan;
-          print('Este es el plan: ${plan.name}');
+            BlocBuilder<PlanCubit, PlanState>(
+              builder: (context, state) {
+                if (state is PlanLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: _CustomPlanes(
-                        textStyle: Theme.of(context).textTheme,
-                        current: 7,
-                        total: 30,
-                        isActive: true,
-                        plan: plan.name,
-                        price: plan.price,
-                        subtitle: "Se renueva el ${plan.name}",
-                      ),
+                if (state is PlanError) {
+                  return Center(child: Text("Error: ${state.message}"));
+                }
+
+                if (state is AllPlansLoaded) {
+                  final plans = state.plans;
+                  final myPlan = state.myPlan;
+
+                  if (plans.isEmpty) {
+                    return const Center(
+                      child: Text("No hay planes disponibles"),
+                    );
+                  }
+
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: plans.map((plan) {
+                        final isActive = myPlan != null && plan.id == myPlan.id;
+
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _CustomPlanes(
+                            isActive: isActive,
+                            textStyle: Theme.of(context).textTheme,
+                            plan: plan,
+                          ),
+                        );
+                      }).toList(),
                     ),
+                  );
+                }
 
-                    // 🔹 Otros planes que puede elegir
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: _CustomPlanes(
-                        textStyle: Theme.of(context).textTheme,
-                        current: 0,
-                        total: 0,
-                        isActive: false,
-                        plan: plan.name,
-                        price: '${plan.price}/mes',
-                        subtitle: 'Perfecto para comenzar',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: _CustomPlanes(
-                        textStyle: Theme.of(context).textTheme,
-                        current: 0,
-                        total: 0,
-                        isActive: false,
-                        plan: 'Plan Super',
-                        price: '90.000/mes',
-                        subtitle: 'El mas popular',
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            return const Center(child: Text("No hay información del plan "));
-          },
+                return const Center(
+                  child: Text("No hay información del plan "),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -88,113 +81,132 @@ class PlanesView extends StatelessWidget {
 class _CustomPlanes extends StatelessWidget {
   const _CustomPlanes({
     required this.textStyle,
-    required this.current,
-    required this.total,
     required this.plan,
     required this.isActive,
-
-    required this.subtitle,
-    required this.price,
   });
-
+  final Plan plan;
   final TextTheme textStyle;
-  final int current;
-  final int total;
-  final String plan;
-  final String subtitle;
   final bool isActive;
 
-  final String? price;
 
   @override
   Widget build(BuildContext context) {
-    return CustomCards(
-      width: double.maxFinite,
-      height: 300,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'es_CO',
+      name: '',
+      
+
+      decimalDigits: 0, // 👈 así no muestra los decimales
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: isActive
+          ? CustomCardsType1(
+              width: double.maxFinite,
+              height: 300,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(plan, style: textStyle.titleLarge),
-                    Text(subtitle, style: textStyle.bodyLarge),
+                    // Aquí va todo el contenido cuando está activo
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(plan.name, style: textStyle.titleLarge),
+                        Text(
+                          'se renueva en ${plan.name}',
+                          style: textStyle.bodyLarge,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Asistencia', style: textStyle.titleLarge),
+                          ],
+                        ),
+                        LinearProgressIndicator(
+                          value: 20 / 30,
+                          minHeight: 10,
+                          color: AppColors.cafeNoir,
+                          backgroundColor: Colors.grey,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        SizedBox(height: 10,),
+                        Text(limpiarDescripcion(plan.description)),
+                      ],
+                    ),
                   ],
                 ),
-
-                // Spacer(),
-                isActive != false
-                    ? Container(
-                        height: 40,
-                        width: 80,
+              ),
+            )
+          : CustomCardsType2(
+              width: double.maxFinite,
+              height: 300,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Aquí va todo el contenido cuando NO está activo
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(plan.name, style: textStyle.titleLarge),
+                            Text(
+                              'se renueva en ${plan.name}',
+                              style: textStyle.bodyLarge,
+                            ),
+                          ],
+                        ),
+                        Text(
+                          '\$${currencyFormatter.format(int.parse(plan.price))}/mes',
+                          style: textStyle.titleLarge,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    const Text('Acceso a clases privadas'),
+                    const Text('Reserva prioritaria'),
+                    const Text('Cancelación Gratuita'),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Container(
+                        height: 60,
+                        width: 200,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
                           color: Colors.black,
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
-                            'Activo',
+                            'Seleccionar Plan',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
-                      )
-                    : Text(price!, style: textStyle.titleLarge),
-              ],
-            ),
-            SizedBox(height: 30),
-            isActive != false
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Clases utilizadas'),
-                          Text("$current/$total"),
-                        ],
-                      ),
-
-                      LinearProgressIndicator(
-                        value: current / total,
-                        minHeight: 6,
-                        color: Colors.green,
-                        backgroundColor: Colors.grey,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ],
-                  )
-                : SizedBox(height: 1),
-            SizedBox(height: 30),
-            Text(' Acceso a clases privadas'),
-            Text(' Reserva prioritaria'),
-            Text(' Cancelacion Gratiuta'),
-            SizedBox(height: 10),
-            isActive != false
-                ? SizedBox(height: 10)
-                : Center(
-                    child: Container(
-                      height: 60,
-                      width: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.black,
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Selecionar Plan',
-                          style: TextStyle(color: Colors.white),
-                        ),
                       ),
                     ),
-                  ),
-          ],
-        ),
-      ),
+                  ],
+                ),
+              ),
+            ),
     );
   }
+  String limpiarDescripcion(String raw) {
+  // Eliminar etiquetas HTML como <p>, </p>, etc.
+  final sinHtml = raw.replaceAll(RegExp(r'<[^>]*>'), '');
+  // Reemplazar \n por saltos de línea reales
+  return sinHtml.replaceAll(r'\n', '\n');
+}
 }

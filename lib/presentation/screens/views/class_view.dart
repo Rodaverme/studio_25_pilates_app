@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 
 class ClassView extends StatelessWidget {
   static const name = 'class_screen';
@@ -36,7 +36,7 @@ class ClassView extends StatelessWidget {
               actions: [
                  Padding(
                   padding: EdgeInsets.all(10.0),
-                  child: CustomCards(
+                  child: CustomCardsType1(
                     width: 150,
                     height: 40,
                     child: Center(child: Text(clase.nivel)),
@@ -80,7 +80,7 @@ class ClassView extends StatelessWidget {
   Widget _buildInfoCard(List<String> texts) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: CustomCards(
+      child: CustomCardsType1(
         width: double.maxFinite,
         height: 80,
         child: Padding(
@@ -139,7 +139,7 @@ class ClassView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Profesor'),
-          CustomCards(
+          CustomCardsType1(
             width: double.maxFinite,
             height: 140,
             child: Row(
@@ -157,7 +157,7 @@ class ClassView extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: const CustomCards(
+                  child: const CustomCardsType1(
                     width: 110,
                     height: 30,
                     child: Center(child: Text('Ver Perfil')),
@@ -185,7 +185,7 @@ class ClassView extends StatelessWidget {
                 .map(
                   (benefit) => Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: CustomCards(
+                    child: CustomCardsType1(
                       height: 40,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -209,7 +209,7 @@ class ClassView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title),
-          CustomCards(
+          CustomCardsType1(
             height: 50,
             width: double.maxFinite,
             child: Padding(

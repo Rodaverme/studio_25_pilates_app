@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
@@ -33,7 +34,10 @@ class LoginScreen extends StatelessWidget {
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(title: Text('Login',style:textStyle.titleLarge ,), centerTitle: true),
+        appBar: AppBar(
+          title: Text('Login', style: textStyle.titleLarge),
+          centerTitle: true,
+        ),
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
             statusBarColor: Color.fromRGBO(137, 107, 90, 1),
@@ -45,7 +49,6 @@ class LoginScreen extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/Logo6.png',
                   fit: BoxFit.cover,
-                  
 
                   // modo de mezcla
                 ),
@@ -91,7 +94,11 @@ class LoginScreen extends StatelessWidget {
                                       children: [
                                         Text('ESTUDIO'),
                                         SizedBox(width: 10),
-                                        Image.asset('assets/images/Logo.png',height: 80,width: 80,),
+                                        Image.asset(
+                                          'assets/images/Logo.png',
+                                          height: 80,
+                                          width: 80,
+                                        ),
                                         SizedBox(width: 10),
                                         Text('PILATES'),
                                       ],
@@ -171,6 +178,7 @@ class _LoginForm extends StatelessWidget {
                 context.read<NotificationsBloc>().requestPermission();
               },
               style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(AppColors.cafeNoir),
                 padding: const WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 20),
                 ),

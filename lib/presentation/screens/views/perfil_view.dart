@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 
 class PerfilView extends StatelessWidget {
   const PerfilView({super.key});
@@ -20,7 +20,7 @@ class PerfilView extends StatelessWidget {
             //Informacion Cliente
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: CustomCards(
+              child: CustomCardsType1(
                 width: double.maxFinite,
                 height: 150,
                 child: Row(
@@ -47,7 +47,7 @@ class PerfilView extends StatelessWidget {
                           ),
                         ),
 
-                        CustomCards(
+                        CustomCardsType1(
                           width: 250,
                           height: 30,
                           child: Center(child: Text('Miembro Premium')),
@@ -62,7 +62,7 @@ class PerfilView extends StatelessWidget {
             Padding(
               padding: EdgeInsetsGeometry.all(10.0),
 
-              child: CustomCards(
+              child: CustomCardsType1(
                 width: double.maxFinite,
                 height: 80,
                 child: Padding(
@@ -85,7 +85,7 @@ class PerfilView extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  CustomCards(
+                  CustomCardsType1(
                     width: 120,
                     height: 120,
                     child: Column(
@@ -96,7 +96,7 @@ class PerfilView extends StatelessWidget {
 
                   Spacer(),
 
-                  CustomCards(
+                  CustomCardsType1(
                     width: 120,
                     height: 120,
                     child: Column(
@@ -107,7 +107,7 @@ class PerfilView extends StatelessWidget {
 
                   Spacer(),
 
-                  CustomCards(
+                  CustomCardsType1(
                     width: 120,
                     height: 120,
                     child: Column(
@@ -153,7 +153,7 @@ class _PerfilOptions extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: onTap,
-        child: CustomCards(
+        child: CustomCardsType1(
           width: double.maxFinite,
           height: 80,
           child: Padding(

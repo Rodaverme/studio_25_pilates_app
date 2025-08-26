@@ -19,7 +19,7 @@ class PlansResponse {
     bool isActive;
     DateTime createdAt;
     DateTime updatedAt;
-    PlanApi plan;
+    PlansApi plan;
 
     PlansResponse({
         required this.id,
@@ -42,7 +42,7 @@ class PlansResponse {
         isActive: json["is_active"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        plan: PlanApi.fromJson(json["plan"]),
+        plan: PlansApi.fromJson(json["plan"]),
     );
 
     Map<String, dynamic> toJson() => {
