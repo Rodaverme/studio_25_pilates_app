@@ -97,8 +97,6 @@ class _HandleNotificationInteractionsState
   void _handleMessage(RemoteMessage message) {
     context.read<NotificationsBloc>().handleRemoteMessage(message);
 
-    // final messageId = message.messageId?.replaceAll(':', '').replaceAll('%', '');
-    // // TODO: usar messageId para navegación condicional
     appRouter.go('/');
   }
 

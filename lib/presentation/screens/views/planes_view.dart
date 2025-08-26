@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
-
 import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/plan/status_plan.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
@@ -41,6 +41,8 @@ class PlanesView extends StatelessWidget {
                 if (state is AllPlansLoaded) {
                   final plans = state.plans;
                   final myPlan = state.myPlan;
+                  final status = state.statusPlan;
+                  // final status = state.statusPlan;
 
                   if (plans.isEmpty) {
                     return const Center(
@@ -59,6 +61,7 @@ class PlanesView extends StatelessWidget {
                             isActive: isActive,
                             textStyle: Theme.of(context).textTheme,
                             plan: plan,
+                            status: isActive ? status : null,
                           ),
                         );
                       }).toList(),
@@ -83,18 +86,18 @@ class _CustomPlanes extends StatelessWidget {
     required this.textStyle,
     required this.plan,
     required this.isActive,
+    this.status,
   });
   final Plan plan;
   final TextTheme textStyle;
   final bool isActive;
-
+  final StatusPlan? status;
 
   @override
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat.currency(
       locale: 'es_CO',
       name: '',
-      
 
       decimalDigits: 0, // 👈 así no muestra los decimales
     );
@@ -134,13 +137,18 @@ class _CustomPlanes extends StatelessWidget {
                           ],
                         ),
                         LinearProgressIndicator(
-                          value: 20 / 30,
+                          value:
+                              status != null &&
+                                  status!.reservationsRemaining > 0
+                              ? status!.reservationsUsed /
+                                    status!.reservationsRemaining
+                              : 0, // 👈 cálculo real
                           minHeight: 10,
                           color: AppColors.cafeNoir,
                           backgroundColor: Colors.grey,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Text(limpiarDescripcion(plan.description)),
                       ],
                     ),
@@ -165,7 +173,7 @@ class _CustomPlanes extends StatelessWidget {
                           children: [
                             Text(plan.name, style: textStyle.titleLarge),
                             Text(
-                              'se renueva en ${plan.name}',
+                              'Perfecto para empezar',
                               style: textStyle.bodyLarge,
                             ),
                           ],
@@ -203,10 +211,11 @@ class _CustomPlanes extends StatelessWidget {
             ),
     );
   }
+
   String limpiarDescripcion(String raw) {
-  // Eliminar etiquetas HTML como <p>, </p>, etc.
-  final sinHtml = raw.replaceAll(RegExp(r'<[^>]*>'), '');
-  // Reemplazar \n por saltos de línea reales
-  return sinHtml.replaceAll(r'\n', '\n');
-}
+    // Eliminar etiquetas HTML como <p>, </p>, etc.
+    final sinHtml = raw.replaceAll(RegExp(r'<[^>]*>'), '');
+    // Reemplazar \n por saltos de línea reales
+    return sinHtml.replaceAll(r'\n', '\n');
+  }
 }

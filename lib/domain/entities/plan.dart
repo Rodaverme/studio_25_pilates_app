@@ -6,6 +6,7 @@ class Plan {
   final String price;
   final bool allowGuests;
   final dynamic guestLimitPerClass;
+  
 
   Plan( {
     required this.id,
@@ -15,5 +16,6 @@ class Plan {
     required this.allowGuests,
     required this.guestLimitPerClass,
     required this.description,
+    req
   });
 }

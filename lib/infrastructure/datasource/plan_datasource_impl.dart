@@ -5,6 +5,7 @@ import 'package:studio_25_pilates_app/domain/entities/plan.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/plan_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_api.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_reponse.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/plan/status_plan.dart';
 
 class PlanDatasourceImpl extends PlansDatasource {
   final Dio dio = DioClient.Dio_create();
@@ -29,7 +30,7 @@ class PlanDatasourceImpl extends PlansDatasource {
           orElse: () => plans.first,
         );
 
-        final plan = PlanMapper.PlanApitoEntity(activePlan.plan);
+        final plan = PlanMapper.planApitoEntity(activePlan.plan);
         print('Tu plan es el siguiente ${plan.name}');
         return plan;
       }
@@ -48,7 +49,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> data = response.data;
         final List<Plan> plans = data
-            .map((json) => PlanMapper.PlanApitoEntity(PlansApi.fromJson(json)))
+            .map((json) => PlanMapper.planApitoEntity(PlansApi.fromJson(json)))
             .toList();
 
         print('Estos son los planes que existen ${plans.first}');
@@ -61,6 +62,25 @@ class PlanDatasourceImpl extends PlansDatasource {
       );
     } catch (e) {
       throw Exception('Error inesperado: $e');
+    }
+  }
+
+  @override
+  Future<StatusPlan> statusPlan(String id) async {
+    try {
+      final response = await dio.get('/api/client/plan-status/$id');
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data;
+        final status = StatusPlan.fromJson(data);
+        return status;
+      }
+
+      throw Exception('Error al obtener estado del plan');
+    } on DioException catch (e) {
+      throw Exception('Error en statusPlan: ${e.response?.data ?? e.message}');
+    } catch (e) {
+      throw Exception('Error inesperado en statusPlan: $e');
     }
   }
 }

@@ -6,15 +6,18 @@ class PlanInitial extends PlanState {}
 
 class PlanLoading extends PlanState {}
 
-// class PlanLoaded extends PlanState {
-//   final Plan plan;
-//   PlanLoaded(this.plan);
-// }
+class PlanStatusLoaded extends PlanState {
+  final StatusPlan statusPlan;
+
+  PlanStatusLoaded({required this.statusPlan});
+}
 
 class AllPlansLoaded extends PlanState {
   final List<Plan> plans;
   final Plan? myPlan;
-  AllPlansLoaded(this.plans, {this.myPlan});
+  final StatusPlan? statusPlan;
+
+  AllPlansLoaded({required this.plans, this.myPlan, this.statusPlan});
 }
 
 class PlanCanceled extends PlanState {}

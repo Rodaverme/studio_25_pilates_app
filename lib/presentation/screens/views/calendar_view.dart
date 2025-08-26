@@ -13,45 +13,59 @@ class CalendarView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Calendario')),
-      body: Column(
+      body: Stack(
         children: [
-          WeekCalendar(
-            onDaySelected: (day) {
-              context.read<ClassCubit>().loadClasses(day);
-            },
+          Positioned.fill(
+            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
-          Expanded(
-            child: BlocBuilder<ClassCubit, ClassState>(
-              builder: (context, state) {
-                if (state is ClassLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is ClassLoaded) {
-                  if (state.classes.isEmpty) {
-                    return const Center(
-                      child: Text("No hay clases para este día"),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: state.classes.length,
-                    itemBuilder: (context, index) {
-                      final textStyle = Theme.of(context).textTheme;
-                      final c = state.classes[index];
-                  
-                      return FadeInLeftBig(
-                        child: LessonsToday(
-                          pilatesClass: c,
-                          textStyle: textStyle,
-                          onTap: () => context.push('/Home/class/${c.id}'),
-                        ),
+          Column(
+            children: [
+              WeekCalendar(
+                onDaySelected: (day) {
+                  context.read<ClassCubit>().loadClasses(day);
+                },
+              ),
+              Expanded(
+                child: BlocBuilder<ClassCubit, ClassState>(
+                  builder: (context, state) {
+                    if (state is ClassLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is ClassLoaded) {
+                      if (state.classes.isEmpty) {
+                        return const Center(
+                          child: Text("No hay clases para este día"),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: state.classes.length,
+
+                        itemBuilder: (context, index) {
+                          final textStyle = Theme.of(context).textTheme;
+                          final c = state.classes[index];
+
+                          return Column(
+                            children: [
+                              FadeInLeftBig(
+                                child: LessonsToday(
+                                  pilatesClass: c,
+                                  textStyle: textStyle,
+                                  onTap: () =>
+                                      context.push('/Home/class/${c.id}'),
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          );
+                        },
                       );
-                    },
-                  );
-                } else if (state is ClassError) {
-                  return Center(child: Text(state.message));
-                }
-                return const Center(child: Text("Selecciona un día"));
-              },
-            ),
+                    } else if (state is ClassError) {
+                      return Center(child: Text(state.message));
+                    }
+                    return const Center(child: Text("Selecciona un día"));
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
