@@ -95,12 +95,28 @@ class _CustomPlanes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    
+
+
     final currencyFormatter = NumberFormat.currency(
       locale: 'es_CO',
       name: '',
 
       decimalDigits: 0, // 👈 así no muestra los decimales
     );
+
+   double? progress;
+  if (status != null) {
+    final startDate = status!.startDate;
+    final endDate   = status!.expiresAt;
+
+    final totalDays = endDate?.difference(startDate!).inDays;
+    final usedDays = totalDays! - status!.daysRemaining;
+    progress = usedDays / totalDays;
+  }
+
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: isActive
@@ -121,7 +137,7 @@ class _CustomPlanes extends StatelessWidget {
                       children: [
                         Text(plan.name, style: textStyle.titleLarge),
                         Text(
-                          'se renueva en ${plan.name}',
+                          'se renueva en ${status?.daysRemaining},días',
                           style: textStyle.bodyLarge,
                         ),
                       ],
@@ -137,12 +153,7 @@ class _CustomPlanes extends StatelessWidget {
                           ],
                         ),
                         LinearProgressIndicator(
-                          value:
-                              status != null &&
-                                  status!.reservationsRemaining > 0
-                              ? status!.reservationsUsed /
-                                    status!.reservationsRemaining
-                              : 0, // 👈 cálculo real
+                          value: progress,
                           minHeight: 10,
                           color: AppColors.cafeNoir,
                           backgroundColor: Colors.grey,
