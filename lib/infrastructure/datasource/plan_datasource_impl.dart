@@ -20,6 +20,7 @@ class PlanDatasourceImpl extends PlansDatasource {
   Future<Plan> getMyPlan() async {
     try {
       final response = await dio.get('/api/client/plans');
+
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> data = response.data;
 
@@ -66,14 +67,15 @@ class PlanDatasourceImpl extends PlansDatasource {
   }
 
   @override
-  Future<StatusPlan> statusPlan(String id) async {
+  Future<StatusPlan> statusPlan() async {
     try {
-      final response = await dio.get('/api/client/plan-status/$id');
-
+      final response = await dio.get('/api/client/plan-status');
+      print('JSON recibido: ${response.data}');
       if (response.statusCode == 200 && response.data != null) {
-        final data = response.data;
-        final status = StatusPlan.fromJson(data);
-        return status;
+        final statusPlan = StatusPlan.fromJson(response.data);
+        print('Plan: ${statusPlan.plan.name}');
+        print('Días restantes: ${statusPlan.daysRemaining}');
+        return statusPlan;
       }
 
       throw Exception('Error al obtener estado del plan');

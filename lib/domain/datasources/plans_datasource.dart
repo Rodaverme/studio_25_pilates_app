@@ -5,7 +5,7 @@ abstract class PlansDatasource {
   Future<Plan>getMyPlan();
   Future<void>cancelMyPlan();
   Future<List<Plan>>getAllPlans();
-  Future<StatusPlan>statusPlan(String id);
+  Future<StatusPlan>statusPlan();
   
 
 }

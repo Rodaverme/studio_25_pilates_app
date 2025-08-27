@@ -8,7 +8,7 @@ class PlanMapper {
     allowGuests: plan.allowGuests,
     guestLimitPerClass: plan.guestLimitPerClass,
     isActive: plan.isActive,
-    price: plan.price,
+    price: plan.price.toString(),
     description: plan.description,
   );
 }

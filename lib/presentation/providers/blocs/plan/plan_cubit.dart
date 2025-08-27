@@ -14,7 +14,7 @@ class PlanCubit extends Cubit<PlanState> {
   Future<void> getStatusPlan(String id) async {
   emit(PlanLoading());
   try {
-    final statusPlan = await repository.statusPlan(id);
+    final statusPlan = await repository.statusPlan();
     emit(PlanStatusLoaded(statusPlan: statusPlan));
   } catch (e) {
     emit(PlanError(e.toString()));
@@ -28,7 +28,7 @@ class PlanCubit extends Cubit<PlanState> {
       final myPlan = await repository.getMyPlan();
       StatusPlan? statusPlan;
       print( 'Este es el Id de mi plan  ${myPlan.id }');
-      statusPlan = await repository.statusPlan(myPlan.id.toString()); // aquí usas el id
+      statusPlan = await repository.statusPlan(); // aquí usas el id
           emit(AllPlansLoaded(plans: plans,myPlan: myPlan,statusPlan: statusPlan));
     } catch (e) {
       emit(PlanError(e.toString()));

@@ -24,8 +24,8 @@ class PlanRespoitoryImpl extends PlanRepository {
   }
   
   @override
-  Future<StatusPlan> statusPlan(String id) {
-    return datasource.statusPlan(id);
+  Future<StatusPlan> statusPlan() {
+    return datasource.statusPlan();
   }
   
 }
