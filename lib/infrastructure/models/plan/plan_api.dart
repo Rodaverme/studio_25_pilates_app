@@ -16,7 +16,6 @@ class PlansApi {
   String name;
   String description;
   String classLimit;
-  String validDays;
   String price;
   bool allowGuests;
   dynamic guestLimitPerClass;
@@ -31,7 +30,7 @@ class PlansApi {
     required this.name,
     required this.description,
     required this.classLimit,
-    required this.validDays,
+
     required this.price,
     required this.allowGuests,
     required this.guestLimitPerClass,
@@ -47,7 +46,6 @@ class PlansApi {
     name: json["name"],
     description: json["description"],
     classLimit: json["class_limit"],
-    validDays: json["valid_days"],
     price: json["price"],
     allowGuests: json["allow_guests"],
     guestLimitPerClass: json["guest_limit_per_class"],
@@ -67,7 +65,6 @@ class PlansApi {
     "name": name,
     "description": description,
     "class_limit": classLimit,
-    "valid_days": validDays,
     "price": price,
     "allow_guests": allowGuests,
     "guest_limit_per_class": guestLimitPerClass,
