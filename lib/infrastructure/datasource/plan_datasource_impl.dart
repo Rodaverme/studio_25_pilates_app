@@ -50,7 +50,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> data = response.data;
         final List<Plan> plans = data
-            .map((json) => PlanMapper.planApitoEntity(PlansApi.fromJson(json)))
+            .map((json) => PlanMapper.planApitoEntity(PlansApi.fromJson(json) ))
             .toList();
 
         print('Estos son los planes que existen ${plans.first}');

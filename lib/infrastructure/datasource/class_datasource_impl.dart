@@ -1,8 +1,10 @@
+
 import 'package:studio_25_pilates_app/domain/clases.dart';
 import 'package:studio_25_pilates_app/domain/datasources/class_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 
 class ClassDatasourceImpl extends ClassDatasource {
+  
   @override
   Future<List<PilatesClass>> getAllClasses() {
     // TODO: implement getAllClasses

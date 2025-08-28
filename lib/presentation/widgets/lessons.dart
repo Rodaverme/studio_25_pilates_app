@@ -23,7 +23,7 @@ class LessonsToday extends StatelessWidget {
         "${pilatesClass.fechaHora.add(pilatesClass.duracion).minute.toString().padLeft(2, '0')}";
 
     return Padding(
-      padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
       child: Container(
         width: double.infinity,
         height: 170,

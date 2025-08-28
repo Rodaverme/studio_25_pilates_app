@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/status_plan.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
@@ -15,67 +13,62 @@ class PlanesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          PlanCubit(PlanRespoitoryImpl(datasource: PlanDatasourceImpl()))
-            ..getAllPlans(),
-
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Planes'), centerTitle: true),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
-            ),
-
-            BlocBuilder<PlanCubit, PlanState>(
-              builder: (context, state) {
-                if (state is PlanLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state is PlanError) {
-                  return Center(child: Text("Error: ${state.message}"));
-                }
-
-                if (state is AllPlansLoaded) {
-                  final plans = state.plans;
-                  final myPlan = state.myPlan;
-                  final status = state.statusPlan;
-                  // final status = state.statusPlan;
-
-                  if (plans.isEmpty) {
-                    return const Center(
-                      child: Text("No hay planes disponibles"),
-                    );
-                  }
-
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: plans.map((plan) {
-                        final isActive = myPlan != null && plan.id == myPlan.id;
-
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: _CustomPlanes(
-                            isActive: isActive,
-                            textStyle: Theme.of(context).textTheme,
-                            plan: plan,
-                            status: isActive ? status : null,
-                          ),
-                        );
-                      }).toList(),
-                    ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Planes'), centerTitle: true),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+          ),
+    
+          BlocBuilder<PlanCubit, PlanState>(
+            builder: (context, state) {
+              if (state is PlanLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+    
+              if (state is PlanError) {
+                return Center(child: Text("Error: ${state.message}"));
+              }
+    
+              if (state is AllPlansLoaded) {
+                final plans = state.plans;
+                final myPlan = state.myPlan;
+                final status = state.statusPlan;
+                // final status = state.statusPlan;
+    
+                if (plans.isEmpty) {
+                  return const Center(
+                    child: Text("No hay planes disponibles"),
                   );
                 }
-
-                return const Center(
-                  child: Text("No hay información del plan "),
+                return SingleChildScrollView(
+                  child: Column(
+                    children: plans.map((plan) {
+                      final isActive = myPlan != null && plan.id == myPlan.id;
+                      final clases = plan.classes?.map((c) => c.nombre).toList() ?? [];
+                      print('Clases del plan ${plan.name}: $clases');
+    
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _CustomPlanes(
+                          isActive: isActive,
+                          textStyle: Theme.of(context).textTheme,
+                          plan: plan,
+                          status: isActive ? status : null,
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 );
-              },
-            ),
-          ],
-        ),
+              }
+    
+              return const Center(
+                child: Text("No hay información del plan "),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -95,10 +88,6 @@ class _CustomPlanes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    
-
-
     final currencyFormatter = NumberFormat.currency(
       locale: 'es_CO',
       name: '',
@@ -106,16 +95,15 @@ class _CustomPlanes extends StatelessWidget {
       decimalDigits: 0, // 👈 así no muestra los decimales
     );
 
-   double? progress;
-  if (status != null) {
-    final startDate = status!.startDate;
-    final endDate   = status!.expiresAt;
+    double? progress;
+    if (status != null) {
+      final startDate = status!.startDate;
+      final endDate = status!.expiresAt;
 
-    final totalDays = endDate?.difference(startDate!).inDays;
-    final usedDays = totalDays! - status!.daysRemaining;
-    progress = usedDays / totalDays;
-  }
-
+      final totalDays = endDate?.difference(startDate!).inDays;
+      final usedDays = totalDays! - status!.daysRemaining;
+      progress = usedDays / totalDays;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),

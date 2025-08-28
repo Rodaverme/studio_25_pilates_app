@@ -45,8 +45,9 @@ Future<void> main() async {
           ),
         ),
         BlocProvider(
-          create: (context) =>
-              PlanCubit(PlanRespoitoryImpl(datasource: PlanDatasourceImpl())),
+          create: (context) => PlanCubit(
+            PlanRespoitoryImpl(datasource: PlanDatasourceImpl()),
+          )..getAllPlans(),
         ),
       ],
       child: const MainApp(),

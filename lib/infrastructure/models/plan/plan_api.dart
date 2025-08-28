@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
+
 List<PlansApi> plansApiFromJson(String str) =>
     List<PlansApi>.from(json.decode(str).map((x) => PlansApi.fromJson(x)));
 
@@ -18,7 +20,7 @@ class PlansApi {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final dynamic deletedAt;
-  final List<ClassSession>? classSessions;
+  final List<ClassSessionResponse>? classSessions;
 
   PlansApi({
     required this.id,
@@ -47,9 +49,9 @@ class PlansApi {
       return DateTime.tryParse(v.toString());
     }
 
-    List<ClassSession> _parseSessions(dynamic v) {
+    List<ClassSessionResponse> _parseSessions(dynamic v) {
       if (v == null) return [];
-      if (v is List) return v.map((e) => ClassSession.fromJson(e)).toList();
+      if (v is List) return v.map((e) => ClassSessionResponse.fromJson(e)).toList();
       return [];
     }
 
@@ -85,100 +87,3 @@ class PlansApi {
       };
 }
 
-class ClassSession {
-  final int id;
-  final String title;
-  final String description;
-  final String visibility;
-  final String classLevelId;
-  final String instructorId;
-  final String roomId;
-  final String price;
-  final int capacity;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final dynamic deletedAt;
-  final Pivot pivot;
-
-  ClassSession({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.visibility,
-    required this.classLevelId,
-    required this.instructorId,
-    required this.roomId,
-    required this.price,
-    required this.capacity,
-    this.createdAt,
-    this.updatedAt,
-    required this.deletedAt,
-    required this.pivot,
-  });
-
-  factory ClassSession.fromJson(Map<String, dynamic> json) {
-    DateTime? _parseDate(dynamic v) => v == null ? null : DateTime.tryParse(v.toString());
-    return ClassSession(
-      id: json["id"] ?? 0,
-      title: json["title"]?.toString() ?? '',
-      description: json["description"]?.toString() ?? '',
-      visibility: json["visibility"]?.toString() ?? '',
-      classLevelId: json["class_level_id"]?.toString() ?? '',
-      instructorId: json["instructor_id"]?.toString() ?? '',
-      roomId: json["room_id"]?.toString() ?? '',
-      price: json["price"]?.toString() ?? '',
-      capacity: json["capacity"] ?? 0,
-      createdAt: _parseDate(json["created_at"]),
-      updatedAt: _parseDate(json["updated_at"]),
-      deletedAt: json["deleted_at"],
-      pivot: Pivot.fromJson(json["pivot"] ?? {}),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "description": description,
-        "visibility": visibility,
-        "class_level_id": classLevelId,
-        "instructor_id": instructorId,
-        "room_id": roomId,
-        "price": price,
-        "capacity": capacity,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "deleted_at": deletedAt,
-        "pivot": pivot.toJson(),
-      };
-}
-
-class Pivot {
-  final String planId;
-  final String classSessionId;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
-  Pivot({
-    required this.planId,
-    required this.classSessionId,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory Pivot.fromJson(Map<String, dynamic> json) {
-    DateTime? _parseDate(dynamic v) => v == null ? null : DateTime.tryParse(v.toString());
-    return Pivot(
-      planId: json["plan_id"]?.toString() ?? '',
-      classSessionId: json["class_session_id"]?.toString() ?? '',
-      createdAt: _parseDate(json["created_at"]),
-      updatedAt: _parseDate(json["updated_at"]),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        "plan_id": planId,
-        "class_session_id": classSessionId,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-      };
-}
