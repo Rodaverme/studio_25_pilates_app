@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 
 class ClassView extends StatelessWidget {
   static const name = 'class_screen';
@@ -13,29 +15,25 @@ class ClassView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //todo implementacion de API buscar clase por ID
+    final textStyle = Theme.of(context).textTheme;
+
     return BlocBuilder<ClassCubit, ClassState>(
       builder: (context, state) {
         if (state is ClassLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ClassByIdLoaded) {
           final PilatesClass clase = state.clase;
-          final fechaFormateada = DateFormat(
-            "d MMMM ",
-            'es_ES',
-          ).format(clase.fechaHora);
+
+          final fechaFormateada = DateFormat("d MMMM ", 'es_ES').format(clase.fechaHora);
           final horaInicio = DateFormat("HH:mm").format(clase.fechaHora);
-          final horaFinal = DateFormat(
-            "HH:mm",
-          ).format(clase.fechaHora.add(clase.duracion));
+          final horaFinal = DateFormat("HH:mm").format(clase.fechaHora.add(clase.duracion));
+
           return Scaffold(
             appBar: AppBar(
               title: Text(clase.nombre),
-
-
               actions: [
-                 Padding(
-                  padding: EdgeInsets.all(10.0),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
                   child: CustomCardsType1(
                     width: 150,
                     height: 40,
@@ -44,223 +42,276 @@ class ClassView extends StatelessWidget {
                 ),
               ],
             ),
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildInfoCard([
-                    fechaFormateada,
-                    '$horaInicio - $horaFinal',
-                    clase.sala,
-                  ]),
-                  _buildProgressSection(clase.cuposOcupados,clase.cupoMaximo),
-                  _buildProfessorSection(),
-                  _buildBenefitSection([
-                    'Fuerza',
-                    'Flexibilidad',
-                    'Relajación',
-                  ]),
-                  _buildTextCardSection('Descripción', 'Mini bio profesor'),
-                  _buildTextCardSection('Qué traer', 'Agua'),
-                  _buildTextCardSection('Precio por clase', '120.000'),
-                  _buildActionButtons(classId),
-                  const SizedBox(height: 80),
-                ],
-              ),
+            body: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/Logo6.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      /// Info Card
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                fechaFormateada,
+                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                "$horaInicio - $horaFinal",
+                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                clase.sala,
+                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// Progreso
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Lugares Disponibles', style: textStyle.titleLarge),
+                                Text("${clase.cuposOcupados}/${clase.cupoMaximo}"),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: LinearProgressIndicator(
+                                value: clase.cuposOcupados / clase.cupoMaximo,
+                                minHeight: 10,
+                                color: AppColors.cafeNoir,
+                                backgroundColor: AppColors.piedra,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// Profesor
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Profesor'),
+                            CustomCardsType2(
+                              width: double.maxFinite,
+                              height: 140,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: const [
+                                      Text('Nombre profesor'),
+                                      SizedBox(height: 10),
+                                      Text('Mini bio del profesor'),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CustomCardsType1(
+                                      width: 110,
+                                      height: 30,
+                                      child: const Center(child: Text('Ver Perfil')),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Beneficios
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Beneficios'),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                CustomCardsType1(
+                                  height: 40,
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    child: Center(child: Text('Fuerza')),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                CustomCardsType1(
+                                  height: 40,
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    child: Center(child: Text('Flexibilidad')),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                CustomCardsType1(
+                                  height: 40,
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    child: Center(child: Text('Relajación')),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Descripción
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Descripción'),
+                            CustomCardsType1(
+                              height: 50,
+                              width: double.maxFinite,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('Mini bio profesor'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Qué traer
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Qué traer'),
+                            CustomCardsType1(
+                              height: 50,
+                              width: double.maxFinite,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('Agua'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Precio
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Precio por clase'),
+                            CustomCardsType1(
+                              height: 50,
+                              width: double.maxFinite,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('120.000'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Botones acción
+                      Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              appRouter.push('/Home/class/$classId/reservation/$classId');
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 120,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey),
+                              ),
+                              child: const Text('Reservar', style: TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                width: 150,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey),
+                                ),
+                                child: const Text('Invitar Acompañante', style: TextStyle(color: Colors.white)),
+                              ),
+                              const SizedBox(width: 10),
+                              Container(
+                                alignment: Alignment.center,
+                                width: 120,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey),
+                                ),
+                                child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                ),
+              ],
             ),
           );
         } else if (state is ClassError) {
           return Center(child: Text(state.message));
         }
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       },
-    );
-  }
-
-  /// Card con información simple en fila
-  Widget _buildInfoCard(List<String> texts) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: CustomCardsType1(
-        width: double.maxFinite,
-        height: 80,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: texts
-                .map(
-                  (text) => Flexible(
-                    child: Text(
-                      text,
-                      style: const TextStyle(fontSize: 18),
-                      overflow: TextOverflow.ellipsis, // pone "..." si se pasa
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Sección con barra de progreso
-  Widget _buildProgressSection(int current, int total) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Lugares Disponibles'),
-              Text("$current/$total"),
-            ],
-          ),
-          const SizedBox(height: 10),
-          LinearProgressIndicator(
-            value: current / total,
-            minHeight: 10,
-            color: Colors.green,
-            backgroundColor: Colors.grey,
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Card con información del profesor
-  Widget _buildProfessorSection() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Profesor'),
-          CustomCardsType1(
-            width: double.maxFinite,
-            height: 140,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Nombre profesor'),
-                    SizedBox(height: 10),
-                    Text('Mini bio del profesor'),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const CustomCardsType1(
-                    width: 110,
-                    height: 30,
-                    child: Center(child: Text('Ver Perfil')),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Lista de beneficios como tarjetas pequeñas
-  Widget _buildBenefitSection(List<String> benefits) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Beneficios'),
-          const SizedBox(height: 5),
-          Row(
-            children: benefits
-                .map(
-                  (benefit) => Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: CustomCardsType1(
-                      height: 40,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Center(child: Text(benefit)),
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Card con título y contenido de texto
-  Widget _buildTextCardSection(String title, String content) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title),
-          CustomCardsType1(
-            height: 50,
-            width: double.maxFinite,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(content),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Botones de acción
-  Widget _buildActionButtons(String id) {
-    return Column(
-      children: [
-        _blackButton(
-          'Reservar',
-          width: 120,
-          onTap: () {
-            appRouter.push('/Home/class/$classId/reservation/$id');
-          },
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _blackButton('Invitar Acompañante'),
-            const SizedBox(width: 10),
-            _blackButton('Cancelar'),
-          ],
-        ),
-      ],
-    );
-  }
-
-  /// Botón negro reutilizable
-  Widget _blackButton(String text, {double? width, void Function()? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
-        width: width,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey),
-        ),
-        child: Text(text, style: const TextStyle(color: Colors.white)),
-      ),
     );
   }
 }

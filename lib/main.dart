@@ -15,6 +15,7 @@ import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_c
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,26 +32,28 @@ Future<void> main() async {
           create: (_) =>
               NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
         ),
-        BlocProvider(create: (_) => AuthCubit()),
-        BlocProvider(
-          create: (_) => LogoutCubit(
-            authRepository: AuthRespositoryImpl(
-              datasource: AuthDatasourceImpl(),
-            ),
-          ),
+        BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
+        BlocProvider<PlanCubit>(
+          create: (_) =>
+              PlanCubit(PlanRespoitoryImpl(datasource: PlanDatasourceImpl())),
         ),
-        BlocProvider(
-          create: (context) => ClassCubit(
+        BlocProvider<ClassCubit>(
+          create: (_) => ClassCubit(
             ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
           ),
         ),
-        BlocProvider(
-          create: (context) => PlanCubit(
-            PlanRespoitoryImpl(datasource: PlanDatasourceImpl()),
-          )..getAllPlans(),
+        BlocProvider<LogoutCubit>(
+          create: (context) => LogoutCubit(
+            authCubit: context.read<AuthCubit>(),
+            planCubit: context.read<PlanCubit>(),
+
+            authRepository: AuthRespositoryImpl(
+              datasource: AuthDatasourceImpl(), // tu datasource actual
+            ),
+          ),
         ),
       ],
-      child: const MainApp(),
+      child: AuthGate(child: const MainApp()), // 👈 envolvemos con un listener
     ),
   );
 }

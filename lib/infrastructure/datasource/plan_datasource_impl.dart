@@ -37,7 +37,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       }
       throw Exception('Error al obtener plan');
     } on DioException catch (e) {
-      throw Exception('Error en el Login: ${e.response?.data ?? e.message}');
+      throw Exception('Error al obtener mi plan: ${e.response?.data ?? e.message}');
     } catch (e) {
       throw Exception('Error inesperado: $e');
     }

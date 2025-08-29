@@ -20,6 +20,7 @@ class AuthDatasourceImpl extends AuthDatasource {
         final loginResponse = LoginResponse.fromJson(
           response.data,
         ); // Guardar token
+        await TokenService.deleleteToken();
         await TokenService.saveToken(loginResponse.token);
         final user = ClientMapper.clientApitoEntity(loginResponse.client);
         print('Bienvenida ${user.name} Token ${loginResponse.token}');
@@ -93,27 +94,34 @@ class AuthDatasourceImpl extends AuthDatasource {
   //   }
   // }
 
-  @override
-  Future<void> logOut() async {
-    try {
-      final response = await dio.post('/api/client/logout');
+@override
+Future<void> logOut() async {
+  try {
+    final response = await dio.post('/api/client/logout');
 
-      if (response.statusCode == 200 && response.data != null) {
-        print('Logout Exitoso');
-      }
-
-      throw Exception('Error al iniciar Sesion');
-    } on DioException catch (e) {
-      throw Exception(
-        'Error al iniciar Sesion: ${e.response?.data ?? e.message}',
-      );
-    } catch (e) {
-      throw Exception('Error inesperado: $e');
+    if (response.statusCode == 200) {
+      print('Logout Exitoso');
+    } else {
+      print('El backend no confirmó el logout, pero limpiamos el token local');
     }
+
+    await TokenService.deleleteToken(); // 👈 limpiar token local
+  } on DioException catch (e) {
+    // Si fue 401 (token inválido), igual borramos el token local
+    if (e.response?.statusCode == 401) {
+      await TokenService.deleleteToken();
+    }
+    throw Exception(
+      'Error al cerrar sesión: ${e.response?.data ?? e.message}',
+    );
+  } catch (e) {
+    throw Exception('Error inesperado: $e');
   }
+}
 
   @override
   Future<User> getCurrentClient() {
+    // TODO: implement getCurrentClient
     throw UnimplementedError();
   }
 }

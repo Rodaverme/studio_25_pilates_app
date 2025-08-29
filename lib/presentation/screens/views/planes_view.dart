@@ -23,9 +23,9 @@ class PlanesView extends StatelessWidget {
     
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
-              if (state is PlanLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              // if (state is PlanLoading) {
+              //   return const Center(child: CircularProgressIndicator());
+              // }
     
               if (state is PlanError) {
                 return Center(child: Text("Error: ${state.message}"));
@@ -64,7 +64,7 @@ class PlanesView extends StatelessWidget {
               }
     
               return const Center(
-                child: Text("No hay información del plan "),
+                child: Text(""),
               );
             },
           ),

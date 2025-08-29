@@ -14,7 +14,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = context.watch<AuthCubit>().state.client;
-    // final Plan = context.watch<PlanCubit>().state
+
     final textStyle = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -26,30 +26,28 @@ class HomeView extends StatelessWidget {
           ),
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
-              if (state is PlanLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              // if (state is PlanLoading) {
+              //   return const Center(child: CircularProgressIndicator());
+              // }
               if (state is PlanError) {
                 return Center(child: Text("Error: ${state.message}"));
               }
               if (state is AllPlansLoaded) {
                 final plans = state.plans;
                 final myPlan = state.myPlan;
-    
+
                 if (plans.isEmpty) {
-                  return const Center(
-                    child: Text("No hay planes disponibles"),
-                  );
+                  return const Center(child: Text(""));
                 }
-    
+
                 // 👉 busca dentro de plans el que corresponde al myPlan
                 final planConClases = plans.firstWhere(
                   (plan) => myPlan != null && plan.id == myPlan.id,
                   orElse: () => plans.first, // fallback al primero
                 );
-    
+
                 final clases = planConClases.classes ?? [];
-    
+
                 return ListView(
                   padding: EdgeInsets.zero,
                   children: [
@@ -60,34 +58,27 @@ class HomeView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
                               'Hola, ${client?.name}',
                               style: textStyle.titleLarge,
                             ),
                           ),
                           SizedBox(height: 20),
-    
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
-                              _InfoCard(
-                                label: 'Clases este mes',
-                                value: '12',
-                              ),
+                              _InfoCard(label: 'Clases este mes', value: '12'),
                               SizedBox(width: 20),
                               _InfoCard(value: '4', label: 'Racha Actual'),
                             ],
                           ),
-    
+
                           const SizedBox(height: 20),
-    
+
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
                               'Mi Próxima Clase',
                               style: textStyle.titleLarge,
@@ -98,7 +89,7 @@ class HomeView extends StatelessWidget {
                             pilatesClass: clases.first,
                           ),
                           const SizedBox(height: 20),
-    
+
                           // ---- Clases de Hoy ----
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -109,16 +100,14 @@ class HomeView extends StatelessWidget {
                             child: ClassesCarousel(listClass: clases),
                           ),
                           const SizedBox(height: 20),
-    
+
                           // ---- Acciones rápidas ----
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: Text('Acciones Rápidas'),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Row(
                               children: [
                                 TextButton(
@@ -144,10 +133,8 @@ class HomeView extends StatelessWidget {
                   ],
                 );
               }
-    
-              return const Center(
-                child: Text("No hay información del plan "),
-              );
+
+              return const Center(child: Text(""));
             },
           ),
         ],
@@ -192,7 +179,7 @@ class _NextClass extends StatelessWidget {
                     ),
                     Text(
                       pilatesClass.instructor,
-                       style: textStyle.titleLarge,
+                      style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

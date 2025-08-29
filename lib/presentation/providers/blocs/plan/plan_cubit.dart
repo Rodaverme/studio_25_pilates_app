@@ -11,7 +11,14 @@ class PlanCubit extends Cubit<PlanState> {
 
   PlanCubit(this.repository) : super(PlanInitial());
 
+
+
+  void reset(){
+    emit(PlanInitial());
+  }
+
   Future<void> getStatusPlan(String id) async {
+  emit(PlanInitial());
   emit(PlanLoading());
   try {
     final statusPlan = await repository.statusPlan();
@@ -22,6 +29,7 @@ class PlanCubit extends Cubit<PlanState> {
 }
 
   Future<void> getAllPlans() async {
+    emit(PlanInitial());
     emit(PlanLoading());
     try {
       final plans = await repository.getAllPlans();
