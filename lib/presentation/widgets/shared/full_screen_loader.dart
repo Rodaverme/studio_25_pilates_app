@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 class FullScreenLoader extends StatelessWidget {
   const FullScreenLoader({super.key});
 
+  
   @override
   Widget build(BuildContext context) {
+  
+
     final textStyle = Theme.of(context).textTheme;
     Stream<String> getLoadingMessage() {
       final message = <String>[
@@ -32,13 +35,16 @@ class FullScreenLoader extends StatelessWidget {
           Text(
             'Espere un momento',
             style: textStyle.titleLarge?.copyWith(fontSize: 20),
+            
           ),
+          
           const SizedBox(height: 20),
           const CircularProgressIndicator(strokeWidth: 4),
           const SizedBox(height: 20),
           StreamBuilder(
             stream: getLoadingMessage(),
             builder: (context, snapshot) {
+              
               if (!snapshot.hasData) return const SizedBox();
               return Text(
                 snapshot.data!,

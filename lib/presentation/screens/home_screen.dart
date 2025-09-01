@@ -1,4 +1,3 @@
-// home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
@@ -14,15 +13,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final planState = context.watch<PlanCubit>().state;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          childView,
-          if (planState is PlanLoading)
-            FullScreenLoader()
-        ],
-      ),
-      bottomNavigationBar: CustomBottomNavigation(),
+      body: switch (planState) {
+        PlanLoading() => const FullScreenLoader(),
+        AllPlansLoaded() => childView,
+        PlanError(:final message) => Center(child: Text('Error: $message')),
+        _ => const FullScreenLoader(), // estado inicial o desconocido
+      },
+      bottomNavigationBar: const CustomBottomNavigation(),
     );
   }
 }

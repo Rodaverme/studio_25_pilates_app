@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/plans_datasource.dart';
+import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/domain/entities/plan.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/plan_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_api.dart';
@@ -9,6 +10,10 @@ import 'package:studio_25_pilates_app/infrastructure/models/plan/status_plan.dar
 
 class PlanDatasourceImpl extends PlansDatasource {
   final Dio dio = DioClient.Dio_create();
+
+  PlanDatasourceImpl(
+    
+  );
 
   @override
   Future<void> cancelMyPlan() {
@@ -31,13 +36,18 @@ class PlanDatasourceImpl extends PlansDatasource {
           orElse: () => plans.first,
         );
 
-        final plan = PlanMapper.planApitoEntity(activePlan.plan);
+        final plan = PlanMapper.planApitoEntity(
+          activePlan.plan,
+         
+        );
         print('Tu plan es el siguiente ${plan.name}');
         return plan;
       }
       throw Exception('Error al obtener plan');
     } on DioException catch (e) {
-      throw Exception('Error al obtener mi plan: ${e.response?.data ?? e.message}');
+      throw Exception(
+        'Error al obtener mi plan: ${e.response?.data ?? e.message}',
+      );
     } catch (e) {
       throw Exception('Error inesperado: $e');
     }
@@ -50,7 +60,12 @@ class PlanDatasourceImpl extends PlansDatasource {
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> data = response.data;
         final List<Plan> plans = data
-            .map((json) => PlanMapper.planApitoEntity(PlansApi.fromJson(json) ))
+            .map(
+              (json) => PlanMapper.planApitoEntity(
+                PlansApi.fromJson(json)
+               
+              ),
+            )
             .toList();
 
         print('Estos son los planes que existen ${plans.first}');

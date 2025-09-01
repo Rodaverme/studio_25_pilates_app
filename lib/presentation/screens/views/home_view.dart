@@ -14,6 +14,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = context.watch<AuthCubit>().state.client;
+   
 
     final textStyle = Theme.of(context).textTheme;
 
@@ -68,10 +69,10 @@ class HomeView extends StatelessWidget {
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children:  [
                               _InfoCard(label: 'Clases este mes', value: '12'),
                               SizedBox(width: 20),
-                              _InfoCard(value: '4', label: 'Racha Actual'),
+                              _InfoCard(value: '4', label: 'racha'),
                             ],
                           ),
 

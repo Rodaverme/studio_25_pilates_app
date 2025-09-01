@@ -1,6 +1,6 @@
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/instructor_responde.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/instructor_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_nivel_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/room/room_response.dart';
 

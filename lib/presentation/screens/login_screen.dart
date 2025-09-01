@@ -12,6 +12,7 @@ import 'package:studio_25_pilates_app/presentation/providers/blocs/login/login_c
 import 'package:studio_25_pilates_app/presentation/providers/blocs/forms/forms_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
+
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -31,6 +32,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
+        
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -55,8 +57,9 @@ class LoginScreen extends StatelessWidget {
               ),
               SafeArea(
                 child: BlocConsumer<LoginCubit, LoginState>(
-                  listener: (context, state) {
+                  listener: (context, state) async {
                     if (state is LoginSuccess) {
+                    
                       context.go('/Home');
                     }
                     if (state is LoginError) {

@@ -1,5 +1,6 @@
 class Instructor {
   final int id;
+  final String name;
   final String email;
   final String bio;
   final String photoUrl;
@@ -9,5 +10,6 @@ class Instructor {
     required this.email,
     required this.bio,
     required this.photoUrl,
+    required this.name
   });
 }

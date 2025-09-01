@@ -7,7 +7,7 @@ import 'package:studio_25_pilates_app/infrastructure/models/plan/status_plan.dar
 class PlanRespoitoryImpl extends PlanRepository {
   final PlanDatasourceImpl datasource;
 
-  PlanRespoitoryImpl({ required this.datasource});
+  PlanRespoitoryImpl( this.datasource);
   @override
   Future<void> cancelMyPlan() {
    return datasource.cancelMyPlan();

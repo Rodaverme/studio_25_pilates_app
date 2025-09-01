@@ -4,14 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/class_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/instructor_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/level_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
+
+import 'package:studio_25_pilates_app/infrastructure/datasource/room_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/class_respository_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/instructor_repository_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/level_repository_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/room_repository_impl.dart';
+
 import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/class/instructor/instructor_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/class/level/level_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/class/room/room_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
@@ -33,10 +45,33 @@ Future<void> main() async {
               NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
         ),
         BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
-        BlocProvider<PlanCubit>(
-          create: (_) =>
-              PlanCubit(PlanRespoitoryImpl(datasource: PlanDatasourceImpl())),
+        BlocProvider(
+          create: (_) => InstructorCubit(
+            InstructorRepositoryImpl(datasource: InstructorDatasourceImpl()),
+          )..loadInstructors(),
         ),
+        BlocProvider(
+          create: (_) =>
+              LevelCubit(LevelRepositoryImpl(datasource: LevelDatasourceImpl()))
+                ..loadLevels(),
+        ),
+
+        BlocProvider(
+          create: (_) =>
+              RoomCubit(RoomRepositoryImpl(datasource: RoomDatasourceImpl()))
+                ..loadRooms(),
+        ),
+        BlocProvider(
+          create: (context) => PlanCubit(
+            PlanRespoitoryImpl(
+              PlanDatasourceImpl(
+               
+              ),
+            ),
+          ),
+          // 👈 tu home real o lo que siga
+        ),
+
         BlocProvider<ClassCubit>(
           create: (_) => ClassCubit(
             ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
@@ -46,7 +81,6 @@ Future<void> main() async {
           create: (context) => LogoutCubit(
             authCubit: context.read<AuthCubit>(),
             planCubit: context.read<PlanCubit>(),
-
             authRepository: AuthRespositoryImpl(
               datasource: AuthDatasourceImpl(), // tu datasource actual
             ),
