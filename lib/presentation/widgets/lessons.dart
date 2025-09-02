@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/domain/entities/entities.dart';
+import 'package:studio_25_pilates_app/domain/entities/instructor.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 
 class LessonsToday extends StatelessWidget {
@@ -8,11 +10,15 @@ class LessonsToday extends StatelessWidget {
     required this.textStyle,
     required this.onTap,
     required this.pilatesClass,
+    required this.listInstrutor,
+    required this.listLevel,
   });
 
   final TextTheme textStyle;
   final void Function()? onTap;
   final PilatesClass pilatesClass;
+  final List<Instructor> listInstrutor;
+  final List<Nivel> listLevel;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +27,22 @@ class LessonsToday extends StatelessWidget {
     final horaFin =
         "${pilatesClass.fechaHora.add(pilatesClass.duracion).hour.toString().padLeft(2, '0')}:"
         "${pilatesClass.fechaHora.add(pilatesClass.duracion).minute.toString().padLeft(2, '0')}";
+
+    final instructorMatch = listInstrutor.firstWhere(
+      (i) => i.id.toString() == pilatesClass.instructor.trim(),
+
+      orElse: () => Instructor(
+        id: 1,
+        name: 'Desconocido',
+        email: '',
+        bio: '',
+        photoUrl: '',
+      ),
+    );
+    final levelMatch = listLevel.firstWhere(
+      (i) => i.id.toString() == pilatesClass.nivel.trim(),
+      orElse: () => Nivel(id: 0, nombre: 'Principiante'),
+    );
 
     return Padding(
       padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
@@ -54,7 +76,7 @@ class LessonsToday extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      pilatesClass.instructor,
+                      instructorMatch.name,
                       style: textStyle.titleLarge?.copyWith(
                         color: AppColors.almendra,
                       ),
@@ -93,7 +115,7 @@ class LessonsToday extends StatelessWidget {
                     FilledButton(
                       onPressed: () {},
                       child: Text(
-                        pilatesClass.nivel,
+                        levelMatch.nombre,
                         style: textStyle.bodySmall,
                       ),
                     ),

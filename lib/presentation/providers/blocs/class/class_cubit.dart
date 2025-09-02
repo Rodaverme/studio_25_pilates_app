@@ -13,20 +13,27 @@ class ClassCubit extends Cubit<ClassState> {
   Future<void> loadClasses(DateTime day) async {
     emit(ClassLoading());
     try {
-      final classes = await repository.getClassesByDay(day);
+      final classes = await repository.getClassesByDay(
+        day,
+      ); // usa getAllClasses+filter
       emit(ClassLoaded(classes, day));
-    } catch (e) {
-      emit(ClassError(message: 'Error cargando clases'));
+    } catch (e, st) {
+      // Log útil en debug
+      // ignore: avoid_print
+      print('❌ loadClasses error: $e\n$st');
+      emit(const ClassError(message: 'Error cargando clases'));
     }
   }
 
   Future<void> loadClassesById(String id) async {
     emit(ClassLoading());
     try {
-      final classes = await repository.getClassesById(id);
-      emit(ClassByIdLoaded(clase: classes));
-    } catch (e) {
-      emit(ClassError(message: 'Error encontrando la clase'));
+      final clase = await repository.getClassesById(id);
+      emit(ClassByIdLoaded(clase: clase));
+    } catch (e, st) {
+      // ignore: avoid_print
+      print('❌ loadClassesById error: $e\n$st');
+      emit(const ClassError(message: 'Error encontrando la clase'));
     }
   }
 }

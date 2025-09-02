@@ -8,6 +8,33 @@ import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_ni
 
 class LevelDatasourceImpl extends LevelDatasource {
   final Dio dio = DioClient.Dio_create();
+
+
+//  try {
+//       final response = await dio.get('/api/instructors');
+//       if (response.statusCode == 200 && response.data != null) {
+//         final List<dynamic> data = response.data;
+//         final List<Instructor> instructors = data
+//             .map(
+//               (json) => InstructorMapper.instructorApitoEntity(
+//                 InstructorResponse.fromJson(json),
+//               ),
+//             )
+//             .toList();
+
+//         print('Estos son los instructores que existen ${instructors.length}');
+//         return instructors;
+//       }
+//       throw Exception('Error al obtner los');
+//     } on DioException catch (e) {
+//       throw Exception(
+//         'Error al obtener todos los planes: ${e.response?.data ?? e.message}',
+//       );
+//     } catch (e) {
+//       throw Exception('Error inesperado: $e');
+//     }
+
+
   @override
   Future<List<Nivel>> getAllLevels() async {
     try {
@@ -22,7 +49,7 @@ class LevelDatasourceImpl extends LevelDatasource {
             )
             .toList();
 
-        print('Estos son los instructores que existen ${niveles.first}');
+        print('Estos son los  que existen ${niveles.first}');
         return niveles;
       }
       throw Exception('Error al obtner los instructores');

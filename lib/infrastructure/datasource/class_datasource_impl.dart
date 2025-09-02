@@ -1,42 +1,81 @@
-
-import 'package:studio_25_pilates_app/domain/clases.dart';
+import 'package:dio/dio.dart';
+import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/class_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+import 'package:studio_25_pilates_app/infrastructure/mappers/class_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
 class ClassDatasourceImpl extends ClassDatasource {
-  
+  final Dio dio = DioClient.Dio_create();
   @override
-  Future<List<PilatesClass>> getAllClasses() {
-    // TODO: implement getAllClasses
-    throw UnimplementedError();
+  Future<List<PilatesClass>> getAllClasses() async {
+    try {
+      final response = await dio.get('/api/classes');
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic> data = response.data;
+        final List<PilatesClass> classes = data
+            .map(
+              (json) => ClassMapper.classApitoEntity(
+                ClassSessionResponse.fromJson(json),
+              ),
+            )
+            .toList();
+
+        return classes;
+      }
+      throw Exception('error a obtener las clases');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener todas las clases  ${e.response?.data ?? e.message} ',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 
   @override
   Future<List<PilatesClass>> getClassesByDay(DateTime day) async {
-    //TODO REMPLAZAR CON LA INFORMACION DE LA API , IGU
-    await Future.delayed(const Duration(milliseconds: 500));
-    final selectedDate = DateTime(day.year, day.month, day.day);
+    try {
+      // Traemos todas las clases usando la función ya implementada
+      final allClasses = await getAllClasses();
 
-    final filteredClasses = listClass.where((c) {
-      final classDate = DateTime(
-        c.fechaHora.year,
-        c.fechaHora.month,
-        c.fechaHora.day,
-      );
-      return classDate == selectedDate;
-    }).toList();
+      // Normalizamos la fecha seleccionada
+      final selectedDate = DateTime(day.year, day.month, day.day);
 
-    return filteredClasses;
+      // Filtramos las clases que coincidan en fecha
+      final filteredClasses = allClasses.where((c) {
+        final classDate = DateTime(
+          c.fechaHora.year,
+          c.fechaHora.month,
+          c.fechaHora.day,
+        );
+        return classDate == selectedDate;
+      }).toList();
+
+      return filteredClasses;
+    } catch (e) {
+      throw Exception('Error en getClassesByDay: $e');
+    }
   }
 
   @override
   Future<PilatesClass> getClassesById(String id) async {
-    await Future.delayed(Duration(milliseconds: 500));
+    try {
+      final response = await dio.get('/api/classes/$id');
 
-    final classResult = listClass.firstWhere(
-      (clase) => clase.id == id,
-      orElse: () => throw Exception('Clase con id $id no encontrada'),
-    );
-    return classResult;
+      if (response.statusCode == 200 && response.data != null) {
+        // ✅ ahora parseamos como objeto
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        final cls = ClassSessionResponse.fromJson(data);
+        return ClassMapper.classApitoEntity(cls);
+      }
+      throw Exception('Error al obtener la clase por Id');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener la clase por id: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 }

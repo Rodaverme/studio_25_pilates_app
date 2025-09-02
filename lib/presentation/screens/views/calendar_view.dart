@@ -51,8 +51,11 @@ class CalendarView extends StatelessWidget {
                                   textStyle: textStyle,
                                   onTap: () =>
                                       context.push('/Home/class/${c.id}'),
+                                  listInstrutor: [],
+                                  listLevel: [],
                                 ),
                               ),
+
                               SizedBox(height: 20),
                             ],
                           );

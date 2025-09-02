@@ -5,19 +5,16 @@
 import 'dart:convert';
 
 // import 'package:studio_25_pilates_app/domain/entities/entities.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/instructor_response.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_nivel_response.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/class/room/room_response.dart';
 
-List<ClassSessionResponse> classSessionResponseFromJson(String str) =>
-    List<ClassSessionResponse>.from(
-      json.decode(str).map((x) => ClassSessionResponse.fromJson(x)),
+List<ClassSessionByPlanResponse> classSessionResponseFromJson(String str) =>
+    List<ClassSessionByPlanResponse>.from(
+      json.decode(str).map((x) => ClassSessionByPlanResponse.fromJson(x)),
     );
 
-String classSessionResponseToJson(List<ClassSessionResponse> data) =>
+String classSessionResponseToJson(List<ClassSessionByPlanResponse> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class ClassSessionResponse {
+class ClassSessionByPlanResponse {
   int id;
   String title;
   String description;
@@ -30,11 +27,8 @@ class ClassSessionResponse {
   DateTime createdAt;
   DateTime updatedAt;
   dynamic deletedAt;
-  ClassLevelResponse? classLevel;
-  InstructorResponse?instructor;
-  RoomResponse? room;
 
-  ClassSessionResponse({
+ClassSessionByPlanResponse({
     required this.id,
     required this.title,
     required this.description,
@@ -47,12 +41,9 @@ class ClassSessionResponse {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.classLevel,
-    required this.instructor,
-    required this.room,
   });
 
-  factory ClassSessionResponse.fromJson(Map<String, dynamic> json) {
+  factory ClassSessionByPlanResponse.fromJson(Map<String, dynamic> json) {
     int _asInt(dynamic v, {int fallback = 0}) {
       if (v is int) return v;
       if (v is String) return int.tryParse(v) ?? fallback;
@@ -70,7 +61,7 @@ class ClassSessionResponse {
       return DateTime.tryParse(s) ?? (fallback ?? DateTime.now());
     }
 
-    return ClassSessionResponse(
+    return ClassSessionByPlanResponse(
       id: _asInt(json["id"]),
       title: _asString(json["title"], fallback: 'Clase sin título'),
       description: _asString(json["description"]),
@@ -83,37 +74,24 @@ class ClassSessionResponse {
       createdAt: _asDate(json["created_at"]),
       updatedAt: _asDate(json["updated_at"]),
       deletedAt: json["deleted_at"],
-      classLevel: ClassLevelResponse.fromJson(
-        (json["class_level"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
-      ),
-      instructor: InstructorResponse.fromJson(
-        (json["instructor"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
-      ),
-      room: RoomResponse.fromJson(
-        (json["room"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
-      ),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "description": description,
-        "visibility": visibility,
-        "class_level_id": classLevelId,
-        "instructor_id": instructorId,
-        "room_id": roomId,
-        "price": price,
-        "capacity": capacity,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "deleted_at": deletedAt,
-        "class_level": classLevel?.toJson(),
-        "instructor": instructor?.toJson(),
-        "room": room?.toJson(),
-      };
+    "id": id,
+    "title": title,
+    "description": description,
+    "visibility": visibility,
+    "class_level_id": classLevelId,
+    "instructor_id": instructorId,
+    "room_id": roomId,
+    "price": price,
+    "capacity": capacity,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "deleted_at": deletedAt,
+  };
 }
-
 
 // class NextOccurrence {
 //     int id;

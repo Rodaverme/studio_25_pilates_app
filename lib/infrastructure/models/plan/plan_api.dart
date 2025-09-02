@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
+
+import 'package:studio_25_pilates_app/infrastructure/models/plan/class_by_plan.dart';
 
 List<PlansApi> plansApiFromJson(String str) =>
     List<PlansApi>.from(json.decode(str).map((x) => PlansApi.fromJson(x)));
@@ -20,7 +21,7 @@ class PlansApi {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final dynamic deletedAt;
-  final List<ClassSessionResponse>? classSessions;
+  final List<ClassSessionByPlanResponse>? classSessions;
 
   PlansApi({
     required this.id,
@@ -49,9 +50,9 @@ class PlansApi {
       return DateTime.tryParse(v.toString());
     }
 
-    List<ClassSessionResponse> _parseSessions(dynamic v) {
+    List<ClassSessionByPlanResponse> _parseSessions(dynamic v) {
       if (v == null) return [];
-      if (v is List) return v.map((e) => ClassSessionResponse.fromJson(e)).toList();
+      if (v is List) return v.map((e) => ClassSessionByPlanResponse.fromJson(e)).toList();
       return [];
     }
 

@@ -47,12 +47,12 @@ Future<void> main() async {
         BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
         BlocProvider(
           create: (_) => InstructorCubit(
-            InstructorRepositoryImpl(datasource: InstructorDatasourceImpl()),
+            InstructorRepositoryImpl(datasource: InstructorDatasourceImpl())..getAllInstructor(),
           )..loadInstructors(),
         ),
         BlocProvider(
           create: (_) =>
-              LevelCubit(LevelRepositoryImpl(datasource: LevelDatasourceImpl()))
+              LevelCubit(LevelRepositoryImpl(datasource: LevelDatasourceImpl())..getAllLevels())
                 ..loadLevels(),
         ),
 
@@ -69,7 +69,6 @@ Future<void> main() async {
               ),
             ),
           ),
-          // 👈 tu home real o lo que siga
         ),
 
         BlocProvider<ClassCubit>(
