@@ -26,6 +26,7 @@ class PlanMapper {
       fechaHora: cls.createdAt,
       duracion: const Duration(minutes: 30),
       instructor: cls.instructorId,
+      bioInstructor: cls.description,
       cupoMaximo: cls.capacity,
       nivel: cls.classLevelId,
       cuposOcupados: 0,

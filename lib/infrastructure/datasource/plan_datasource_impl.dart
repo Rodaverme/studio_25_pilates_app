@@ -3,7 +3,7 @@ import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/plans_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/domain/entities/plan.dart';
-import 'package:studio_25_pilates_app/infrastructure/mappers/plan_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/mappers/plans/plan_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_api.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_reponse.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/plan/status_plan.dart';

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/class_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
-import 'package:studio_25_pilates_app/infrastructure/mappers/class_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/mappers/class/class_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
 class ClassDatasourceImpl extends ClassDatasource {

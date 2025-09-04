@@ -22,5 +22,6 @@ class ClassByplanMapper {
     sala: room.name,
     descripcion: classes.description,
     price: classes.price,
+    bioInstructor: instructor.bio
   );
 }

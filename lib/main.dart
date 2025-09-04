@@ -7,6 +7,7 @@ import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/class_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/credit_card_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/instructor_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/level_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
@@ -26,6 +27,8 @@ import 'package:studio_25_pilates_app/presentation/providers/blocs/class/level/l
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/room/room_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/credit_card/credit_card_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/payment_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
 
@@ -47,34 +50,38 @@ Future<void> main() async {
         BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
         BlocProvider(
           create: (_) => InstructorCubit(
-            InstructorRepositoryImpl(datasource: InstructorDatasourceImpl())..getAllInstructor(),
+            InstructorRepositoryImpl(datasource: InstructorDatasourceImpl())
+              ..getAllInstructor(),
           )..loadInstructors(),
         ),
         BlocProvider(
-          create: (_) =>
-              LevelCubit(LevelRepositoryImpl(datasource: LevelDatasourceImpl())..getAllLevels())
-                ..loadLevels(),
+          create: (_) => LevelCubit(
+            LevelRepositoryImpl(datasource: LevelDatasourceImpl())
+              ..getAllLevels(),
+          )..loadLevels(),
         ),
 
         BlocProvider(
-          create: (_) =>
-              RoomCubit(RoomRepositoryImpl(datasource: RoomDatasourceImpl()))
-                ..loadRooms(),
+          create: (_) => RoomCubit(
+            RoomRepositoryImpl(datasource: RoomDatasourceImpl())..getAllRoom(),
+          )..loadRooms(),
         ),
         BlocProvider(
-          create: (context) => PlanCubit(
-            PlanRespoitoryImpl(
-              PlanDatasourceImpl(
-               
-              ),
-            ),
-          ),
+          create: (context) =>
+              PlanCubit(PlanRespoitoryImpl(PlanDatasourceImpl())),
         ),
+
+        BlocProvider(create: (_) => PaymentCubit()),
 
         BlocProvider<ClassCubit>(
           create: (_) => ClassCubit(
             ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
           ),
+        ),
+        BlocProvider(
+          create: (_) =>
+              CreditCardCubit(CreditCardDatasourceImpl()..getMycreditCard())
+                ..loadMyCard(),
         ),
         BlocProvider<LogoutCubit>(
           create: (context) => LogoutCubit(

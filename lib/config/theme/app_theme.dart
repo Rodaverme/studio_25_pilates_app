@@ -37,7 +37,7 @@ class AppTheme {
         color: AppColors.cafeNoir,
       ),
       bodySmall: TextStyle(
-        fontSize: 8,
+        fontSize: 10,
         fontWeight: FontWeight.w900,
         color: AppColors.cafeNoir,
       ),
@@ -63,7 +63,7 @@ class AppTheme {
     /// 🟨 Estilo general de AppBar
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.piedra,
-      foregroundColor: AppColors.piedra,
+      foregroundColor: AppColors.cafeNoir,
       titleTextStyle: TextStyle(
         fontSize: 30,
         fontWeight: FontWeight.bold,

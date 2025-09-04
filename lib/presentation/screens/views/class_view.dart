@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
@@ -16,7 +16,6 @@ class ClassView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-
     return BlocBuilder<ClassCubit, ClassState>(
       builder: (context, state) {
         if (state is ClassLoading) {
@@ -24,20 +23,30 @@ class ClassView extends StatelessWidget {
         } else if (state is ClassByIdLoaded) {
           final PilatesClass clase = state.clase;
 
-          final fechaFormateada = DateFormat("d MMMM ", 'es_ES').format(clase.fechaHora);
+          final fechaFormateada = DateFormat(
+            "d MMMM ",
+            'es_ES',
+          ).format(clase.fechaHora);
           final horaInicio = DateFormat("HH:mm").format(clase.fechaHora);
-          final horaFinal = DateFormat("HH:mm").format(clase.fechaHora.add(clase.duracion));
+          final horaFinal = DateFormat(
+            "HH:mm",
+          ).format(clase.fechaHora.add(clase.duracion));
+          final currencyFormatter = NumberFormat.currency(
+            locale: 'es_CO',
+            name: '',
+
+            decimalDigits: 0, // 👈 así no muestra los decimales
+          );
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(clase.nombre),
+              title: Text(clase.nombre, style: textStyle.titleLarge),
               actions: [
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: CustomCardsType1(
-                    width: 150,
-                    height: 40,
-                    child: Center(child: Text(clase.nivel)),
+                  child: FilledButton(
+                    onPressed: () {},
+                    child: Text(clase.nivel, style: textStyle.bodySmall),
                   ),
                 ),
               ],
@@ -55,28 +64,37 @@ class ClassView extends StatelessWidget {
                     children: [
                       /// Info Card
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 20,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
                               child: Text(
                                 fechaFormateada,
-                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
+                                style: textStyle.titleLarge?.copyWith(
+                                  fontSize: 15,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 "$horaInicio - $horaFinal",
-                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
+                                style: textStyle.titleLarge?.copyWith(
+                                  fontSize: 15,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 clase.sala,
-                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
+                                style: textStyle.titleLarge?.copyWith(
+                                  fontSize: 15,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -95,13 +113,20 @@ class ClassView extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Lugares Disponibles', style: textStyle.titleLarge),
-                                Text("${clase.cuposOcupados}/${clase.cupoMaximo}"),
+                                Text(
+                                  'Lugares Disponibles',
+                                  style: textStyle.titleLarge,
+                                ),
+                                Text(
+                                  "${clase.cuposOcupados}/${clase.cupoMaximo}",
+                                ),
                               ],
                             ),
                             const SizedBox(height: 10),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                               child: LinearProgressIndicator(
                                 value: clase.cuposOcupados / clase.cupoMaximo,
                                 minHeight: 10,
@@ -117,73 +142,148 @@ class ClassView extends StatelessWidget {
                       const SizedBox(height: 10),
 
                       /// Profesor
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Profesor'),
-                            CustomCardsType2(
-                              width: double.maxFinite,
-                              height: 140,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: const [
-                                      Text('Nombre profesor'),
-                                      SizedBox(height: 10),
-                                      Text('Mini bio del profesor'),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CustomCardsType1(
-                                      width: 110,
-                                      height: 30,
-                                      child: const Center(child: Text('Ver Perfil')),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      ///
+                      ///
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35),
+                          child: Text('Profesor', style: textStyle.titleLarge),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: CustomCardsType2(
+                          width: double.maxFinite,
+                          height: 170,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment
+                                  .spaceBetween, // 👈 importante
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      clase.instructor,
+                                      style: textStyle.titleLarge?.copyWith(
+                                        fontSize: 22,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(
+                                        clase.bioInstructor,
+                                        maxLines: 3,
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                          height: 1.2,
+                                          fontSize: 18,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: FilledButton(
+                                    onPressed: () {},
+                                    style: ButtonStyle().copyWith(
+                                      backgroundColor:
+                                          const WidgetStatePropertyAll(
+                                            AppColors.cafeNoir,
+                                          ),
+                                    ),
+                                    child: Text(
+                                      'Ver Perfil',
+                                      style: TextStyle().copyWith(
+                                        color: AppColors.piedra,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
 
                       /// Beneficios
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Beneficios'),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'Beneficios',
+                                style: textStyle.titleLarge,
+                              ),
+                            ),
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                CustomCardsType1(
+                                CustomCardsType2(
                                   height: 40,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 12),
-                                    child: Center(child: Text('Fuerza')),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Fuerza',
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                CustomCardsType1(
+                                CustomCardsType2(
                                   height: 40,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 12),
-                                    child: Center(child: Text('Flexibilidad')),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Flexibilidad',
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                CustomCardsType1(
+                                CustomCardsType2(
                                   height: 40,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 12),
-                                    child: Center(child: Text('Relajación')),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Relajación',
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -191,112 +291,198 @@ class ClassView extends StatelessWidget {
                           ],
                         ),
                       ),
+                      SizedBox(height: 20),
 
                       /// Descripción
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Descripción'),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'Descripción',
+                                style: textStyle.titleLarge,
+                              ),
+                            ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Mini bio profesor'),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Text(
+                                  clase.descripcion,
+                                  style: textStyle.titleLarge?.copyWith(
+                                    color: AppColors.almendra,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
+
+                      SizedBox(height: 20),
 
                       /// Qué traer
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Qué traer'),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'Qué traer',
+                                style: textStyle.titleLarge,
+                              ),
+                            ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Agua'),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Text(
+                                  'Agua',
+                                  style: textStyle.titleLarge?.copyWith(
+                                    color: AppColors.almendra,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
 
+                      SizedBox(height: 20),
+
                       /// Precio
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Precio por clase'),
+                            Text(
+                              'Precio por clase',
+                              style: textStyle.titleLarge,
+                            ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('120.000'),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Text(
+                                  '\$${currencyFormatter.format(int.parse(clase.price))}',
+
+                                  style: textStyle.titleLarge?.copyWith(
+                                    color: AppColors.almendra,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
+
+                      SizedBox(height: 20),
 
                       /// Botones acción
                       Column(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              appRouter.push('/Home/class/$classId/reservation/$classId');
+                          FilledButton(
+                            onPressed: () {
+                              context.push(
+                                '/Home/class/$classId/reservation/$classId',
+                              );
                             },
-                            child: Container(
-                              alignment: Alignment.center,
-                              width: 120,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey),
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(
+                                AppColors.cafeNoir,
                               ),
-                              child: const Text('Reservar', style: TextStyle(color: Colors.white)),
+
+                              padding: const WidgetStatePropertyAll(
+                                EdgeInsets.symmetric(vertical: 20),
+                              ),
+                              fixedSize: WidgetStatePropertyAll(Size(300, 60)),
+                              shape: WidgetStatePropertyAll(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              'Reservar',
+                              style: textStyle.titleLarge?.copyWith(
+                                color: AppColors.piedra,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                width: 150,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.grey),
-                                ),
-                                child: const Text('Invitar Acompañante', style: TextStyle(color: Colors.white)),
-                              ),
-                              const SizedBox(width: 10),
-                              Container(
-                                alignment: Alignment.center,
-                                width: 120,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.grey),
-                                ),
-                                child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
-                              ),
-                            ],
-                          ),
+
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     appRouter.push(
+                          //       '/Home/class/$classId/reservation/$classId',
+                          //     );
+                          //   },
+                          //   child: Container(
+                          //     alignment: Alignment.center,
+                          //     width: 120,
+                          //     height: 60,
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.black,
+                          //       borderRadius: BorderRadius.circular(8),
+                          //       border: Border.all(color: Colors.grey),
+                          //     ),
+                          //     child: const Text(
+                          //       'Reservar',
+                          //       style: TextStyle(color: Colors.white),
+                          //     ),
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 10),
+                          // Container(
+                          //   alignment: Alignment.center,
+                          //   width: 150,
+                          //   height: 60,
+                          //   decoration: BoxDecoration(
+                          //     color: Colors.black,
+                          //     borderRadius: BorderRadius.circular(8),
+                          //     border: Border.all(color: Colors.grey),
+                          //   ),
+                          //   child: const Text(
+                          //     'Invitar Acompañante',
+                          //     style: TextStyle(color: Colors.white),
+                          //   ),
+                          // ),
+                          // const SizedBox(width: 10),
+                          // Container(
+                          //   alignment: Alignment.center,
+                          //   width: 120,
+                          //   height: 60,
+                          //   decoration: BoxDecoration(
+                          //     color: Colors.black,
+                          //     borderRadius: BorderRadius.circular(8),
+                          //     border: Border.all(color: Colors.grey),
+                          //   ),
+                          //   child: const Text(
+                          //     'Cancelar',
+                          //     style: TextStyle(color: Colors.white),
+                          //   ),
+                          // ),
                         ],
                       ),
 

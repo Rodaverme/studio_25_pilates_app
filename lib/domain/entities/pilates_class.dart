@@ -7,6 +7,7 @@ class PilatesClass {
   final DateTime fechaHora;
   final Duration duracion;
   final String instructor;
+  final String bioInstructor;
   final int cupoMaximo;
   final String nivel;
   final int cuposOcupados;
@@ -25,6 +26,7 @@ class PilatesClass {
     required this.cuposOcupados,
     required this.sala,
     required this.descripcion,
-    required this.price
+    required this.price,
+    required this.bioInstructor
   });
 }
