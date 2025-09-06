@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
@@ -30,7 +31,7 @@ class ReservationView extends StatelessWidget {
             locale: 'es_CO',
             name: '',
 
-            decimalDigits: 0, // 👈 así no muestra los decimales
+            decimalDigits: 0,
           );
 
           return Scaffold(
@@ -291,7 +292,10 @@ class PaymentMethodSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-    final creditCard = context.watch<CreditCardCubit>().state.creditCard;
+    final creditCards = context
+        .watch<CreditCardCubit>()
+        .state
+        .creditCard; // 👈 ahora es lista
 
     return BlocBuilder<PaymentCubit, PaymentState>(
       builder: (context, state) {
@@ -327,53 +331,67 @@ class PaymentMethodSelector extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // 👉 Tarjeta guardada
-            if (creditCard != null)
-              CustomCardsType2(
-                height: 70,
-                width: double.maxFinite,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: RadioListTile<PaymentMethod>(
-                    value: PaymentMethod.card(creditCard),
-                    groupValue: selectedMethod,
-                    onChanged: (value) {
-                      if (value != null) {
-                        context.read<PaymentCubit>().selectMethod(value);
-                      }
-                    },
-                    title: Text(
-                      '${creditCard.brand}.***********${creditCard.lastFour}',
-                    ),
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    subtitle: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text(
-                        'Expira el ${creditCard.expMonth}/${creditCard.expYear.toString().substring(2)}',
-                        style: textStyle.titleMedium,
+            // 👉 Tarjetas guardadas
+            if (creditCards!.isNotEmpty)
+              ListView.builder(
+                shrinkWrap:
+                    true, // 👈 evita problemas de scroll dentro de Column
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: creditCards.length,
+                itemBuilder: (context, index) {
+                  final card = creditCards[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: CustomCardsType2(
+                      height: 70,
+                      width: double.maxFinite,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: RadioListTile<PaymentMethod>(
+                          value: PaymentMethod.card(card),
+                          groupValue: selectedMethod,
+                          onChanged: (value) {
+                            if (value != null) {
+                              context.read<PaymentCubit>().selectMethod(value);
+                            }
+                          },
+                          title: Text('${card.brand} •••• ${card.lastFour}'),
+                          controlAffinity: ListTileControlAffinity.trailing,
+                          subtitle: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
+                            child: Text(
+                              'Expira el ${card.expMonth}/${card.expYear.toString().substring(2)}',
+                              style: textStyle.titleMedium,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
+
             const SizedBox(height: 10),
 
             // 👉 Nueva tarjeta
-            CustomCardsType2(
-              height: 60,
-              width: double.maxFinite,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: RadioListTile<PaymentMethod>(
-                  value: const PaymentMethod.newCard(),
-                  groupValue: selectedMethod,
-                  onChanged: (value) {
-                    if (value != null) {
-                      context.read<PaymentCubit>().selectMethod(value);
-                    }
-                  },
-                  title: const Text('Agregar Nueva Tarjeta'),
-                  controlAffinity: ListTileControlAffinity.trailing,
+            GestureDetector(
+              onTap: () {
+                context.push('/new_card');
+                // Acción para agregar nueva tarjeta
+              },
+              child: CustomCardsType2(
+                height: 60,
+                width: double.maxFinite,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Center(
+                    child: Text(
+                      'Agregar Nueva Tarjeta',
+                      style: textStyle.titleLarge,
+                    ),
+                  ),
                 ),
               ),
             ),

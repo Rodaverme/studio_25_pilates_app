@@ -28,4 +28,45 @@ class CreditCardCubit extends Cubit<CreditCardState> {
       );
     }
   }
+
+  /// 🔹 Guardar tarjeta nueva
+  Future<void> saveMyCard({
+    required String number,
+    required String cvc,
+    required String expMonth,
+    required String expYear,
+    required String cardHolder,
+    required String acceptToken,
+    required String acceptPersonalAuth,
+  }) async {
+    emit(state.copyWith(status: CreditCardStatus.loading));
+    try {
+      await datasource.saveCreditCard(
+        number,
+        cvc,
+        expMonth,
+        expYear,
+        cardHolder,
+        acceptToken,
+        acceptPersonalAuth,
+      );
+
+      /// ✅ Opcional: recargar la lista de tarjetas después de crear
+      final myCreditCard = await datasource.getMycreditCard();
+
+      emit(
+        state.copyWith(
+          status: CreditCardStatus.loaded,
+          creditCard: myCreditCard,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: CreditCardStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
 }

@@ -22,7 +22,8 @@ class InputDecorations {
       ),
       hintText: hintText,
       labelText: labelText,
-      errorText: errorText
+      errorText: errorText,
+      
       
     );
   }

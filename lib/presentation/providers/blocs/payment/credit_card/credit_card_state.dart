@@ -4,7 +4,7 @@ enum CreditCardStatus { initial, loading, loaded, error }
 
 class CreditCardState extends Equatable {
   final CreditCardStatus status;
-  final CreditCard? creditCard; // lo hago nullable para manejar initial sin error
+  final List <CreditCard>? creditCard; // lo hago nullable para manejar initial sin error
   final String? errorMessage;
 
   const CreditCardState({
@@ -15,7 +15,7 @@ class CreditCardState extends Equatable {
 
   CreditCardState copyWith({
     CreditCardStatus? status,
-    CreditCard? creditCard,
+    List <CreditCard>? creditCard,
     String? errorMessage,
   }) {
     return CreditCardState(

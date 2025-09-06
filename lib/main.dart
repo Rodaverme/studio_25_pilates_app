@@ -10,6 +10,7 @@ import 'package:studio_25_pilates_app/infrastructure/datasource/class_datasource
 import 'package:studio_25_pilates_app/infrastructure/datasource/credit_card_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/instructor_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/level_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/merchants_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
 
 import 'package:studio_25_pilates_app/infrastructure/datasource/room_datasource_impl.dart';
@@ -28,6 +29,8 @@ import 'package:studio_25_pilates_app/presentation/providers/blocs/class/room/ro
 import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/credit_card/credit_card_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/credit_card/form_credit_card/form_credit_card_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/merchants/merchants_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/payment_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
@@ -80,8 +83,9 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (_) =>
-              CreditCardCubit(CreditCardDatasourceImpl()..getMycreditCard())
+              CreditCardCubit(CreditCardDatasourceImpl())
                 ..loadMyCard(),
+                
         ),
         BlocProvider<LogoutCubit>(
           create: (context) => LogoutCubit(
@@ -91,6 +95,12 @@ Future<void> main() async {
               datasource: AuthDatasourceImpl(), // tu datasource actual
             ),
           ),
+        ),
+        BlocProvider(create: (_) => FormsCreditCardCubit()),
+        BlocProvider(
+          create: (_) =>
+              MerchantsCubit(MerchantsDatasourceImpl()..getTokenPermalink())
+                ..loadMerchants(),
         ),
       ],
       child: AuthGate(child: const MainApp()), // 👈 envolvemos con un listener

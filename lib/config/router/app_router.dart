@@ -6,9 +6,10 @@ import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.d
 import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/notifications_views.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/perfil_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/planes_view.dart';
-import 'package:studio_25_pilates_app/presentation/screens/views/reservation_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_view.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -48,11 +49,14 @@ final appRouter = GoRouter(
                       child: ReservationView(classId: classId),
                     );
                   },
+                  
                 ),
               ],
             ),
           ],
         ),
+
+        
 
         GoRoute(
           path: '/calendar',
@@ -78,8 +82,13 @@ final appRouter = GoRouter(
             return const PerfilView();
           },
         ),
+         GoRoute(
+          path: '/new_card',
+          builder: (context, state) => const CreateNewCardView(),
+        ),
       ],
     ),
+   
 
     GoRoute(path: '/', builder: (context, state) => LoginScreen()),
     GoRoute(
