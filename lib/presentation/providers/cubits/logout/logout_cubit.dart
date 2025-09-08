@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 
 part 'logout_state.dart';
 

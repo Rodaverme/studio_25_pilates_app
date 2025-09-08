@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 
 class PerfilView extends StatelessWidget {

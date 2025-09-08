@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart';

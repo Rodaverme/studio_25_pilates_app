@@ -1,13 +1,14 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/credit_card/credit_card_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/payment_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/payment_state.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/credit_card_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_state.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 
@@ -299,6 +300,8 @@ class PaymentMethodSelector extends StatelessWidget {
 
     return BlocBuilder<PaymentCubit, PaymentState>(
       builder: (context, state) {
+      
+
         PaymentMethod? selectedMethod;
         if (state is PaymentSelected) {
           selectedMethod = state.method;
@@ -332,7 +335,7 @@ class PaymentMethodSelector extends StatelessWidget {
             const SizedBox(height: 10),
 
             // 👉 Tarjetas guardadas
-            if (creditCards!.isNotEmpty)
+            if (creditCards.isNotEmpty)
               ListView.builder(
                 shrinkWrap:
                     true, // 👈 evita problemas de scroll dentro de Column
@@ -340,30 +343,32 @@ class PaymentMethodSelector extends StatelessWidget {
                 itemCount: creditCards.length,
                 itemBuilder: (context, index) {
                   final card = creditCards[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: CustomCardsType2(
-                      height: 70,
-                      width: double.maxFinite,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: RadioListTile<PaymentMethod>(
-                          value: PaymentMethod.card(card),
-                          groupValue: selectedMethod,
-                          onChanged: (value) {
-                            if (value != null) {
-                              context.read<PaymentCubit>().selectMethod(value);
-                            }
-                          },
-                          title: Text('${card.brand} •••• ${card.lastFour}'),
-                          controlAffinity: ListTileControlAffinity.trailing,
-                          subtitle: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                            ),
-                            child: Text(
-                              'Expira el ${card.expMonth}/${card.expYear.toString().substring(2)}',
-                              style: textStyle.titleMedium,
+                  return FadeInLeft(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: CustomCardsType2(
+                        height: 70,
+                        width: double.maxFinite,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: RadioListTile<PaymentMethod>(
+                            value: PaymentMethod.card(card),
+                            groupValue: selectedMethod,
+                            onChanged: (value) {
+                              if (value != null) {
+                                context.read<PaymentCubit>().selectMethod(value);
+                              }
+                            },
+                            title: Text('${card.brand} •••• ${card.lastFour}'),
+                            controlAffinity: ListTileControlAffinity.trailing,
+                            subtitle: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
+                              child: Text(
+                                'Expira el ${card.expMonth}/${card.expYear}',
+                                style: textStyle.titleMedium,
+                              ),
                             ),
                           ),
                         ),

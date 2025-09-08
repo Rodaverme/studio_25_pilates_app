@@ -4,12 +4,12 @@ enum CreditCardStatus { initial, loading, loaded, error }
 
 class CreditCardState extends Equatable {
   final CreditCardStatus status;
-  final List <CreditCard>? creditCard; // lo hago nullable para manejar initial sin error
+  final List <CreditCard> creditCard; // lo hago nullable para manejar initial sin error
   final String? errorMessage;
 
   const CreditCardState({
     this.status = CreditCardStatus.initial,
-    this.creditCard,
+    this.creditCard = const [],
     this.errorMessage,
   });
 

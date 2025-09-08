@@ -7,9 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/login/login_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/forms/forms_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/login/login_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
 

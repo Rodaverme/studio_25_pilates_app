@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/instructor/instructor_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/level/level_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/instructor/instructor_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/level/level_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/full_screen_loader.dart';
 

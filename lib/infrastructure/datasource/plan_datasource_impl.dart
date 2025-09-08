@@ -40,7 +40,7 @@ class PlanDatasourceImpl extends PlansDatasource {
           activePlan.plan,
          
         );
-        print('Tu plan es el siguiente ${plan.name}');
+      
         return plan;
       }
       throw Exception('Error al obtener plan');
@@ -68,7 +68,7 @@ class PlanDatasourceImpl extends PlansDatasource {
             )
             .toList();
 
-        print('Estos son los planes que existen ${plans.first}');
+      
         return plans;
       }
       throw Exception('Error al obtener plan');
@@ -85,11 +85,10 @@ class PlanDatasourceImpl extends PlansDatasource {
   Future<StatusPlan> statusPlan() async {
     try {
       final response = await dio.get('/api/client/plan-status');
-      print('JSON recibido: ${response.data}');
+
       if (response.statusCode == 200 && response.data != null) {
         final statusPlan = StatusPlan.fromJson(response.data);
-        print('Plan: ${statusPlan.plan.name}');
-        print('Días restantes: ${statusPlan.daysRemaining}');
+       
         return statusPlan;
       }
 

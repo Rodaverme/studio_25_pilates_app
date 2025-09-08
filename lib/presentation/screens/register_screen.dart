@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 
-import 'package:studio_25_pilates_app/presentation/providers/blocs/forms/forms_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/register/register_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/register/register_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class RegisterScreen extends StatelessWidget {

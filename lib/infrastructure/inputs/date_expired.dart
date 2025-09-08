@@ -23,18 +23,33 @@ class DateExpired extends FormzInput<String, DateExpiredError> {
   }
 
   // Override validator to handle validating a given input value.
-  @override
-  DateExpiredError? validator(String value) {
-    if (value.isEmpty || value.trim().isEmpty) return DateExpiredError.empty;
-    final parts = value.split('/');
-    final int month = int.parse(parts[0]);
-    final int year = int.parse('20${parts[1]}'); // ej: "24" -> 2024
-    final now = DateTime.now();
-    final lastDayOfMonth = DateTime(year, month + 1, 0);
-
-    if (lastDayOfMonth.isBefore(now)) return DateExpiredError.expired;
-
-    if (!expRegExp.hasMatch(value)) return DateExpiredError.invalid;
-    return null;
+@override
+DateExpiredError? validator(String value) {
+  if (value.isEmpty || value.trim().isEmpty) {
+    return DateExpiredError.empty;
   }
+
+  // 👇 Validar formato MM/YY antes de hacer split
+  if (!expRegExp.hasMatch(value)) {
+    return DateExpiredError.invalid;
+  }
+
+  final parts = value.split('/');
+  final int month = int.parse(parts[0]);
+  final int year = int.parse('20${parts[1]}'); // ej: "24" -> 2024
+
+  // Mes inválido aunque pase regex (ejemplo "00/24")
+  if (month < 1 || month > 12) {
+    return DateExpiredError.invalid;
+  }
+
+  final now = DateTime.now();
+  final lastDayOfMonth = DateTime(year, month + 1, 0);
+
+  if (lastDayOfMonth.isBefore(now)) {
+    return DateExpiredError.expired;
+  }
+
+  return null;
+}
 }

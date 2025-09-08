@@ -21,18 +21,18 @@ import 'package:studio_25_pilates_app/infrastructure/repositories/level_reposito
 import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/room_repository_impl.dart';
 
-import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/class_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/instructor/instructor_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/level/level_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/room/room_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/logout/logout_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/instructor/instructor_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/level/level_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/room/room_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/logout/logout_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/credit_card/credit_card_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/credit_card/form_credit_card/form_credit_card_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/merchants/merchants_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/payment/payment_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/credit_card_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/form_credit_card/form_credit_card_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/merchants/merchants_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
 
 Future<void> main() async {

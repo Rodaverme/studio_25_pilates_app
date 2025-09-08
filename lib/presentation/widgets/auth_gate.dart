@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 
-import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 
 
 class AuthGate extends StatelessWidget {

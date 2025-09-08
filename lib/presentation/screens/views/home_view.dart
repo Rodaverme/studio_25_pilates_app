@@ -6,10 +6,10 @@ import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/domain/entities/instructor.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/instructor/instructor_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/class/level/level_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/blocs/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/instructor/instructor_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/level/level_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
 class HomeView extends StatelessWidget {

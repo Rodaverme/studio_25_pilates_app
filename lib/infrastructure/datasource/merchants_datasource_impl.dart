@@ -22,9 +22,7 @@ class MerchantsDatasourceImpl extends MerchantsDatasource {
         // ✅ Pasamos el objeto a entidad con el mapper
         final merch = MerchantsMapper.merchantsApiToEntity(merchantsResponse);
 
-        print('Estos son los tokens de aceptación: '
-            ' Aceptacionn  ${merch.presignedAcceptance},  personal ${merch.presignedPersonalDataAuth}');
-        print('Permalink: ${merch.presignedAcceptance}');
+      
 
         
 
