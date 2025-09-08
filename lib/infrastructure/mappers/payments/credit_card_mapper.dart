@@ -11,5 +11,6 @@ class CreditCardMapper {
     expYear: card.expYear,
     lastFour: card.lastFour,
     token: card.token,
+    sourceId: card.sourceId ?? ' '
   );
 }

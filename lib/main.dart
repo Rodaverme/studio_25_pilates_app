@@ -4,36 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
-
-import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/class_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/credit_card_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/instructor_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/level_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/merchants_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/plan_datasource_impl.dart';
-
-import 'package:studio_25_pilates_app/infrastructure/datasource/room_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/class_respository_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/instructor_repository_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/level_repository_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/plan_respoitory_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/repositories/room_repository_impl.dart';
-
-import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/instructor/instructor_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/level/level_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/room/room_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/logout/logout_cubit.dart';
+import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/credit_card_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/form_credit_card/form_credit_card_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/merchants/merchants_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,6 +77,7 @@ Future<void> main() async {
               MerchantsCubit(MerchantsDatasourceImpl()..getTokenPermalink())
                 ..loadMerchants(),
         ),
+        BlocProvider(create: (_)  => TransactionCubit(TransactionsDatasourceImpl()) )
       ],
       child: AuthGate(child: const MainApp()), // 👈 envolvemos con un listener
     ),

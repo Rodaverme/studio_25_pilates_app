@@ -6,6 +6,7 @@ class CreditCard {
   final String token;
   final String expMonth;
   final String expYear;
+  final String sourceId;
 
   CreditCard({
     required this.id,
@@ -15,5 +16,6 @@ class CreditCard {
     required this.token,
     required this.expMonth,
     required this.expYear,
+    required this.sourceId
   });
 }

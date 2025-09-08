@@ -18,7 +18,7 @@ class CreditCardResponse {
   dynamic cardHolder;
   String lastFour;
   String token;
-  dynamic sourceId;
+  String? sourceId;
   String expMonth;
   String expYear;
   bool isDefault;
@@ -54,7 +54,7 @@ class CreditCardResponse {
         cardHolder: json["card_holder"],
         lastFour: json["last_four"],
         token: json["token"],
-        sourceId: json["source_id"],
+        sourceId: json["source_id"] ,
         expMonth: json["exp_month"],
         expYear: json["exp_year"],
         isDefault: json["is_default"],

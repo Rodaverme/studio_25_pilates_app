@@ -24,7 +24,7 @@ class MerchantsDatasourceImpl extends MerchantsDatasource {
 
       
 
-        
+          print('token 1 ${merch.presignedAcceptance}, token2 ${merch.presignedPersonalDataAuth}');
 
         return merch;
       }

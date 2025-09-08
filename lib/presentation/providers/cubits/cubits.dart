@@ -1,3 +1,7 @@
+export 'package:studio_25_pilates_app/presentation/providers/cubits/payment/transactions/transaction_cubit.dart';
+
+export 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/form_credit_card/form_credit_card_cubit.dart';
+
 export 'package:studio_25_pilates_app/presentation/providers/cubits/register/register_cubit.dart';
 
 export 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
@@ -12,7 +16,7 @@ export 'package:studio_25_pilates_app/presentation/providers/cubits/logout/logou
 
 export 'package:studio_25_pilates_app/presentation/providers/cubits/login/login_cubit.dart';
 
-export 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
+
 
 export 'package:studio_25_pilates_app/presentation/providers/cubits/class/room/room_cubit.dart';
 
@@ -23,3 +27,4 @@ export 'package:studio_25_pilates_app/presentation/providers/cubits/class/instru
 export 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
 
 export 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+
