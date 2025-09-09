@@ -1,4 +1,4 @@
-import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+
 
 class Plan {
   final int id;
@@ -8,7 +8,7 @@ class Plan {
   final String price;
   final bool allowGuests;
   final dynamic guestLimitPerClass;
-  final List<PilatesClass>?classes;
+  
   
 
   Plan( {
@@ -19,6 +19,6 @@ class Plan {
     required this.allowGuests,
     required this.guestLimitPerClass,
     required this.description,
-    this.classes
+    
   });
 }

@@ -13,15 +13,17 @@ class ClassByplanMapper {
   ) => PilatesClass(
     id: classes.id.toString(),
     nombre: classes.title,
-    fechaHora: DateTime.now(),
+    date: classes.nextOccurrence?.date ?? DateTime.now(),
     duracion: Duration(minutes: 30),
     instructor: instructor.name,
     cupoMaximo: classes.capacity,
     nivel: level.name,
-    cuposOcupados: 10,
+    cuposOcupados: int.parse(classes.nextOccurrence?.reservedCount ?? '0'),
     sala: room.name,
     descripcion: classes.description,
     price: classes.price,
-    bioInstructor: instructor.bio
+    bioInstructor: instructor.bio,
+    endTime: classes.nextOccurrence?.endTime ?? '',
+    starTime: classes.nextOccurrence?.startTime ?? ''
   );
 }

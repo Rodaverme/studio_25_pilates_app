@@ -11,6 +11,10 @@ final class ClassInitial extends ClassState {}
 
 final class ClassLoading extends ClassState {}
 
+final class ClassByIdLoading extends ClassState {}
+
+final class ClassByPlanLoading extends ClassState {}
+
 class ClassLoaded extends ClassState {
   final List<PilatesClass> classes;
   final DateTime selectedDate;
@@ -26,6 +30,11 @@ class ClassByIdLoaded extends ClassState {
 
   @override
   List<Object?> get props => [clase];
+}
+
+class ClassByPlanIdLoaded extends ClassState {
+  final List<PilatesClass> classPlan;
+  const ClassByPlanIdLoaded({required this.classPlan});
 }
 
 class ClassError extends ClassState {

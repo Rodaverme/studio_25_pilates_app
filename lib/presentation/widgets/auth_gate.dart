@@ -19,7 +19,7 @@ class AuthGate extends StatelessWidget {
        
 
         // siempre deja todo limpio primero
-        plan.reset();
+       
         plan.getAllPlans();
        
         if (state.isAuthenticated) {

@@ -26,11 +26,11 @@ class ClassView extends StatelessWidget {
           final fechaFormateada = DateFormat(
             "d MMMM ",
             'es_ES',
-          ).format(clase.fechaHora);
-          final horaInicio = DateFormat("HH:mm").format(clase.fechaHora);
+          ).format(clase.date);
+          final horaInicio = DateFormat("HH:mm").format(clase.date);
           final horaFinal = DateFormat(
             "HH:mm",
-          ).format(clase.fechaHora.add(clase.duracion));
+          ).format(clase.date.add(clase.duracion));
           final currencyFormatter = NumberFormat.currency(
             locale: 'es_CO',
             name: '',
@@ -406,7 +406,7 @@ class ClassView extends StatelessWidget {
                           FilledButton(
                             onPressed: () {
                               context.push(
-                                '/Home/class/$classId/reservation/$classId',
+                                '/class/$classId/reservation/$classId',
                               );
                             },
                             style: ButtonStyle(

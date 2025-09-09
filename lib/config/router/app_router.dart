@@ -7,6 +7,7 @@ import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart
 import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/notifications_views.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/perfil_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/planes_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_view.dart';
@@ -24,9 +25,9 @@ final appRouter = GoRouter(
           path: '/Home',
           builder: (context, state) {
             return const HomeView();
-          },
-          routes: [
-            GoRoute(
+          },    
+            ),
+             GoRoute(
               name: ClassView.name,
               path: '/class/:id',
               builder: (context, state) {
@@ -49,14 +50,21 @@ final appRouter = GoRouter(
                       child: ReservationView(classId: classId),
                     );
                   },
-                  
                 ),
-              ],
-            ),
+
+
+
+
+
+
+              GoRoute(
+                  path: '/succesPay',
+                  builder: (context, state) {
+                    return const ReservationSuccessView();
+                  },
+                ),
           ],
         ),
-
-        
 
         GoRoute(
           path: '/calendar',
@@ -82,13 +90,12 @@ final appRouter = GoRouter(
             return const PerfilView();
           },
         ),
-         GoRoute(
+        GoRoute(
           path: '/new_card',
           builder: (context, state) => const CreateNewCardView(),
         ),
       ],
     ),
-   
 
     GoRoute(path: '/', builder: (context, state) => LoginScreen()),
     GoRoute(

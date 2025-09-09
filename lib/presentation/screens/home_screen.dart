@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/instructor/instructor_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/level/level_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/full_screen_loader.dart';
 
@@ -28,19 +26,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final planState = context.watch<PlanCubit>().state;
-    final instructorState = context.watch<InstructorCubit>().state;
-    final nivelState = context.watch<LevelCubit>().state;
-    // final classState = context.watch<ClassCubit>().state;
-
+    
     final bool isPlanLoaded = planState is AllPlansLoaded;
-    final bool isInstructorLoaded =
-        instructorState.status == InstructorStatus.loaded;
-    final bool islevelLoaded = nivelState.status == LevelStatus.loaded;
+   
+    
 
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => _refreshData(context),
-        child: (isPlanLoaded && isInstructorLoaded && islevelLoaded)
+        child: (isPlanLoaded )
             ? childView
             : Center(
                 child: ListView(

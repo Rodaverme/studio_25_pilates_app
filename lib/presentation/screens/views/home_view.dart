@@ -3,28 +3,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
-import 'package:studio_25_pilates_app/domain/entities/entities.dart';
-import 'package:studio_25_pilates_app/domain/entities/instructor.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/instructor/instructor_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/level/level_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+    final planState = context.read<PlanCubit>().state;
+    if (planState is AllPlansLoaded) {
+      context.read<ClassCubit>().loadClassesByPlan(planState.myPlan!.id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final client = context.watch<AuthCubit>().state.client;
-    final instructors = context.watch<InstructorCubit>().state.instructors;
-    final levels = context.watch<LevelCubit>().state.levels;
-
-    // ✅ Creamos un Map para acceso rápido por ID
-    final instructorsMap = {for (var i in instructors) i.id.toString(): i};
-    final levelsMap = {for (var i in levels) i.id.toString(): i};
-
     final textStyle = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -34,122 +38,122 @@ class HomeView extends StatelessWidget {
           Positioned.fill(
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
+
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
               if (state is PlanError) {
-                return Center(child: Text("Error: ${state.message}"));
+                return Center(child: Text('Error :${state.message}'));
               }
 
               if (state is AllPlansLoaded) {
-                final plans = state.plans;
-                final myPlan = state.myPlan;
+                return BlocBuilder<ClassCubit, ClassState>(
+                  builder: (context, classState) {
+                    if (classState is ClassByPlanLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                if (plans.isEmpty) return const Center(child: Text(""));
+                    if (classState is ClassByPlanIdLoaded) {
+                      final clases = classState.classPlan;
 
-                final planConClases = plans.firstWhere(
-                  (plan) => myPlan != null && plan.id == myPlan.id,
-                  orElse: () => plans.first,
-                );
+                      if (clases.isEmpty) {
+                        return const Center(
+                          child: Text("No tienes clases en este plan"),
+                        );
+                      }
 
-                final clases = planConClases.classes ?? [];
-
-                // ✅ Preparamos la lista de clases con su instructor
-                final clasesConInstructor = clases.map((c) {
-                  return ClaseConInstructor(
-                    pilatesClass: c,
-                    instructor:
-                        instructorsMap[c.instructor] ??
-                        Instructor(
-                          id: 0,
-                          name: 'Desconocido',
-                          email: '',
-                          bio: '',
-                          photoUrl: '',
-                        ),
-                    nivel:
-                        levelsMap[c.nivel] ??
-                        Nivel(id: 0, nombre: 'Principiante'),
-                  );
-                }).toList();
-
-                return ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      return ListView(
+                        padding: EdgeInsets.zero,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              'Hola, ${client?.name}',
-                              style: textStyle.titleLarge,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              _InfoCard(label: 'Clases este mes', value: '12'),
-                              SizedBox(width: 20),
-                              _InfoCard(value: '4', label: 'racha'),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              'Mi Próxima Clase',
-                              style: textStyle.titleLarge,
-                            ),
-                          ),
-                          if (clasesConInstructor.isNotEmpty)
-                            _NextClass(
-                              textStyle: textStyle,
-                              claseConInstructor: clasesConInstructor.first,
-                            ),
-                          const SizedBox(height: 20),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Text('Clases de Hoy'),
-                          ),
-                          SizedBox(
-                            height: 380,
-                            child: ClassesCarousel(list: clasesConInstructor),
-                          ),
-                          // ---- Acciones rápidas ----
-                          SizedBox(height: 10),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Text('Acciones Rápidas'),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text('Mis Clases'),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: Text(
+                                    'Hola, ${client?.name}',
+                                    style: textStyle.titleLarge,
+                                  ),
                                 ),
-                                const Spacer(),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text('Calendario'),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    _InfoCard(
+                                      label: 'Clases este mes',
+                                      value: '12',
+                                    ),
+                                    SizedBox(width: 20),
+                                    _InfoCard(value: '4', label: 'racha'),
+                                  ],
                                 ),
-                                const Spacer(),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text('Tarjetas'),
+                                const SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: Text(
+                                    'Mi Próxima Clase',
+                                    style: textStyle.titleLarge,
+                                  ),
+                                ),
+                                _NextClass(
+                                  textStyle: textStyle,
+                                  clase: clases.first,
+                                ),
+                                const SizedBox(height: 20),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  child: Text('Clases de Hoy'),
+                                ),
+                                SizedBox(
+                                  height: 380,
+                                  child: ClassesCarousel(list: clases),
+                                ),
+                                const SizedBox(height: 10),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  child: Text('Acciones Rápidas'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {},
+                                        child: const Text('Mis Clases'),
+                                      ),
+                                      const Spacer(),
+                                      TextButton(
+                                        onPressed: () {},
+                                        child: const Text('Calendario'),
+                                      ),
+                                      const Spacer(),
+                                      TextButton(
+                                        onPressed: () {},
+                                        child: const Text('Tarjetas'),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                  ],
+                      );
+                    }
+
+                    if (classState is ClassError) {
+                      return Center(child: Text(classState.message));
+                    }
+
+                    return const Center(child: CircularProgressIndicator());
+                  },
                 );
               }
 
@@ -162,29 +166,14 @@ class HomeView extends StatelessWidget {
   }
 }
 
-// Wrapper para asociar clase con instructor
-class ClaseConInstructor {
-  final PilatesClass pilatesClass;
-  final Instructor instructor;
-  final Nivel nivel;
-
-  ClaseConInstructor({
-    required this.pilatesClass,
-    required this.instructor,
-    required this.nivel,
-  });
-}
-
 class _NextClass extends StatelessWidget {
-  const _NextClass({required this.textStyle, required this.claseConInstructor});
+  const _NextClass({required this.textStyle, required this.clase});
 
   final TextTheme textStyle;
-  final ClaseConInstructor claseConInstructor;
+  final PilatesClass clase;
 
   @override
   Widget build(BuildContext context) {
-    final c = claseConInstructor;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
@@ -205,19 +194,19 @@ class _NextClass extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      c.pilatesClass.nombre,
+                      clase.nombre,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      c.instructor.name,
+                      clase.instructor,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "Hoy, ${c.pilatesClass.fechaHora.hour.toString().padLeft(2, '0')}:${c.pilatesClass.fechaHora.minute.toString().padLeft(2, '0')}",
+                      "Hoy, ${clase.date.hour.toString().padLeft(2, '0')}:${clase.date.minute.toString().padLeft(2, '0')}",
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -259,7 +248,7 @@ class _InfoCard extends StatelessWidget {
 
 class ClassesCarousel extends StatefulWidget {
   const ClassesCarousel({super.key, required this.list});
-  final List<ClaseConInstructor> list;
+  final List<PilatesClass> list;
 
   @override
   State<ClassesCarousel> createState() => _ClassesCarouselState();
@@ -287,29 +276,44 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
               return Column(
                 children: [
                   LessonsToday(
-                    pilatesClass: widget.list[first].pilatesClass,
+                    pilatesClass: widget.list[first],
                     textStyle: textStyle,
-                    onTap: () => context.push(
-                      '/Home/class/${widget.list[first].pilatesClass.id}',
-                    ),
-                    listInstrutor: widget.list
-                        .map((e) => e.instructor)
-                        .toList(),
-                    listLevel: widget.list.map((e) => e.nivel).toList(),
+                    onTap: () async {
+                      await context.push(
+                        '/class/${widget.list[first].id}',
+                      );
+                      if (!mounted)
+                        return; // 👈 evita usar context si el widget fue desmontado
+                      final planState = context.read<PlanCubit>().state;
+                      if (planState is AllPlansLoaded) {
+                        context.read<ClassCubit>().loadClassesByPlan(
+                          planState.myPlan!.id,
+                        );
+                      }
+                    },
+                    instructor: widget.list[first].instructor,
+                    level: widget.list[first].nivel,
                   ),
-
                   const SizedBox(height: 12),
                   if (second < widget.list.length)
                     LessonsToday(
-                      pilatesClass: widget.list[second].pilatesClass,
+                      pilatesClass: widget.list[second],
                       textStyle: textStyle,
-                      onTap: () => context.push(
-                        '/Home/class/${widget.list[second].pilatesClass.id}',
-                      ),
-                      listInstrutor: widget.list
-                          .map((e) => e.instructor)
-                          .toList(),
-                      listLevel: widget.list.map((e) => e.nivel).toList(),
+                      onTap: () async {
+                        await context.push(
+                          '/class/${widget.list[first].id}',
+                        );
+                        if (!mounted)
+                          return; // 👈 evita usar context si el widget fue desmontado
+                        final planState = context.read<PlanCubit>().state;
+                        if (planState is AllPlansLoaded) {
+                          context.read<ClassCubit>().loadClassesByPlan(
+                            planState.myPlan!.id,
+                          );
+                        }
+                      },
+                      instructor: widget.list[second].instructor,
+                      level: widget.list[second].nivel,
                     ),
                 ],
               );

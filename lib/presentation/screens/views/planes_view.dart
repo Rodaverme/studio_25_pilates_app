@@ -23,10 +23,7 @@ class PlanesView extends StatelessWidget {
     
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
-              // if (state is PlanLoading) {
-              //   return const Center(child: CircularProgressIndicator());
-              // }
-    
+             
               if (state is PlanError) {
                 return Center(child: Text("Error: ${state.message}"));
               }
@@ -46,8 +43,8 @@ class PlanesView extends StatelessWidget {
                   child: Column(
                     children: plans.map((plan) {
                       final isActive = myPlan != null && plan.id == myPlan.id;
-                      final clases = plan.classes?.map((c) => c.nombre).toList() ?? [];
-                      print('Clases del plan ${plan.name}: $clases');
+                      // final clases = plan.classes?.map((c) => c.nombre).toList() ?? [];
+                      // print('Clases del plan ${plan.name}: $clases');
     
                       return Padding(
                         padding: const EdgeInsets.all(8.0),

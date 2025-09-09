@@ -1,3 +1,4 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:studio_25_pilates_app/domain/entities/plan.dart';
@@ -18,7 +19,7 @@ class PlanCubit extends Cubit<PlanState> {
   }
 
   Future<void> getStatusPlan(String id) async {
-  emit(PlanInitial());
+
   emit(PlanLoading());
   try {
     final statusPlan = await repository.statusPlan();
@@ -28,20 +29,38 @@ class PlanCubit extends Cubit<PlanState> {
   }
 }
 
-  Future<void> getAllPlans() async {
-    emit(PlanInitial());
-    emit(PlanLoading());
-    try {
-      final plans = await repository.getAllPlans();
-      final myPlan = await repository.getMyPlan();
-      StatusPlan? statusPlan;
-      print( 'Este es el Id de mi plan  ${myPlan.id }');
-      statusPlan = await repository.statusPlan(); // aquí usas el id
-          emit(AllPlansLoaded(plans: plans,myPlan: myPlan,statusPlan: statusPlan));
-    } catch (e) {
+Future<void> getAllPlans() async {
+  emit(PlanLoading());
+  try {
+    final plans = await repository.getAllPlans();
+    final myPlan = await repository.getMyPlan();
+    final statusPlan = await repository.statusPlan();
+    emit(AllPlansLoaded(plans: plans, myPlan: myPlan, statusPlan: statusPlan));
+  } catch (e) {
+    // en vez de romper todo, conserva el estado anterior si existía
+    if (state is AllPlansLoaded) {
+      emit(state); 
+    } else {
       emit(PlanError(e.toString()));
     }
   }
+}
+
+
+  // Future<void> getAllPlans() async {
+    
+  //   emit(PlanLoading());
+  //   try {
+  //     final plans = await repository.getAllPlans();
+  //     final myPlan = await repository.getMyPlan();
+  //     StatusPlan? statusPlan;
+  //     print( 'Este es el Id de mi plan  ${myPlan.id }');
+  //     statusPlan = await repository.statusPlan(); // aquí usas el id
+  //         emit(AllPlansLoaded(plans: plans,myPlan: myPlan,statusPlan: statusPlan));
+  //   } catch (e) {
+  //     emit(PlanError(e.toString()));
+  //   }
+  // }
 
   Future<void> cancelMyPlan() async {
     emit(PlanLoading());

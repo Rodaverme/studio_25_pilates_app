@@ -91,7 +91,7 @@ class ReservationView extends StatelessWidget {
                           ),
                         ),
                       ),
-                     
+
                       _TotalPay(
                         textStyle: textStyle,
                         statePay: statePay,
@@ -199,7 +199,7 @@ class _SumaryClass extends StatelessWidget {
                       const SizedBox(height: 10),
                       Text('Fecha', style: textStyle.titleLarge),
                       Text(
-                        classe.fechaHora.day.toString(),
+                        classe.date.day.toString(),
                         style: textStyle.titleMedium,
                       ),
                       const SizedBox(height: 10),
@@ -364,10 +364,7 @@ class ReserveButton extends StatelessWidget {
     return BlocConsumer<TransactionCubit, TransactionState>(
       listener: (context, state) {
         if (state.status == TransactionStatus.loaded) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Reserva realizada con éxito ✅')),
-            //! LUEGO NAVEGA A VIEW DE PAGO CONFIRMADO
-          );
+          context.go('/Home/succesPay');
         } else if (state.status == TransactionStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: ${state.errorMessage} ❌')),

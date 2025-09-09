@@ -44,11 +44,7 @@ class ClassDatasourceImpl extends ClassDatasource {
 
       // Filtramos las clases que coincidan en fecha
       final filteredClasses = allClasses.where((c) {
-        final classDate = DateTime(
-          c.fechaHora.year,
-          c.fechaHora.month,
-          c.fechaHora.day,
-        );
+        final classDate = DateTime(c.date.year, c.date.month, c.date.day);
         return classDate == selectedDate;
       }).toList();
 
@@ -73,6 +69,37 @@ class ClassDatasourceImpl extends ClassDatasource {
     } on DioException catch (e) {
       throw Exception(
         'Error al obtener la clase por id: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
+  }
+
+  @override
+  Future<List<PilatesClass>> getClassesByPlan(int id) async {
+    try {
+      final response = await dio.get('/api/classes/by-plan/$id');
+      if (response.statusCode == 200 && response.data != null) {
+        final rawData = response.data['classes']; // 👈 aquí está la lista
+
+        if (rawData == null) return [];
+
+        final List<dynamic> data = rawData as List<dynamic>;
+
+        final List<PilatesClass> classes = data
+            .map(
+              (json) => ClassMapper.classApitoEntity(
+                ClassSessionResponse.fromJson(json),
+              ),
+            )
+            .toList();
+
+        return classes;
+      }
+      throw Exception('Error al obtener las clases');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener todas las clases  ${e.response?.data ?? e.message} ',
       );
     } catch (e) {
       throw Exception('Error inesperado: $e');

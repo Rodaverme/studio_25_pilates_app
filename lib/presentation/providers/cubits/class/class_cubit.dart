@@ -26,7 +26,7 @@ class ClassCubit extends Cubit<ClassState> {
   }
 
   Future<void> loadClassesById(String id) async {
-    emit(ClassLoading());
+    emit(ClassByIdLoading());
     try {
       final clase = await repository.getClassesById(id);
       emit(ClassByIdLoaded(clase: clase));
@@ -34,6 +34,19 @@ class ClassCubit extends Cubit<ClassState> {
       // ignore: avoid_print
       print('❌ loadClassesById error: $e\n$st');
       emit(const ClassError(message: 'Error encontrando la clase'));
+    }
+  }
+
+  Future<void> loadClassesByPlan(int id) async {
+    emit(ClassByPlanLoading());
+    try {
+      final clasees = await repository.getClassesByPlan(id);
+      emit(ClassByPlanIdLoaded(classPlan: clasees));
+    } catch (e,st) {
+      // ignore: avoid_print
+       print('❌ loadClassesByPlan error: $e\n$st');
+    emit(const ClassError(message: 'Error cargando clases del plan'));
+      
     }
   }
 }
