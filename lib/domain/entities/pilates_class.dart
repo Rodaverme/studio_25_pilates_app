@@ -15,6 +15,7 @@ class PilatesClass {
   final String price;
   final String starTime;
   final String endTime;
+  final int ocurrenceId;
 
   
 
@@ -33,5 +34,6 @@ class PilatesClass {
     required this.bioInstructor,
     required this.endTime,
     required this.starTime, 
+    required this.ocurrenceId
   });
 }

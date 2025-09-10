@@ -24,6 +24,7 @@ class ClassByplanMapper {
     price: classes.price,
     bioInstructor: instructor.bio,
     endTime: classes.nextOccurrence?.endTime ?? '',
-    starTime: classes.nextOccurrence?.startTime ?? ''
+    starTime: classes.nextOccurrence?.startTime ?? '',
+    ocurrenceId: classes.nextOccurrence?.id ?? 1
   );
 }

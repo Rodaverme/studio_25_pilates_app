@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,9 +59,7 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (_) =>
-              CreditCardCubit(CreditCardDatasourceImpl())
-                ..loadMyCard(),
-                
+              CreditCardCubit(CreditCardDatasourceImpl())..loadMyCard(),
         ),
         BlocProvider<LogoutCubit>(
           create: (context) => LogoutCubit(
@@ -77,7 +76,12 @@ Future<void> main() async {
               MerchantsCubit(MerchantsDatasourceImpl()..getTokenPermalink())
                 ..loadMerchants(),
         ),
-        BlocProvider(create: (_)  => TransactionCubit(TransactionsDatasourceImpl()) )
+        BlocProvider(
+          create: (_) => TransactionCubit(TransactionsDatasourceImpl()),
+        ),
+        BlocProvider(
+          create: (_) => ReservationCubit(ReservationDatasourceImpl()),
+        ),
       ],
       child: AuthGate(child: const MainApp()), // 👈 envolvemos con un listener
     ),

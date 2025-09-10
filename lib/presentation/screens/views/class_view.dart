@@ -16,28 +16,25 @@ class ClassView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
+
     return BlocBuilder<ClassCubit, ClassState>(
       builder: (context, state) {
         if (state is ClassLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         } else if (state is ClassByIdLoaded) {
           final PilatesClass clase = state.clase;
-
-          final fechaFormateada = DateFormat(
-            "d MMMM ",
-            'es_ES',
-          ).format(clase.date);
+    
+          final fechaFormateada = DateFormat("d MMMM ", 'es_ES').format(clase.date);
           final horaInicio = DateFormat("HH:mm").format(clase.date);
-          final horaFinal = DateFormat(
-            "HH:mm",
-          ).format(clase.date.add(clase.duracion));
+          final horaFinal = DateFormat("HH:mm").format(clase.date.add(clase.duracion));
           final currencyFormatter = NumberFormat.currency(
             locale: 'es_CO',
             name: '',
-
-            decimalDigits: 0, // 👈 así no muestra los decimales
+            decimalDigits: 0,
           );
-
+    
           return Scaffold(
             appBar: AppBar(
               title: Text(clase.nombre, style: textStyle.titleLarge),
@@ -64,46 +61,37 @@ class ClassView extends StatelessWidget {
                     children: [
                       /// Info Card
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 20,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
                               child: Text(
                                 fechaFormateada,
-                                style: textStyle.titleLarge?.copyWith(
-                                  fontSize: 15,
-                                ),
+                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 "$horaInicio - $horaFinal",
-                                style: textStyle.titleLarge?.copyWith(
-                                  fontSize: 15,
-                                ),
+                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 clase.sala,
-                                style: textStyle.titleLarge?.copyWith(
-                                  fontSize: 15,
-                                ),
+                                style: textStyle.titleLarge?.copyWith(fontSize: 15),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
                       ),
-
+    
                       const SizedBox(height: 10),
-
+    
                       /// Progreso
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -113,20 +101,13 @@ class ClassView extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Lugares Disponibles',
-                                  style: textStyle.titleLarge,
-                                ),
-                                Text(
-                                  "${clase.cuposOcupados}/${clase.cupoMaximo}",
-                                ),
+                                Text('Lugares Disponibles', style: textStyle.titleLarge),
+                                Text("${clase.cuposOcupados}/${clase.cupoMaximo}"),
                               ],
                             ),
                             const SizedBox(height: 10),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: LinearProgressIndicator(
                                 value: clase.cuposOcupados / clase.cupoMaximo,
                                 minHeight: 10,
@@ -138,12 +119,10 @@ class ClassView extends StatelessWidget {
                           ],
                         ),
                       ),
-
+    
                       const SizedBox(height: 10),
-
+    
                       /// Profesor
-                      ///
-                      ///
                       Align(
                         alignment: Alignment.topLeft,
                         child: Padding(
@@ -157,29 +136,19 @@ class ClassView extends StatelessWidget {
                           width: double.maxFinite,
                           height: 170,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment
-                                  .spaceBetween, // 👈 importante
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      clase.instructor,
-                                      style: textStyle.titleLarge?.copyWith(
-                                        fontSize: 22,
-                                      ),
-                                    ),
+                                    Text(clase.instructor,
+                                        style: textStyle.titleLarge?.copyWith(fontSize: 22)),
                                     const SizedBox(height: 5),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                      ),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
                                       child: Text(
                                         clase.bioInstructor,
                                         maxLines: 3,
@@ -198,16 +167,11 @@ class ClassView extends StatelessWidget {
                                   child: FilledButton(
                                     onPressed: () {},
                                     style: ButtonStyle().copyWith(
-                                      backgroundColor:
-                                          const WidgetStatePropertyAll(
-                                            AppColors.cafeNoir,
-                                          ),
+                                      backgroundColor: const WidgetStatePropertyAll(AppColors.cafeNoir),
                                     ),
                                     child: Text(
                                       'Ver Perfil',
-                                      style: TextStyle().copyWith(
-                                        color: AppColors.piedra,
-                                      ),
+                                      style: TextStyle().copyWith(color: AppColors.piedra),
                                     ),
                                   ),
                                 ),
@@ -216,8 +180,8 @@ class ClassView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
-
+                      const SizedBox(height: 20),
+    
                       /// Beneficios
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -225,13 +189,8 @@ class ClassView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              child: Text(
-                                'Beneficios',
-                                style: textStyle.titleLarge,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text('Beneficios', style: textStyle.titleLarge),
                             ),
                             const SizedBox(height: 5),
                             Row(
@@ -239,16 +198,12 @@ class ClassView extends StatelessWidget {
                                 CustomCardsType2(
                                   height: 40,
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
                                     child: Center(
-                                      child: Text(
-                                        'Fuerza',
-                                        style: textStyle.titleLarge?.copyWith(
-                                          color: AppColors.almendra,
-                                        ),
-                                      ),
+                                      child: Text('Fuerza',
+                                          style: textStyle.titleLarge?.copyWith(
+                                            color: AppColors.almendra,
+                                          )),
                                     ),
                                   ),
                                 ),
@@ -256,16 +211,12 @@ class ClassView extends StatelessWidget {
                                 CustomCardsType2(
                                   height: 40,
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
                                     child: Center(
-                                      child: Text(
-                                        'Flexibilidad',
-                                        style: textStyle.titleLarge?.copyWith(
-                                          color: AppColors.almendra,
-                                        ),
-                                      ),
+                                      child: Text('Flexibilidad',
+                                          style: textStyle.titleLarge?.copyWith(
+                                            color: AppColors.almendra,
+                                          )),
                                     ),
                                   ),
                                 ),
@@ -273,16 +224,12 @@ class ClassView extends StatelessWidget {
                                 CustomCardsType2(
                                   height: 40,
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
                                     child: Center(
-                                      child: Text(
-                                        'Relajación',
-                                        style: textStyle.titleLarge?.copyWith(
-                                          color: AppColors.almendra,
-                                        ),
-                                      ),
+                                      child: Text('Relajación',
+                                          style: textStyle.titleLarge?.copyWith(
+                                            color: AppColors.almendra,
+                                          )),
                                     ),
                                   ),
                                 ),
@@ -291,8 +238,8 @@ class ClassView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
-
+                      const SizedBox(height: 20),
+    
                       /// Descripción
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -300,36 +247,25 @@ class ClassView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              child: Text(
-                                'Descripción',
-                                style: textStyle.titleLarge,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text('Descripción', style: textStyle.titleLarge),
                             ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   clase.descripcion,
-                                  style: textStyle.titleLarge?.copyWith(
-                                    color: AppColors.almendra,
-                                  ),
+                                  style: textStyle.titleLarge?.copyWith(color: AppColors.almendra),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-
-                      SizedBox(height: 20),
-
+                      const SizedBox(height: 20),
+    
                       /// Qué traer
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -337,87 +273,61 @@ class ClassView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              child: Text(
-                                'Qué traer',
-                                style: textStyle.titleLarge,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text('Qué traer', style: textStyle.titleLarge),
                             ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   'Agua',
-                                  style: textStyle.titleLarge?.copyWith(
-                                    color: AppColors.almendra,
-                                  ),
+                                  style: textStyle.titleLarge?.copyWith(color: AppColors.almendra),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-
-                      SizedBox(height: 20),
-
+                      const SizedBox(height: 20),
+    
                       /// Precio
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Precio por clase',
-                              style: textStyle.titleLarge,
-                            ),
+                            Text('Precio por clase', style: textStyle.titleLarge),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   '\$${currencyFormatter.format(int.parse(clase.price))}',
-
-                                  style: textStyle.titleLarge?.copyWith(
-                                    color: AppColors.almendra,
-                                  ),
+                                  style: textStyle.titleLarge?.copyWith(color: AppColors.almendra),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-
-                      SizedBox(height: 20),
-
+                      const SizedBox(height: 20),
+    
                       /// Botones acción
                       Column(
                         children: [
                           FilledButton(
                             onPressed: () {
-                              context.push(
-                                '/class/$classId/reservation/$classId',
-                              );
+                              context.push('/Home/class/$classId/reservation/$classId');
                             },
                             style: ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(
-                                AppColors.cafeNoir,
-                              ),
-
+                              backgroundColor: const WidgetStatePropertyAll(AppColors.cafeNoir),
                               padding: const WidgetStatePropertyAll(
                                 EdgeInsets.symmetric(vertical: 20),
                               ),
-                              fixedSize: WidgetStatePropertyAll(Size(300, 60)),
+                              fixedSize: const WidgetStatePropertyAll(Size(300, 60)),
                               shape: WidgetStatePropertyAll(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
@@ -426,66 +336,12 @@ class ClassView extends StatelessWidget {
                             ),
                             child: Text(
                               'Reservar',
-                              style: textStyle.titleLarge?.copyWith(
-                                color: AppColors.piedra,
-                              ),
+                              style: textStyle.titleLarge?.copyWith(color: AppColors.piedra),
                             ),
                           ),
-
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     appRouter.push(
-                          //       '/Home/class/$classId/reservation/$classId',
-                          //     );
-                          //   },
-                          //   child: Container(
-                          //     alignment: Alignment.center,
-                          //     width: 120,
-                          //     height: 60,
-                          //     decoration: BoxDecoration(
-                          //       color: Colors.black,
-                          //       borderRadius: BorderRadius.circular(8),
-                          //       border: Border.all(color: Colors.grey),
-                          //     ),
-                          //     child: const Text(
-                          //       'Reservar',
-                          //       style: TextStyle(color: Colors.white),
-                          //     ),
-                          //   ),
-                          // ),
-                          // const SizedBox(height: 10),
-                          // Container(
-                          //   alignment: Alignment.center,
-                          //   width: 150,
-                          //   height: 60,
-                          //   decoration: BoxDecoration(
-                          //     color: Colors.black,
-                          //     borderRadius: BorderRadius.circular(8),
-                          //     border: Border.all(color: Colors.grey),
-                          //   ),
-                          //   child: const Text(
-                          //     'Invitar Acompañante',
-                          //     style: TextStyle(color: Colors.white),
-                          //   ),
-                          // ),
-                          // const SizedBox(width: 10),
-                          // Container(
-                          //   alignment: Alignment.center,
-                          //   width: 120,
-                          //   height: 60,
-                          //   decoration: BoxDecoration(
-                          //     color: Colors.black,
-                          //     borderRadius: BorderRadius.circular(8),
-                          //     border: Border.all(color: Colors.grey),
-                          //   ),
-                          //   child: const Text(
-                          //     'Cancelar',
-                          //     style: TextStyle(color: Colors.white),
-                          //   ),
-                          // ),
                         ],
                       ),
-
+    
                       const SizedBox(height: 80),
                     ],
                   ),
@@ -494,9 +350,11 @@ class ClassView extends StatelessWidget {
             ),
           );
         } else if (state is ClassError) {
-          return Center(child: Text(state.message));
+          return Scaffold(
+            body: Center(child: Text(state.message)),
+          );
         }
-        return const SizedBox.shrink();
+        return const Scaffold(body: SizedBox.shrink());
       },
     );
   }

@@ -11,6 +11,7 @@ import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/cred
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_state.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/transactions/transaction_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 
@@ -160,7 +161,7 @@ class _TotalPay extends StatelessWidget {
             ],
           ),
 
-          ReserveButton(classe: classe),
+          ReserveButton(classe: classe,),
         ],
       ),
     );
@@ -361,75 +362,109 @@ class ReserveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TransactionCubit, TransactionState>(
-      listener: (context, state) {
-        if (state.status == TransactionStatus.loaded) {
-          context.go('/Home/succesPay');
-        } else if (state.status == TransactionStatus.error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.errorMessage} ❌')),
-            //! LUEGO NAVEGA A VIEW DE PAGO CON ERROR
-          );
-        }
-      },
-      builder: (context, state) {
-        final isLoading = state.status == TransactionStatus.loading;
+    return MultiBlocListener(
+      listeners: [
+        // 1. Listener de transacción
+        BlocListener<TransactionCubit, TransactionState>(
+          listener: (context, state) {
+            if (state.status == TransactionStatus.loaded) {
+              final paymentState = context.read<PaymentCubit>().state;
 
-        return FilledButton(
-          onPressed: isLoading
-              ? null
-              : () {
-                  final paymentState = context.read<PaymentCubit>().state;
+              if (paymentState is PaymentSelected) {
+                final method = paymentState.method;
+                final paymentMethod = method.type.name;
+                final cardId = method.card?.id ;
 
-                  if (paymentState is PaymentSelected) {
-                    final method = paymentState.method;
+                // 👉 Cuando la transacción termine, creamos la reserva
+                context.read<ReservationCubit>().createReservation(
+                      ocurrenceId: classe.ocurrenceId,
+                      paymentMethod: paymentMethod,
+                      cardId: cardId!
+                    );
+              }
+            } else if (state.status == TransactionStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error en transacción: ${state.errorMessage} ❌')),
+              );
+            }
+          },
+        ),
 
-                    String? paymentSourceId;
+        // 2. Listener de reserva
+        BlocListener<ReservationCubit, ReservationState>(
+          listener: (context, state) {
+            if (state.status == ReservationStatus.loaded) {
+              // 👉 Navegamos solo cuando la reserva esté confirmada
+              context.go('/Home/succesPay');
+            } else if (state.status == ReservationStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error al crear reserva: ${state.errorMessage} ❌')),
+              );
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<TransactionCubit, TransactionState>(
+        builder: (context, state) {
+          final isLoading = state.status == TransactionStatus.loading;
 
-                    switch (method.type) {
-                      case PaymentMethodType.credit:
-                        paymentSourceId = 'CREDITS';
-                        break;
-                      case PaymentMethodType.card:
-                        paymentSourceId =
-                            method.card?.sourceId; // tarjeta seleccionada
-                        break;
-                      case PaymentMethodType.newCard:
-                        paymentSourceId = null; // flujo de nueva tarjeta
-                        break;
+          return FilledButton(
+            onPressed: isLoading
+                ? null
+                : () {
+                    final paymentState = context.read<PaymentCubit>().state;
+
+                    if (paymentState is PaymentSelected) {
+                      final method = paymentState.method;
+
+                      String? paymentSourceId;
+
+                      switch (method.type) {
+                        case PaymentMethodType.credit:
+                          paymentSourceId = 'CREDITS';
+                          break;
+                        case PaymentMethodType.card:
+                          paymentSourceId = method.card?.sourceId;
+                          break;
+                        case PaymentMethodType.newCard:
+                          paymentSourceId = null;
+                          break;
+                      }
+
+                      // 👉 Disparamos la transacción primero
+                      context.read<TransactionCubit>().dotransaction(
+                            type: 'plan',
+                            typeId: '2',
+                            amount: int.parse(classe.price),
+                            currency: 'COP',
+                            method: method.type.name,
+                            paymentSourceId: paymentSourceId ?? '',
+                          );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Selecciona un método de pago'),
+                        ),
+                      );
                     }
-
-                    context.read<TransactionCubit>().dotransaction(
-                      type: 'plan',
-                      typeId: '2',
-                      amount: int.parse(classe.price),
-                      currency: 'COP',
-                      method: method.type.name,
-                      paymentSourceId: paymentSourceId ?? '',
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Selecciona un método de pago'),
-                      ),
-                    );
-                  }
-                },
-          style: const ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(AppColors.cafeNoir),
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-              : const Text('Reservar'),
-        );
-      },
+                  },
+            style: const ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll(AppColors.cafeNoir),
+            ),
+            child: isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text('Reservar'),
+          );
+        },
+      ),
     );
   }
 }
+

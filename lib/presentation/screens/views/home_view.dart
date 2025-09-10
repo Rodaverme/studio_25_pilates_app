@@ -206,7 +206,7 @@ class _NextClass extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "Hoy, ${clase.date.hour.toString().padLeft(2, '0')}:${clase.date.minute.toString().padLeft(2, '0')}",
+                      "Hoy, ${clase.starTime}",
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -278,18 +278,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                   LessonsToday(
                     pilatesClass: widget.list[first],
                     textStyle: textStyle,
-                    onTap: () async {
-                      await context.push(
-                        '/class/${widget.list[first].id}',
-                      );
-                      if (!mounted)
-                        return; // 👈 evita usar context si el widget fue desmontado
-                      final planState = context.read<PlanCubit>().state;
-                      if (planState is AllPlansLoaded) {
-                        context.read<ClassCubit>().loadClassesByPlan(
-                          planState.myPlan!.id,
-                        );
-                      }
+                    onTap: ()  {
+                      
+                       context.push('/Home/class/${widget.list[first].id}');
                     },
                     instructor: widget.list[first].instructor,
                     level: widget.list[first].nivel,
@@ -299,18 +290,8 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                     LessonsToday(
                       pilatesClass: widget.list[second],
                       textStyle: textStyle,
-                      onTap: () async {
-                        await context.push(
-                          '/class/${widget.list[first].id}',
-                        );
-                        if (!mounted)
-                          return; // 👈 evita usar context si el widget fue desmontado
-                        final planState = context.read<PlanCubit>().state;
-                        if (planState is AllPlansLoaded) {
-                          context.read<ClassCubit>().loadClassesByPlan(
-                            planState.myPlan!.id,
-                          );
-                        }
+                      onTap: ()  {
+                         context.push('/Home/class/${widget.list[second].id}');
                       },
                       instructor: widget.list[second].instructor,
                       level: widget.list[second].nivel,

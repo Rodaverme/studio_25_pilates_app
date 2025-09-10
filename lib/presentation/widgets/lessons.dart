@@ -22,10 +22,9 @@ class LessonsToday extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final horaInicio =
-        "${pilatesClass.date.hour.toString().padLeft(2, '0')}:${pilatesClass.date.minute.toString().padLeft(2, '0')}";
+        pilatesClass.starTime;
     final horaFin =
-        "${pilatesClass.date.add(pilatesClass.duracion).hour.toString().padLeft(2, '0')}:"
-        "${pilatesClass.date.add(pilatesClass.duracion).minute.toString().padLeft(2, '0')}";
+       pilatesClass.endTime;
 
     
   

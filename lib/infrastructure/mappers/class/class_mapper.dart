@@ -18,5 +18,6 @@ class ClassMapper {
         price: classes.price,
         endTime: classes.nextOccurrence?.endTime ?? '' ,
         starTime: classes.nextOccurrence?.startTime  ?? '',
+        ocurrenceId: classes.nextOccurrence!.id
       );
 }
