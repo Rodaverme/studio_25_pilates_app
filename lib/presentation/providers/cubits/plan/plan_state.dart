@@ -1,28 +1,38 @@
 part of 'plan_cubit.dart';
 
-abstract class PlanState {}
+enum PlanStatus { initial, loading, loaded, canceled, error }
 
-class PlanInitial extends PlanState {}
-
-class PlanLoading extends PlanState {}
-
-class PlanStatusLoaded extends PlanState {
-  final StatusPlan statusPlan;
-
-  PlanStatusLoaded({required this.statusPlan});
-}
-
-class AllPlansLoaded extends PlanState {
+class PlanState extends Equatable {
+  final PlanStatus status;
   final List<Plan> plans;
   final Plan? myPlan;
   final StatusPlan? statusPlan;
+  final String? errorMessage;
 
-  AllPlansLoaded({required this.plans, this.myPlan, this.statusPlan});
-}
+  const PlanState({
+    this.status = PlanStatus.initial,
+    this.plans = const [],
+    this.myPlan,
+    this.statusPlan,
+    this.errorMessage,
+  });
 
-class PlanCanceled extends PlanState {}
+  PlanState copyWith({
+    PlanStatus? status,
+    List<Plan>? plans,
+    Plan? myPlan,
+    StatusPlan? statusPlan,
+    String? errorMessage,
+  }) {
+    return PlanState(
+      status: status ?? this.status,
+      plans: plans ?? this.plans,
+      myPlan: myPlan ?? this.myPlan,
+      statusPlan: statusPlan ?? this.statusPlan,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
 
-class PlanError extends PlanState {
-  final String message;
-  PlanError(this.message);
+  @override
+  List<Object?> get props => [status, plans, myPlan, statusPlan, errorMessage];
 }

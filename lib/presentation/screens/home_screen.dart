@@ -15,28 +15,30 @@ class HomeScreen extends StatelessWidget {
     final planCubit = context.read<PlanCubit>();
     final instructorCubit = context.read<InstructorCubit>();
     final levelCubit = context.read<LevelCubit>();
-  
 
     await Future.wait([
-      planCubit.getAllPlans(),
+      planCubit.loadPlans(),
+      planCubit.loadMyPlan(),
+      planCubit.loadStatusPlan(),
       instructorCubit.loadInstructors(),
       levelCubit.loadLevels(),
-   
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
     final planState = context.watch<PlanCubit>().state;
-   
-    
-    final bool isPlanLoaded = planState is AllPlansLoaded;
-   
+
+    // ignore: unrelated_type_equality_checks
+    final bool isPlanLoaded = planState.status == PlanStatus.loaded;
+    // ignore: unrelated_type_equality_checks
+    final bool isMyPlanLoaded = planState.status == PlanStatus.loaded;
+    final bool isStatusPlanLoaded = planState.status == PlanStatus.loaded;
 
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => _refreshData(context),
-        child: (isPlanLoaded  )
+        child: (isPlanLoaded && isMyPlanLoaded && isStatusPlanLoaded)
             ? childView
             : Center(
                 child: ListView(

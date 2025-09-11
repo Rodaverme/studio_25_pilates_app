@@ -105,4 +105,10 @@ class ClassDatasourceImpl extends ClassDatasource {
       throw Exception('Error inesperado: $e');
     }
   }
+  
+  @override
+  Future<PilatesClass> getClassReserved() {
+    // TODO: implement getClassReserved
+    throw UnimplementedError();
+  }
 }

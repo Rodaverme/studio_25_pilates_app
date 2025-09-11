@@ -11,8 +11,10 @@ class CalendarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: Text('Calendario')),
+      appBar: AppBar(title: const Text('Calendario')),
       body: Stack(
         children: [
           Positioned.fill(
@@ -20,51 +22,55 @@ class CalendarView extends StatelessWidget {
           ),
           Column(
             children: [
+              /// 📅 Calendario
               WeekCalendar(
                 onDaySelected: (day) {
-                  context.read<ClassCubit>().loadClasses(day);
+                  context.read<ClassCubit>().loadAllClasses(day);
                 },
               ),
+
+              /// 📌 Lista de clases
               Expanded(
                 child: BlocBuilder<ClassCubit, ClassState>(
                   builder: (context, state) {
-                    if (state is ClassLoading) {
+                    if (state.status == ClassStatus.loading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is ClassLoaded) {
-                      if (state.classes.isEmpty) {
+                    }
+
+                    if (state.status == ClassStatus.loaded) {
+                      if (state.allClasses.isEmpty) {
                         return const Center(
                           child: Text("No hay clases para este día"),
                         );
                       }
-                      return ListView.builder(
-                        itemCount: state.classes.length,
 
+                      return ListView.separated(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: state.allClasses.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 20),
                         itemBuilder: (context, index) {
-                          final textStyle = Theme.of(context).textTheme;
-                          final c = state.classes[index];
+                          final c = state.allClasses[index];
 
-                          return Column(
-                            children: [
-                              FadeInLeftBig(
-                                child: LessonsToday(
-                                  pilatesClass: c,
-                                  textStyle: textStyle,
-                                  onTap: () =>
-                                      context.push('/Home/class/${c.id}'),
-                                  instructor: c.instructor,
-                                  level: c.nivel,
-                                ),
-                              ),
-
-                              SizedBox(height: 20),
-                            ],
+                          return FadeInLeftBig(
+                            child: LessonsToday(
+                              pilatesClass: c,
+                              textStyle: textStyle,
+                              onTap: () => context.push('/Home/class/${c.id}'),
+                              instructor: c.instructor,
+                              level: c.nivel,
+                            ),
                           );
                         },
                       );
-                    } else if (state is ClassError) {
-                      return Center(child: Text(state.message));
                     }
-                    return const Center(child: Text("Selecciona un día"));
+
+                    if (state.status == ClassStatus.error) {
+                      return Center(child: Text(state.errorMessage!));
+                    }
+
+                    return const Center(
+                      child: Text("Selecciona un día para ver las clases"),
+                    );
                   },
                 ),
               ),

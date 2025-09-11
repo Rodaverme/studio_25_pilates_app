@@ -24,10 +24,10 @@ class ReservationView extends StatelessWidget {
 
     return BlocBuilder<ClassCubit, ClassState>(
       builder: (context, state) {
-        if (state is ClassLoading) {
+        if (state.status == ClassStatus.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is ClassByIdLoaded) {
-          final PilatesClass classe = state.clase;
+        } else if (state.status == ClassStatus.loaded) {
+          final PilatesClass? classe = state.clase;
           final textStyle = Theme.of(context).textTheme;
           final statePay = context.watch<PaymentCubit>().state;
           final currencyFormatter = NumberFormat.currency(
@@ -62,7 +62,7 @@ class ReservationView extends StatelessWidget {
                               // 👉 Resumen
                               _SumaryClass(
                                 textStyle: textStyle,
-                                classe: classe,
+                                classe: classe!,
                               ),
                               const SizedBox(height: 40),
                               Text(
@@ -105,8 +105,8 @@ class ReservationView extends StatelessWidget {
               ],
             ),
           );
-        } else if (state is ClassError) {
-          return Center(child: Text(state.message));
+        } else if (state.status == ClassStatus.error) {
+          return Center(child: Text(state.errorMessage!));
         }
         return const SizedBox.shrink();
       },

@@ -8,45 +8,47 @@ part 'class_state.dart';
 class ClassCubit extends Cubit<ClassState> {
   final ClassRespositoryImpl repository;
 
-  ClassCubit(this.repository) : super(ClassInitial());
+  ClassCubit(this.repository) : super(ClassState());
 
-  Future<void> loadClasses(DateTime day) async {
-    emit(ClassLoading());
+  Future<void> loadAllClasses(DateTime day) async {
+    emit(state.copyWith(status: ClassStatus.loading));
     try {
-      final classes = await repository.getClassesByDay(
-        day,
-      ); // usa getAllClasses+filter
-      emit(ClassLoaded(classes, day));
-    } catch (e, st) {
-      // Log útil en debug
-      // ignore: avoid_print
-      print('❌ loadClasses error: $e\n$st');
-      emit(const ClassError(message: 'Error cargando clases'));
+      final classes = await repository.getClassesByDay(day);
+      emit(
+        state.copyWith(
+          status: ClassStatus.loaded,
+          allClasses: classes,
+          selectedDate: day,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(status: ClassStatus.error, errorMessage: e.toString()),
+      );
     }
   }
 
-  Future<void> loadClassesById(String id) async {
-    emit(ClassByIdLoading());
+  Future<void> loadClasesById(String id) async {
+    emit(state.copyWith(status: ClassStatus.loading));
     try {
       final clase = await repository.getClassesById(id);
-      emit(ClassByIdLoaded(clase: clase));
-    } catch (e, st) {
-      // ignore: avoid_print
-      print('❌ loadClassesById error: $e\n$st');
-      emit(const ClassError(message: 'Error encontrando la clase'));
+      emit(state.copyWith(status: ClassStatus.loaded, clase: clase));
+    } catch (e) {
+      emit(
+        state.copyWith(status: ClassStatus.error, errorMessage: e.toString()),
+      );
     }
   }
 
-  Future<void> loadClassesByPlan(int id) async {
-    emit(ClassByPlanLoading());
+  Future<void> loadPlanClasses(int planId) async {
+    emit(state.copyWith(status: ClassStatus.loading));
     try {
-      final clasees = await repository.getClassesByPlan(id);
-      emit(ClassByPlanIdLoaded(classPlan: clasees));
-    } catch (e,st) {
-      // ignore: avoid_print
-       print('❌ loadClassesByPlan error: $e\n$st');
-    emit(const ClassError(message: 'Error cargando clases del plan'));
-      
+      final plan = await repository.getClassesByPlan(planId);
+      emit(state.copyWith(status: ClassStatus.loaded, planClasses: plan));
+    } catch (e) {
+      emit(
+        state.copyWith(status: ClassStatus.error, errorMessage: e.toString()),
+      );
     }
   }
 }

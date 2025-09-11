@@ -1,46 +1,52 @@
 part of 'class_cubit.dart';
 
-abstract class ClassState extends Equatable {
-  const ClassState();
+enum ClassStatus { initial, loading, loaded, error }
+
+class ClassState extends Equatable {
+  final ClassStatus status;
+  final List<PilatesClass> allClasses;
+  final List<PilatesClass> planClasses;
+  final List<PilatesClass> reservedClasses;
+  final PilatesClass? clase;
+  final DateTime? selectedDate;
+  final String? errorMessage;
+
+  const ClassState({
+    this.clase,
+    this.status = ClassStatus.initial,
+    this.allClasses = const [],
+    this.planClasses = const [],
+    this.reservedClasses = const [],
+    this.selectedDate,
+    this.errorMessage,
+  });
+  ClassState copyWith({
+    ClassStatus? status,
+    PilatesClass? clase,
+    List<PilatesClass>? allClasses,
+    List<PilatesClass>? reservedClasses,
+    List<PilatesClass>? planClasses,
+    DateTime? selectedDate,
+    String? errorMessage,
+  }) {
+    return ClassState(
+      clase: clase ?? this.clase,
+      status: status ?? this.status,
+      allClasses: allClasses ?? this.allClasses,
+      reservedClasses: reservedClasses ?? this.reservedClasses,
+      planClasses: planClasses ?? this.planClasses,
+      selectedDate: selectedDate ?? this.selectedDate,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
 
   @override
-  List<Object?> get props => [];
-}
-
-final class ClassInitial extends ClassState {}
-
-final class ClassLoading extends ClassState {}
-
-final class ClassByIdLoading extends ClassState {}
-
-final class ClassByPlanLoading extends ClassState {}
-
-class ClassLoaded extends ClassState {
-  final List<PilatesClass> classes;
-  final DateTime selectedDate;
-  const ClassLoaded(this.classes, this.selectedDate);
-
-  @override
-  List<Object?> get props => [classes, selectedDate];
-}
-
-class ClassByIdLoaded extends ClassState {
-  final PilatesClass clase;
-  const ClassByIdLoaded({required this.clase});
-
-  @override
-  List<Object?> get props => [clase];
-}
-
-class ClassByPlanIdLoaded extends ClassState {
-  final List<PilatesClass> classPlan;
-  const ClassByPlanIdLoaded({required this.classPlan});
-}
-
-class ClassError extends ClassState {
-  final String message;
-  const ClassError({required this.message});
-
-  @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [
+    status,
+    allClasses,
+    reservedClasses,
+    planClasses,
+    selectedDate,
+    errorMessage,
+  ];
 }

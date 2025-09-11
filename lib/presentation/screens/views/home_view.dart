@@ -18,11 +18,15 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   @override
-  void initState() {
+  void initState()  {
     super.initState();
     final planState = context.read<PlanCubit>().state;
-    if (planState is AllPlansLoaded) {
-      context.read<ClassCubit>().loadClassesByPlan(planState.myPlan!.id);
+    if (planState.status == PlanStatus.loaded && planState.myPlan != null) {
+      context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
+      // final token = await TokenService.getToken();
+      // await NotificationRepositoryImpl(
+      //   datasource: NotificationsDatasourceImpl(),
+      // ).sendToken(token!);
     }
   }
 
@@ -30,7 +34,6 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     final client = context.watch<AuthCubit>().state.client;
     final textStyle = Theme.of(context).textTheme;
-
     return Scaffold(
       appBar: AppBar(),
       body: Stack(
@@ -39,120 +42,130 @@ class _HomeViewState extends State<HomeView> {
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
 
+
+             // final token = await TokenService.getToken();
+      // await NotificationRepositoryImpl(
+      //   datasource: NotificationsDatasourceImpl(),
+      // ).sendToken(token!);
           BlocBuilder<PlanCubit, PlanState>(
-            builder: (context, state) {
-              if (state is PlanError) {
-                return Center(child: Text('Error :${state.message}'));
+            builder: (context, planState) {
+
+              if (planState.status == PlanStatus.error) {
+                return Center(child: Text('Error: ${planState.errorMessage}'));
               }
 
-              if (state is AllPlansLoaded) {
+              if (planState.status == PlanStatus.loaded &&
+                  planState.myPlan != null) {
                 return BlocBuilder<ClassCubit, ClassState>(
                   builder: (context, classState) {
-                    if (classState is ClassByPlanLoading) {
+                    if (classState.status == ClassStatus.loading) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    if (classState is ClassByPlanIdLoaded) {
-                      final clases = classState.classPlan;
-
-                      if (clases.isEmpty) {
-                        return const Center(
-                          child: Text("No tienes clases en este plan"),
-                        );
-                      }
-
-                      return ListView(
-                        padding: EdgeInsets.zero,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    'Hola, ${client?.name}',
-                                    style: textStyle.titleLarge,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    _InfoCard(
-                                      label: 'Clases este mes',
-                                      value: '12',
-                                    ),
-                                    SizedBox(width: 20),
-                                    _InfoCard(value: '4', label: 'racha'),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    'Mi Próxima Clase',
-                                    style: textStyle.titleLarge,
-                                  ),
-                                ),
-                                _NextClass(
-                                  textStyle: textStyle,
-                                  clase: clases.first,
-                                ),
-                                const SizedBox(height: 20),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Text('Clases de Hoy'),
-                                ),
-                                SizedBox(
-                                  height: 380,
-                                  child: ClassesCarousel(list: clases),
-                                ),
-                                const SizedBox(height: 10),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Text('Acciones Rápidas'),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text('Mis Clases'),
-                                      ),
-                                      const Spacer(),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text('Calendario'),
-                                      ),
-                                      const Spacer(),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text('Tarjetas'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                    if (classState.status == ClassStatus.error) {
+                      return Center(
+                        child: Text("Error: ${classState.errorMessage}"),
                       );
                     }
 
-                    if (classState is ClassError) {
-                      return Center(child: Text(classState.message));
+                    final planClases = classState.planClasses;
+                    // final reserverdClases = classState.reservedClasses;
+                    // final allClases = classState.allClasses;
+
+                    if (planClases.isEmpty) {
+                      return const Center(
+                        child: Text("No tienes clases en este plan"),
+                      );
                     }
 
-                    return const Center(child: CircularProgressIndicator());
+                    return ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: Text(
+                                  'Hola, ${client?.name}',
+                                  style: textStyle.titleLarge,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  _InfoCard(
+                                    label: 'Clases este mes',
+                                    value: '12',
+                                  ),
+                                  SizedBox(width: 20),
+                                  _InfoCard(value: '4', label: 'racha'),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: Text(
+                                  'Mi Próxima Clase',
+                                  style: textStyle.titleLarge,
+                                ),
+                              ),
+
+                              //!tiene que ser mi proxima  reserva
+                              _NextClass(
+                                textStyle: textStyle,
+                                clase: planClases.first,
+                              ),
+                              const SizedBox(height: 20),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text('Clases de Hoy'),
+                              ),
+                              //!tengo que separarlo en todas las clases y clases del plan
+                              SizedBox(
+                                height: 380,
+                                child: ClassesCarousel(list: planClases),
+                              ),
+                              const SizedBox(height: 10),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text('Acciones Rápidas'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: Row(
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Mis Clases'),
+                                    ),
+                                    const Spacer(),
+                                    TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Calendario'),
+                                    ),
+                                    const Spacer(),
+                                    TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Tarjetas'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
                   },
                 );
               }
@@ -278,9 +291,8 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                   LessonsToday(
                     pilatesClass: widget.list[first],
                     textStyle: textStyle,
-                    onTap: ()  {
-                      
-                       context.push('/Home/class/${widget.list[first].id}');
+                    onTap: () {
+                      context.push('/Home/class/${widget.list[first].id}');
                     },
                     instructor: widget.list[first].instructor,
                     level: widget.list[first].nivel,
@@ -290,8 +302,8 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                     LessonsToday(
                       pilatesClass: widget.list[second],
                       textStyle: textStyle,
-                      onTap: ()  {
-                         context.push('/Home/class/${widget.list[second].id}');
+                      onTap: () {
+                        context.push('/Home/class/${widget.list[second].id}');
                       },
                       instructor: widget.list[second].instructor,
                       level: widget.list[second].nivel,

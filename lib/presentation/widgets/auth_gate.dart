@@ -20,11 +20,16 @@ class AuthGate extends StatelessWidget {
 
         // siempre deja todo limpio primero
        
-        plan.getAllPlans();
+        plan.loadPlans();
+        plan.loadMyPlan();
+        plan.loadStatusPlan();
+        
        
         if (state.isAuthenticated) {
           // ya hay token nuevo en SecureStorage -> pedimos datos frescos
-          await plan.getAllPlans();
+          await plan.loadPlans();
+          await plan.loadMyPlan();
+          await plan.loadStatusPlan();
          
         }
       },

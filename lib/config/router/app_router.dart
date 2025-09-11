@@ -37,7 +37,7 @@ final appRouter = GoRouter(
                 return BlocProvider(
                   create: (_) => ClassCubit(
                     ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
-                  )..loadClassesById(classId),
+                  )..loadClasesById(classId),
                   child: ClassView(classId: classId),
                 );
               },
@@ -50,7 +50,7 @@ final appRouter = GoRouter(
                     return BlocProvider(
                       create: (_) => ClassCubit(
                         ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
-                      )..loadClassesById(classId),
+                      )..loadClasesById(classId),
                       child: ReservationView(classId: classId),
                     );
                   },

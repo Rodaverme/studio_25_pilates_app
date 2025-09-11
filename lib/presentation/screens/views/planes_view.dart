@@ -24,11 +24,11 @@ class PlanesView extends StatelessWidget {
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
              
-              if (state is PlanError) {
-                return Center(child: Text("Error: ${state.message}"));
+              if (state.status == PlanStatus.error) {
+                return Center(child: Text("Error: ${state.errorMessage}"));
               }
     
-              if (state is AllPlansLoaded) {
+              if (state.status == PlanStatus.loaded) {
                 final plans = state.plans;
                 final myPlan = state.myPlan;
                 final status = state.statusPlan;
