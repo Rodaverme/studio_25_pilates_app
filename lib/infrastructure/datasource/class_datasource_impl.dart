@@ -3,7 +3,9 @@ import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/class_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/class/class_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/mappers/class/reserved_class_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/reservation/reservation_response.dart';
 
 class ClassDatasourceImpl extends ClassDatasource {
   final Dio dio = DioClient.Dio_create();
@@ -105,10 +107,34 @@ class ClassDatasourceImpl extends ClassDatasource {
       throw Exception('Error inesperado: $e');
     }
   }
-  
+
   @override
-  Future<PilatesClass> getClassReserved() {
-    // TODO: implement getClassReserved
-    throw UnimplementedError();
+  Future<List<PilatesClass>> getClassReserved() async {
+    try {
+      final response = await dio.get('/api/reservations');
+      print("Reservas crudas: ${response.data}");
+      if (response.statusCode == 200 && response.data != null) {
+        final rawData = response.data; // 👈 aquí está la lista
+
+        final List<dynamic> data = rawData as List<dynamic>;
+
+        final List<PilatesClass> classes = data
+            .map(
+              (json) => ReservedClassMapper.resevartionToClassEntity(
+                ReservationResponse.fromJson(json),
+              ),
+            )
+            .toList();
+
+        return classes;
+      }
+      throw Exception('Error al obtener las clases');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener todas las clases  ${e.response?.data ?? e.message} ',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 }

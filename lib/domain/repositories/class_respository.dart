@@ -4,6 +4,6 @@ abstract class ClassRespository {
   Future<List<PilatesClass>> getAllClasses();
   Future<List<PilatesClass>> getClassesByDay(DateTime day);
   Future<PilatesClass> getClassesById(String id);
-  Future<List<PilatesClass>>getClassesByPlan(int id);
-  Future<PilatesClass>getClassReserved();
+  Future<List<PilatesClass>> getClassesByPlan(int id);
+  Future<List<PilatesClass>> getClassReserved();
 }

@@ -27,7 +27,7 @@ class ClassRespositoryImpl extends ClassRespository {
   }
 
   @override
-  Future<PilatesClass> getClassReserved() {
+  Future <List <PilatesClass>> getClassReserved() {
     return datasource.getClassReserved();
   }
 }

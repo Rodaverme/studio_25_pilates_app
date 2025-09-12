@@ -21,8 +21,10 @@ class _HomeViewState extends State<HomeView> {
   void initState()  {
     super.initState();
     final planState = context.read<PlanCubit>().state;
+    context.read<ClassCubit>().loadReservedClasses();
     if (planState.status == PlanStatus.loaded && planState.myPlan != null) {
       context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
+     
       // final token = await TokenService.getToken();
       // await NotificationRepositoryImpl(
       //   datasource: NotificationsDatasourceImpl(),
@@ -58,6 +60,7 @@ class _HomeViewState extends State<HomeView> {
                   planState.myPlan != null) {
                 return BlocBuilder<ClassCubit, ClassState>(
                   builder: (context, classState) {
+
                     if (classState.status == ClassStatus.loading) {
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -69,7 +72,7 @@ class _HomeViewState extends State<HomeView> {
                     }
 
                     final planClases = classState.planClasses;
-                    // final reserverdClases = classState.reservedClasses;
+                    final reserverdClases = classState.reservedClasses;
                     // final allClases = classState.allClasses;
 
                     if (planClases.isEmpty) {

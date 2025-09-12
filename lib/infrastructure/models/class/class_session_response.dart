@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/instructor_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_nivel_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/room/room_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
 
 List<ClassSessionResponse> classSessionResponseFromJson(String str) =>
     List<ClassSessionResponse>.from(
@@ -31,9 +32,9 @@ class ClassSessionResponse {
   DateTime updatedAt;
   dynamic deletedAt;
   ClassLevelResponse? classLevel;
-  InstructorResponse?instructor;
+  InstructorResponse? instructor;
   RoomResponse? room;
-  NextOccurrence? nextOccurrence;
+  OccurrenceResponse? nextOccurrence;
 
   ClassSessionResponse({
     required this.id,
@@ -51,7 +52,7 @@ class ClassSessionResponse {
     required this.classLevel,
     required this.instructor,
     required this.room,
-    required this.nextOccurrence
+    required this.nextOccurrence,
   });
 
   factory ClassSessionResponse.fromJson(Map<String, dynamic> json) {
@@ -86,112 +87,38 @@ class ClassSessionResponse {
       updatedAt: _asDate(json["updated_at"]),
       deletedAt: json["deleted_at"],
       classLevel: ClassLevelResponse.fromJson(
-        (json["class_level"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
+        (json["class_level"] ?? const <String, dynamic>{})
+            as Map<String, dynamic>,
       ),
       instructor: InstructorResponse.fromJson(
-        (json["instructor"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
+        (json["instructor"] ?? const <String, dynamic>{})
+            as Map<String, dynamic>,
       ),
       room: RoomResponse.fromJson(
         (json["room"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
       ),
       nextOccurrence: json["next_occurrence"] != null
-          ? NextOccurrence.fromJson(json["next_occurrence"])
+          ? OccurrenceResponse.fromJson(json["next_occurrence"])
           : null,
-    
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "description": description,
-        "visibility": visibility,
-        "class_level_id": classLevelId,
-        "instructor_id": instructorId,
-        "room_id": roomId,
-        "price": price,
-        "capacity": capacity,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "deleted_at": deletedAt,
-        "class_level": classLevel?.toJson(),
-        "instructor": instructor?.toJson(),
-        "room": room?.toJson(),
-        "next_occurrence": nextOccurrence?.toJson(),
-      };
+    "id": id,
+    "title": title,
+    "description": description,
+    "visibility": visibility,
+    "class_level_id": classLevelId,
+    "instructor_id": instructorId,
+    "room_id": roomId,
+    "price": price,
+    "capacity": capacity,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "deleted_at": deletedAt,
+    "class_level": classLevel?.toJson(),
+    "instructor": instructor?.toJson(),
+    "room": room?.toJson(),
+    "next_occurrence": nextOccurrence?.toJson(),
+  };
 }
-
-
-class NextOccurrence {
-    int id;
-    String classSessionId;
-    String recurringScheduleId;
-    dynamic specialScheduleId;
-    DateTime date;
-    String startTime;
-    String endTime;
-    int capacity;
-    String price;
-    bool isSpecial;
-    bool isCancelled;
-    String reservedCount;
-    DateTime createdAt;
-    DateTime updatedAt;
-    dynamic deletedAt;
-
-    NextOccurrence({
-        required this.id,
-        required this.classSessionId,
-        required this.recurringScheduleId,
-        required this.specialScheduleId,
-        required this.date,
-        required this.startTime,
-        required this.endTime,
-        required this.capacity,
-        required this.price,
-        required this.isSpecial,
-        required this.isCancelled,
-        required this.reservedCount,
-        required this.createdAt,
-        required this.updatedAt,
-        required this.deletedAt,
-    });
-
-    factory NextOccurrence.fromJson(Map<String, dynamic> json) => NextOccurrence(
-        id: json["id"],
-        classSessionId: json["class_session_id"],
-        recurringScheduleId: json["recurring_schedule_id"],
-        specialScheduleId: json["special_schedule_id"],
-        date: DateTime.parse(json["date"]),
-        startTime: json["start_time"],
-        endTime: json["end_time"],
-        capacity: json["capacity"],
-        price: json["price"],
-        isSpecial: json["is_special"],
-        isCancelled: json["is_cancelled"],
-        reservedCount: json["reserved_count"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        deletedAt: json["deleted_at"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "class_session_id": classSessionId,
-        "recurring_schedule_id": recurringScheduleId,
-        "special_schedule_id": specialScheduleId,
-        "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-        "start_time": startTime,
-        "end_time": endTime,
-        "capacity": capacity,
-        "price": price,
-        "is_special": isSpecial,
-        "is_cancelled": isCancelled,
-        "reserved_count": reservedCount,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "deleted_at": deletedAt,
-    };
-}
-
-
