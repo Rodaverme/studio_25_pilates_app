@@ -1,23 +1,33 @@
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_list_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
+
+
 
 class ClassMapper {
-  static PilatesClass classApitoEntity(ClassSessionResponse classes) =>
-      PilatesClass(
-        id: classes.id.toString(),
-        nombre: classes.title,
-        date: classes.nextOccurrence?.date ?? DateTime.now(),
-        duracion: Duration(minutes: 30),
-        instructor: classes.instructor!.name,
-        bioInstructor: classes.instructor!.bio,
-        cupoMaximo: classes.capacity,
-        nivel: classes.classLevel!.name,
-        cuposOcupados: int.parse(classes.nextOccurrence?.reservedCount ?? '0'),
-        sala: classes.room!.name,
-        descripcion: classes.description,
-        price: classes.price,
-        endTime: classes.nextOccurrence?.endTime ?? '' ,
-        starTime: classes.nextOccurrence?.startTime  ?? '',
-        ocurrenceId: classes.nextOccurrence!.id
-      );
+  static PilatesClass classApitoEntity(OccurrenceResponse occurrence) {
+    return PilatesClass(
+      id: occurrence.classSessionId ?? '',
+      nombre: occurrence.classSession?.title ?? '',
+      date: occurrence.date,
+      isInPlan: occurrence.isInPlan,
+      instructor: occurrence.classSession?.instructor?.name ?? "Sin instructor",
+      bioInstructor: occurrence.classSession?.instructor?.bio ?? "",
+      cupoMaximo: occurrence.classSession?.capacity ?? occurrence.capacity ,
+      nivel: occurrence.classSession?.classLevel?.name ?? "Sin nivel",
+      cuposOcupados: int.tryParse(occurrence.reservedCount ?? "0") ?? 0,
+      sala: occurrence.classSession?.room?.name ?? "Sin sala",
+      descripcion: occurrence.classSession?.description ?? '',
+      price: occurrence.classSession?.price ?? occurrence.price ?? '',
+      endTime: occurrence.endTime ?? '',
+      starTime: occurrence.startTime ?? '',
+      ocurrenceId: occurrence.id,
+    );
+    
+  }
+
+  static List<PilatesClass> listApiToEntity(OccurrenceListResponse response) {
+    return response.data.map((o) => classApitoEntity(o)).toList();
+  }
+  
 }

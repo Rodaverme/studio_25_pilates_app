@@ -29,6 +29,23 @@ class ClassCubit extends Cubit<ClassState> {
       );
     }
   }
+  Future<void> loadClasses() async {
+    emit(state.copyWith(status: ClassStatus.loading));
+    try {
+      final classes = await repository.getAllClasses();
+      emit(
+        state.copyWith(
+          status: ClassStatus.loaded,
+          classes: classes,
+         
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(status: ClassStatus.error, errorMessage: e.toString()),
+      );
+    }
+  }
 
   Future<void> loadClasesById(String id) async {
     emit(state.copyWith(status: ClassStatus.loading));
@@ -53,6 +70,7 @@ class ClassCubit extends Cubit<ClassState> {
       );
     }
   }
+  
 
   Future<void> loadReservedClasses() async {
     emit(state.copyWith(status: ClassStatus.loading));

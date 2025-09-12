@@ -206,7 +206,7 @@ class _SumaryClass extends StatelessWidget {
                       const SizedBox(height: 10),
                       Text('Duración', style: textStyle.titleLarge),
                       Text(
-                        '${classe.duracion.inMinutes} minutos',
+                        '${classe.date} minutos',
                         style: textStyle.titleMedium,
                       ),
                     ],

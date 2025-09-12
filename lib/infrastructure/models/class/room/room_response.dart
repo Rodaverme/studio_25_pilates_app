@@ -1,7 +1,7 @@
 class RoomResponse {
     int id;
-    String name;
-    String capacity;
+    String? name;
+    String?capacity;
     dynamic location;
     DateTime createdAt;
     DateTime updatedAt;
@@ -9,8 +9,8 @@ class RoomResponse {
 
     RoomResponse({
         required this.id,
-        required this.name,
-        required this.capacity,
+        this.name,
+        this.capacity,
         required this.location,
         required this.createdAt,
         required this.updatedAt,

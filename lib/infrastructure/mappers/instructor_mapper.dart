@@ -4,9 +4,9 @@ import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/ins
 class InstructorMapper {
   static Instructor instructorApitoEntity(InstructorResponse instructor) => Instructor(
     id: instructor.id,
-    name: instructor.name,
-    email: instructor.email,
-    bio: instructor.bio   , 
+    name: instructor.name ?? '',
+    email: instructor.email ?? '',
+    bio: instructor.bio ?? ''   , 
     photoUrl: instructor.photoUrl ?? ''
 
     

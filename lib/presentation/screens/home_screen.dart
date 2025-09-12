@@ -27,13 +27,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final planState = context.watch<PlanCubit>().state;
+     final planState = context.watch<PlanCubit>().state;
 
     // ignore: unrelated_type_equality_checks
     final bool isPlanLoaded = planState.status == PlanStatus.loaded;
     // ignore: unrelated_type_equality_checks
     final bool isMyPlanLoaded = planState.status == PlanStatus.loaded;
     final bool isStatusPlanLoaded = planState.status == PlanStatus.loaded;
+    
 
     return Scaffold(
       body: RefreshIndicator(

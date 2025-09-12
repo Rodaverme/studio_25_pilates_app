@@ -1,9 +1,9 @@
 class InstructorResponse {
     int id;
-    String name;
-    String email;
+    String? name;
+    String? email;
     bool isActive;
-    String bio;
+    String? bio;
     dynamic photoUrl;
     DateTime createdAt;
     DateTime updatedAt;
@@ -11,8 +11,8 @@ class InstructorResponse {
 
     InstructorResponse({
         required this.id,
-        required this.name,
-        required this.email,
+         this.name,
+         this.email,
         required this.isActive,
         required this.bio,
         required this.photoUrl,

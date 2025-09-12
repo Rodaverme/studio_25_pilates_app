@@ -5,6 +5,7 @@ enum ClassStatus { initial, loading, loaded, error }
 class ClassState extends Equatable {
   final ClassStatus status;
   final List<PilatesClass> allClasses;
+  final List<PilatesClass>classes;
   final List<PilatesClass> planClasses;
   final List<PilatesClass> reservedClasses;
   final PilatesClass? clase;
@@ -12,6 +13,7 @@ class ClassState extends Equatable {
   final String? errorMessage;
 
   const ClassState({
+    this.classes = const[],
     this.clase,
     this.status = ClassStatus.initial,
     this.allClasses = const [],
@@ -21,6 +23,7 @@ class ClassState extends Equatable {
     this.errorMessage,
   });
   ClassState copyWith({
+    List<PilatesClass>? classes,
     ClassStatus? status,
     PilatesClass? clase,
     List<PilatesClass>? allClasses,
@@ -30,6 +33,7 @@ class ClassState extends Equatable {
     String? errorMessage,
   }) {
     return ClassState(
+      classes: classes ?? this.classes,
       clase: clase ?? this.clase,
       status: status ?? this.status,
       allClasses: allClasses ?? this.allClasses,
@@ -42,6 +46,7 @@ class ClassState extends Equatable {
 
   @override
   List<Object?> get props => [
+    classes,
     status,
     allClasses,
     reservedClasses,

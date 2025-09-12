@@ -1,11 +1,8 @@
-
-
 class PilatesClass {
   final String id;
   final String nombre;
   final String descripcion;
   final DateTime date;
-  final Duration duracion;
   final String instructor;
   final String bioInstructor;
   final int cupoMaximo;
@@ -16,14 +13,12 @@ class PilatesClass {
   final String starTime;
   final String endTime;
   final int ocurrenceId;
+  final bool isInPlan;
 
-  
-
-  PilatesClass( {
+  PilatesClass({
     required this.id,
     required this.nombre,
     required this.date,
-    required this.duracion,
     required this.instructor,
     required this.cupoMaximo,
     required this.nivel,
@@ -33,7 +28,8 @@ class PilatesClass {
     required this.price,
     required this.bioInstructor,
     required this.endTime,
-    required this.starTime, 
-    required this.ocurrenceId
+    required this.starTime,
+    required this.ocurrenceId,
+    required this.isInPlan,
   });
 }

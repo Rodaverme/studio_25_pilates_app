@@ -24,6 +24,7 @@ class _HomeViewState extends State<HomeView> {
     context.read<ClassCubit>().loadReservedClasses();
     if (planState.status == PlanStatus.loaded && planState.myPlan != null) {
       context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
+      context.read<ClassCubit>().loadClasses();
      
       // final token = await TokenService.getToken();
       // await NotificationRepositoryImpl(
@@ -71,8 +72,8 @@ class _HomeViewState extends State<HomeView> {
                       );
                     }
 
-                    final planClases = classState.planClasses;
-                    final reserverdClases = classState.reservedClasses;
+                    final planClases = classState.classes;
+                    // final reserverdClases = classState.reservedClasses;
                     // final allClases = classState.allClasses;
 
                     if (planClases.isEmpty) {

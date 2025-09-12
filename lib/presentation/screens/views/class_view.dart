@@ -38,7 +38,7 @@ class ClassView extends StatelessWidget {
               DateFormat("d MMMM ", 'es_ES').format(clase.date);
           final horaInicio = DateFormat("HH:mm").format(clase.date);
           final horaFinal =
-              DateFormat("HH:mm").format(clase.date.add(clase.duracion));
+              DateFormat("HH:mm").format(clase.date);
           final currencyFormatter = NumberFormat.currency(
             locale: 'es_CO',
             name: '',

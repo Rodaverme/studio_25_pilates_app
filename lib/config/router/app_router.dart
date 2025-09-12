@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
@@ -26,18 +25,16 @@ final appRouter = GoRouter(
           path: '/Home',
           builder: (context, state) {
             return const HomeView();
-          },
-          routes: [
-            GoRoute(
+          },    
+            ),
+             GoRoute(
               name: ClassView.name,
               path: '/class/:id',
               builder: (context, state) {
                 final classId = state.pathParameters['id']!;
 
-                return BlocProvider(
-                  create: (_) => ClassCubit(
-                    ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
-                  )..loadClasesById(classId),
+                return BlocProvider.value(
+                  value: context.read<ClassCubit>()..loadClasesById(classId),
                   child: ClassView(classId: classId),
                 );
               },
@@ -47,23 +44,19 @@ final appRouter = GoRouter(
                   builder: (context, state) {
                     final classId = state.pathParameters['id']!;
 
-                    return BlocProvider(
-                      create: (_) => ClassCubit(
-                        ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
-                      )..loadClasesById(classId),
+                    return BlocProvider.value(
+                      value: context.read<ClassCubit>()
+                        ..loadClasesById(classId),
                       child: ReservationView(classId: classId),
                     );
                   },
                 ),
-              ],
-            ),
-
-            GoRoute(
-              path: '/succesPay',
-              builder: (context, state) {
-                return const ReservationSuccessView();
-              },
-            ),
+              GoRoute(
+                  path: '/succesPay',
+                  builder: (context, state) {
+                    return const ReservationSuccessView();
+                  },
+                ),
           ],
         ),
 

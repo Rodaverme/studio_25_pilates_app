@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/instructor_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_nivel_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/room/room_response.dart';
-import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
+
 
 List<ClassSessionResponse> classSessionResponseFromJson(String str) =>
     List<ClassSessionResponse>.from(
@@ -20,39 +20,39 @@ String classSessionResponseToJson(List<ClassSessionResponse> data) =>
 
 class ClassSessionResponse {
   int id;
-  String title;
-  String description;
-  String visibility;
-  String classLevelId;
-  String instructorId;
-  String roomId;
-  String price;
-  int capacity;
+  String? title;
+  String? description;
+  String? visibility;
+  String?classLevelId;
+  String? instructorId;
+  String? roomId;
+  String? price;
+  int? capacity;
   DateTime createdAt;
   DateTime updatedAt;
   dynamic deletedAt;
   ClassLevelResponse? classLevel;
   InstructorResponse? instructor;
   RoomResponse? room;
-  OccurrenceResponse? nextOccurrence;
+ 
 
   ClassSessionResponse({
     required this.id,
-    required this.title,
-    required this.description,
-    required this.visibility,
-    required this.classLevelId,
-    required this.instructorId,
-    required this.roomId,
-    required this.price,
-    required this.capacity,
+    this.title,
+    this.description,
+    this.visibility,
+    this.classLevelId,
+    this.instructorId,
+    this.roomId,
+    this.price,
+    this.capacity,
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
     required this.classLevel,
     required this.instructor,
     required this.room,
-    required this.nextOccurrence,
+   
   });
 
   factory ClassSessionResponse.fromJson(Map<String, dynamic> json) {
@@ -97,9 +97,7 @@ class ClassSessionResponse {
       room: RoomResponse.fromJson(
         (json["room"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
       ),
-      nextOccurrence: json["next_occurrence"] != null
-          ? OccurrenceResponse.fromJson(json["next_occurrence"])
-          : null,
+     
     );
   }
 
@@ -119,6 +117,6 @@ class ClassSessionResponse {
     "class_level": classLevel?.toJson(),
     "instructor": instructor?.toJson(),
     "room": room?.toJson(),
-    "next_occurrence": nextOccurrence?.toJson(),
+   
   };
 }
