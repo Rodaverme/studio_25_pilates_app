@@ -3,9 +3,7 @@ import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/class_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/class/class_mapper.dart';
-
-
-import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
 class ClassDatasourceImpl extends ClassDatasource {
   final Dio dio = DioClient.Dio_create();
@@ -14,19 +12,18 @@ class ClassDatasourceImpl extends ClassDatasource {
     try {
       final response = await dio.get('/api/classes');
       if (response.statusCode == 200 && response.data != null) {
-        final List<dynamic> data = response.data['data']; // 👈 aquí extraes la lista
+        final List<dynamic> data =
+            response.data['data']; // 👈 aquí extraes la lista
 
-      final List<PilatesClass> classes = data
-          .map(
-            (json) => ClassMapper.classApitoEntity(
-              OccurrenceResponse.fromJson(json),
-            ),
-          )
-          .toList();
+        final List<PilatesClass> classes = data
+            .map(
+              (json) => ClassMapper.classApitoEntity(
+                ClassSessionResponse.fromJson(json),
+              ),
+            )
+            .toList();
 
-      return classes;
-
-        
+        return classes;
       }
       throw Exception('error a obtener las clases');
     } on DioException catch (e) {
@@ -38,26 +35,26 @@ class ClassDatasourceImpl extends ClassDatasource {
     }
   }
 
-  @override
-  Future<List<PilatesClass>> getClassesByDay(DateTime day) async {
-    try {
-      // Traemos todas las clases usando la función ya implementada
-      final allClasses = await getAllClasses();
+  // @override
+  // Future<List<PilatesClass>> getClassesByDay(DateTime day) async {
+  //   try {
+  //     // Traemos todas las clases usando la función ya implementada
+  //     final allClasses = await getAllClasses();
 
-      // Normalizamos la fecha seleccionada
-      final selectedDate = DateTime(day.year, day.month, day.day);
+  //     // Normalizamos la fecha seleccionada
+  //     final selectedDate = DateTime(day.year, day.month, day.day);
 
-      // Filtramos las clases que coincidan en fecha
-      final filteredClasses = allClasses.where((c) {
-        final classDate = DateTime(c.date.year, c.date.month, c.date.day);
-        return classDate == selectedDate;
-      }).toList();
+  //     // Filtramos las clases que coincidan en fecha
+  //     final filteredClasses = allClasses.where((c) {
+  //       final classDate = DateTime(c.date.year, c.date.month, c.date.day);
+  //       return classDate == selectedDate;
+  //     }).toList();
 
-      return filteredClasses;
-    } catch (e) {
-      throw Exception('Error en getClassesByDay: $e');
-    }
-  }
+  //     return filteredClasses;
+  //   } catch (e) {
+  //     throw Exception('Error en getClassesByDay: $e');
+  //   }
+  // }
 
   @override
   Future<PilatesClass> getClassesById(String id) async {
@@ -67,7 +64,7 @@ class ClassDatasourceImpl extends ClassDatasource {
       if (response.statusCode == 200 && response.data != null) {
         // ✅ ahora parseamos como objeto
         final Map<String, dynamic> data = response.data as Map<String, dynamic>;
-        final cls = OccurrenceResponse.fromJson(data);
+        final cls = ClassSessionResponse.fromJson(data);
         return ClassMapper.classApitoEntity(cls);
       }
       throw Exception('Error al obtener la clase por Id');
@@ -80,36 +77,36 @@ class ClassDatasourceImpl extends ClassDatasource {
     }
   }
 
-  @override
-  Future<List<PilatesClass>> getClassesByPlan(int id) async {
-    try {
-      final response = await dio.get('/api/classes/by-plan/$id');
-      if (response.statusCode == 200 && response.data != null) {
-        final rawData = response.data['classes']; // 👈 aquí está la lista
+  // @override
+  // Future<List<PilatesClass>> getClassesByPlan(int id) async {
+  //   try {
+  //     final response = await dio.get('/api/classes/by-plan/$id');
+  //     if (response.statusCode == 200 && response.data != null) {
+  //       final rawData = response.data['classes']; // 👈 aquí está la lista
 
-        if (rawData == null) return [];
+  //       if (rawData == null) return [];
 
-        final List<dynamic> data = rawData as List<dynamic>;
+  //       final List<dynamic> data = rawData as List<dynamic>;
 
-        final List<PilatesClass> classes = data
-            .map(
-              (json) => ClassMapper.classApitoEntity(
-                OccurrenceResponse.fromJson(json as Map<String, dynamic>),
-              ),
-            )
-            .toList();
+  //       final List<PilatesClass> classes = data
+  //           .map(
+  //             (json) => ClassMapper.classApitoEntity(
+  //               ClassSessionResponse.fromJson(json as Map<String, dynamic>),
+  //             ),
+  //           )
+  //           .toList();
 
-        return classes;
-      }
-      throw Exception('Error al obtener las clases');
-    } on DioException catch (e) {
-      throw Exception(
-        'Error al obtener todas las clases  ${e.response?.data ?? e.message} ',
-      );
-    } catch (e) {
-      throw Exception('Error inesperado: $e');
-    }
-  }
+  //       return classes;
+  //     }
+  //     throw Exception('Error al obtener las clases');
+  //   } on DioException catch (e) {
+  //     throw Exception(
+  //       'Error al obtener todas las clases  ${e.response?.data ?? e.message} ',
+  //     );
+  //   } catch (e) {
+  //     throw Exception('Error inesperado: $e');
+  //   }
+  // }
 
   @override
   Future<List<PilatesClass>> getClassReserved() {

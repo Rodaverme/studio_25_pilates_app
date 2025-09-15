@@ -200,13 +200,13 @@ class _SumaryClass extends StatelessWidget {
                       const SizedBox(height: 10),
                       Text('Fecha', style: textStyle.titleLarge),
                       Text(
-                        classe.date.day.toString(),
+                       '',
                         style: textStyle.titleMedium,
                       ),
                       const SizedBox(height: 10),
                       Text('Duración', style: textStyle.titleLarge),
                       Text(
-                        '${classe.date} minutos',
+                        ' minutos',
                         style: textStyle.titleMedium,
                       ),
                     ],
@@ -377,7 +377,7 @@ class ReserveButton extends StatelessWidget {
 
                 // 👉 Cuando la transacción termine, creamos la reserva
                 context.read<ReservationCubit>().createReservation(
-                      ocurrenceId: classe.ocurrenceId,
+                      ocurrenceId: 1,
                       paymentMethod: paymentMethod,
                       cardId: cardId!
                     );

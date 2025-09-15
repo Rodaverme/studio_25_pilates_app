@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
-import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
+
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/plan/plan_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
 class HomeView extends StatefulWidget {
@@ -18,19 +18,18 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   @override
-  void initState()  {
+  void initState() {
     super.initState();
-    final planState = context.read<PlanCubit>().state;
-    context.read<ClassCubit>().loadReservedClasses();
-    if (planState.status == PlanStatus.loaded && planState.myPlan != null) {
-      context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
-      context.read<ClassCubit>().loadClasses();
-     
-      // final token = await TokenService.getToken();
-      // await NotificationRepositoryImpl(
-      //   datasource: NotificationsDatasourceImpl(),
-      // ).sendToken(token!);
-    }
+
+    context.read<OcurrencesCubit>().loadOcurrence(
+      DateTime.now(),
+      DateTime(2025, 10, 12),
+    );
+    // context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
+    // final token = await TokenService.getToken();
+    // await NotificationRepositoryImpl(
+    //   datasource: NotificationsDatasourceImpl(),
+    // ).sendToken(token!);
   }
 
   @override
@@ -45,136 +44,107 @@ class _HomeViewState extends State<HomeView> {
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
 
-
-             // final token = await TokenService.getToken();
-      // await NotificationRepositoryImpl(
-      //   datasource: NotificationsDatasourceImpl(),
-      // ).sendToken(token!);
-          BlocBuilder<PlanCubit, PlanState>(
-            builder: (context, planState) {
-
-              if (planState.status == PlanStatus.error) {
-                return Center(child: Text('Error: ${planState.errorMessage}'));
+          // final token = await TokenService.getToken();
+          // await NotificationRepositoryImpl(
+          //   datasource: NotificationsDatasourceImpl(),
+          // ).sendToken(token!);
+          BlocBuilder<OcurrencesCubit, OcurrencesState>(
+            builder: (context, ocurrenceState) {
+              if (ocurrenceState.status == OcurrenceStatus.loading) {
+                return Center(child: CircularProgressIndicator());
               }
 
-              if (planState.status == PlanStatus.loaded &&
-                  planState.myPlan != null) {
-                return BlocBuilder<ClassCubit, ClassState>(
-                  builder: (context, classState) {
+              if (ocurrenceState.status == OcurrenceStatus.error) {
+                return Center(
+                  child: Text("Error: ${ocurrenceState.errorMessage}"),
+                );
+              }
 
-                    if (classState.status == ClassStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+              final ocurrences = ocurrenceState.ocurrences;
 
-                    if (classState.status == ClassStatus.error) {
-                      return Center(
-                        child: Text("Error: ${classState.errorMessage}"),
-                      );
-                    }
+              if (ocurrences.isEmpty) {
+                return Center(child: Text("No hay ocurrencias disponibles"));
+              }
 
-                    final planClases = classState.classes;
-                    // final reserverdClases = classState.reservedClasses;
-                    // final allClases = classState.allClasses;
-
-                    if (planClases.isEmpty) {
-                      return const Center(
-                        child: Text("No tienes clases en este plan"),
-                      );
-                    }
-
-                    return ListView(
-                      padding: EdgeInsets.zero,
+              return ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: Text(
-                                  'Hola, ${client?.name}',
-                                  style: textStyle.titleLarge,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  _InfoCard(
-                                    label: 'Clases este mes',
-                                    value: '12',
-                                  ),
-                                  SizedBox(width: 20),
-                                  _InfoCard(value: '4', label: 'racha'),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: Text(
-                                  'Mi Próxima Clase',
-                                  style: textStyle.titleLarge,
-                                ),
-                              ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            'Hola, ${client?.name}',
+                            style: textStyle.titleLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            _InfoCard(label: 'Clases este mes', value: '12'),
+                            SizedBox(width: 20),
+                            _InfoCard(value: '4', label: 'racha'),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            'Mi Próxima Clase',
+                            style: textStyle.titleLarge,
+                          ),
+                        ),
 
-                              //!tiene que ser mi proxima  reserva
-                              _NextClass(
-                                textStyle: textStyle,
-                                clase: planClases.first,
+                        //!tiene que ser mi proxima  reserva
+                        _NextClass(
+                          textStyle: textStyle,
+                          clase: ocurrences.first,
+                        ),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Text('Clases de Hoy'),
+                        ),
+                        //!tengo que separarlo en todas las clases y clases del plan
+                        SizedBox(
+                          height: 380,
+                          child: ClassesCarousel(list: ocurrences),
+                        ),
+                        const SizedBox(height: 10),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Text('Acciones Rápidas'),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              TextButton(
+                                onPressed: () {},
+                                child: const Text('Mis Clases'),
                               ),
-                              const SizedBox(height: 20),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: Text('Clases de Hoy'),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: () {},
+                                child: const Text('Calendario'),
                               ),
-                              //!tengo que separarlo en todas las clases y clases del plan
-                              SizedBox(
-                                height: 380,
-                                child: ClassesCarousel(list: planClases),
-                              ),
-                              const SizedBox(height: 10),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: Text('Acciones Rápidas'),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: Row(
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {},
-                                      child: const Text('Mis Clases'),
-                                    ),
-                                    const Spacer(),
-                                    TextButton(
-                                      onPressed: () {},
-                                      child: const Text('Calendario'),
-                                    ),
-                                    const Spacer(),
-                                    TextButton(
-                                      onPressed: () {},
-                                      child: const Text('Tarjetas'),
-                                    ),
-                                  ],
-                                ),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: () {},
+                                child: const Text('Tarjetas'),
                               ),
                             ],
                           ),
                         ),
                       ],
-                    );
-                  },
-                );
-              }
-
-              return const Center(child: CircularProgressIndicator());
+                    ),
+                  ),
+                ],
+              );
             },
           ),
         ],
@@ -187,7 +157,7 @@ class _NextClass extends StatelessWidget {
   const _NextClass({required this.textStyle, required this.clase});
 
   final TextTheme textStyle;
-  final PilatesClass clase;
+  final Ocurrence clase;
 
   @override
   Widget build(BuildContext context) {
@@ -211,19 +181,19 @@ class _NextClass extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      clase.nombre,
+                      clase.classSession.nombre,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      clase.instructor,
+                      clase.classSession.instructor,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "Hoy, ${clase.starTime}",
+                      "Hoy, ${clase.startTime}",
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -265,7 +235,7 @@ class _InfoCard extends StatelessWidget {
 
 class ClassesCarousel extends StatefulWidget {
   const ClassesCarousel({super.key, required this.list});
-  final List<PilatesClass> list;
+  final List<Ocurrence> list;
 
   @override
   State<ClassesCarousel> createState() => _ClassesCarouselState();
@@ -293,24 +263,24 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
               return Column(
                 children: [
                   LessonsToday(
-                    pilatesClass: widget.list[first],
+                    ocurrence: widget.list[first],
                     textStyle: textStyle,
                     onTap: () {
                       context.push('/Home/class/${widget.list[first].id}');
                     },
-                    instructor: widget.list[first].instructor,
-                    level: widget.list[first].nivel,
+                    instructor: widget.list[first].classSession.instructor,
+                    level: widget.list[first].classSession.nivel,
                   ),
                   const SizedBox(height: 12),
                   if (second < widget.list.length)
                     LessonsToday(
-                      pilatesClass: widget.list[second],
+                      ocurrence: widget.list[second],
                       textStyle: textStyle,
                       onTap: () {
                         context.push('/Home/class/${widget.list[second].id}');
                       },
-                      instructor: widget.list[second].instructor,
-                      level: widget.list[second].nivel,
+                      instructor: widget.list[second].classSession.instructor,
+                      level: widget.list[second].classSession.nivel,
                     ),
                 ],
               );

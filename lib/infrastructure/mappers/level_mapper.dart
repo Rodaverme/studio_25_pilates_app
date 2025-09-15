@@ -8,7 +8,7 @@ import 'package:studio_25_pilates_app/infrastructure/models/class/room/room_resp
 class RoomMapper {
   static Room roomApitoEntity(RoomResponse room) => Room(
     id: room.id,
-    name: room.name ?? '',
+    name: room.name,
     capacity: room.capacity ?? '',
     loation: room.location ?? ''
     

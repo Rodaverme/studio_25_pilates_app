@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
 
@@ -82,6 +84,7 @@ Future<void> main() async {
         BlocProvider(
           create: (_) => ReservationCubit(ReservationDatasourceImpl()),
         ),
+        BlocProvider(create: (_) => OcurrencesCubit(OcurrenceDatasourceImpl()) )
       ],
       child: AuthGate(child: const MainApp()), // 👈 envolvemos con un listener
     ),

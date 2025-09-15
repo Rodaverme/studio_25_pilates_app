@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:studio_25_pilates_app/infrastructure/models/class/instructor/instructor_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_nivel_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/class/room/room_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
 
 
 List<ClassSessionResponse> classSessionResponseFromJson(String str) =>
@@ -28,12 +29,10 @@ class ClassSessionResponse {
   String? roomId;
   String? price;
   int? capacity;
-  DateTime createdAt;
-  DateTime updatedAt;
-  dynamic deletedAt;
   ClassLevelResponse? classLevel;
   InstructorResponse? instructor;
   RoomResponse? room;
+  Datum? nextOcurrence;
  
 
   ClassSessionResponse({
@@ -46,12 +45,11 @@ class ClassSessionResponse {
     this.roomId,
     this.price,
     this.capacity,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
     required this.classLevel,
     required this.instructor,
     required this.room,
+    required this.nextOcurrence
+
    
   });
 
@@ -67,11 +65,7 @@ class ClassSessionResponse {
       return v.toString();
     }
 
-    DateTime _asDate(dynamic v, {DateTime? fallback}) {
-      if (v == null) return fallback ?? DateTime.now();
-      final s = v.toString();
-      return DateTime.tryParse(s) ?? (fallback ?? DateTime.now());
-    }
+   
 
     return ClassSessionResponse(
       id: _asInt(json["id"]),
@@ -83,9 +77,7 @@ class ClassSessionResponse {
       roomId: _asString(json["room_id"]),
       price: _asString(json["price"], fallback: '0'),
       capacity: _asInt(json["capacity"]),
-      createdAt: _asDate(json["created_at"]),
-      updatedAt: _asDate(json["updated_at"]),
-      deletedAt: json["deleted_at"],
+     
       classLevel: ClassLevelResponse.fromJson(
         (json["class_level"] ?? const <String, dynamic>{})
             as Map<String, dynamic>,
@@ -97,6 +89,9 @@ class ClassSessionResponse {
       room: RoomResponse.fromJson(
         (json["room"] ?? const <String, dynamic>{}) as Map<String, dynamic>,
       ),
+      nextOcurrence: json["next_occurrence"] != null
+          ? Datum.fromJson(json["next_occurrence"])
+          : null,
      
     );
   }
@@ -111,9 +106,6 @@ class ClassSessionResponse {
     "room_id": roomId,
     "price": price,
     "capacity": capacity,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "deleted_at": deletedAt,
     "class_level": classLevel?.toJson(),
     "instructor": instructor?.toJson(),
     "room": room?.toJson(),

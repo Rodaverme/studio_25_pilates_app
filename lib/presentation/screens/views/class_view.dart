@@ -35,10 +35,10 @@ class ClassView extends StatelessWidget {
           final PilatesClass clase = state.clase!;
 
           final fechaFormateada =
-              DateFormat("d MMMM ", 'es_ES').format(clase.date);
-          final horaInicio = DateFormat("HH:mm").format(clase.date);
+              DateFormat("d MMMM ", 'es_ES').format(DateTime.now());
+          final horaInicio = DateFormat("HH:mm").format(DateTime.now());
           final horaFinal =
-              DateFormat("HH:mm").format(clase.date);
+              DateFormat("HH:mm").format(DateTime.now());
           final currencyFormatter = NumberFormat.currency(
             locale: 'es_CO',
             name: '',
@@ -117,7 +117,7 @@ class ClassView extends StatelessWidget {
                               children: [
                                 Text('Lugares Disponibles',
                                     style: textStyle.titleLarge),
-                                Text("${clase.cuposOcupados}/${clase.cupoMaximo}"),
+                                Text("${'2'}/${clase.cupoMaximo}"),
                               ],
                             ),
                             const SizedBox(height: 10),
@@ -125,7 +125,7 @@ class ClassView extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: LinearProgressIndicator(
-                                value: clase.cuposOcupados / clase.cupoMaximo,
+                                value: 1 / clase.cupoMaximo,
                                 minHeight: 10,
                                 color: AppColors.cafeNoir,
                                 backgroundColor: AppColors.piedra,

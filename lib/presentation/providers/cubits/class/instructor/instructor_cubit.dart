@@ -16,15 +16,19 @@ class InstructorCubit extends Cubit<InstructorState> {
     emit(state.copyWith(status: InstructorStatus.loading));
     try {
       final instructors = await datasource.getAllInstructor();
-      emit(state.copyWith(
-        status: InstructorStatus.loaded,
-        instructors: instructors,
-      ));
+      emit(
+        state.copyWith(
+          status: InstructorStatus.loaded,
+          instructors: instructors,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: InstructorStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: InstructorStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

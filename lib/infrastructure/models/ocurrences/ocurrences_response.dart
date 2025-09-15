@@ -1,64 +1,157 @@
+// To parse this JSON data, do
+//
+//     final ocurrenceResponse = ocurrenceResponseFromJson(jsonString);
+
+import 'dart:convert';
+
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
-class OccurrenceResponse {
-  final int id;
-  final String? classSessionId;
-  final String? recurringScheduleId;
-  final String? specialScheduleId;
-  final DateTime date;
-  final String? startTime;
-  final String? endTime;
-  final int capacity;
-  final String? price;
-  final bool isSpecial;
-  final bool isCancelled;
-  final String? reservedCount;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final dynamic deletedAt;
-  final bool isInPlan;
-  final ClassSessionResponse? classSession;
+OcurrenceResponse ocurrenceResponseFromJson(String str) =>
+    OcurrenceResponse.fromJson(json.decode(str));
 
-  OccurrenceResponse({
+String ocurrenceResponseToJson(OcurrenceResponse data) =>
+    json.encode(data.toJson());
+
+class OcurrenceResponse {
+  int currentPage;
+  List<Datum> data;
+  String firstPageUrl;
+  int from;
+  int lastPage;
+  String lastPageUrl;
+  dynamic nextPageUrl;
+  String path;
+  int perPage;
+  dynamic prevPageUrl;
+  int to;
+  int total;
+
+  OcurrenceResponse({
+    required this.currentPage,
+    required this.data,
+    required this.firstPageUrl,
+    required this.from,
+    required this.lastPage,
+    required this.lastPageUrl,
+    required this.nextPageUrl,
+    required this.path,
+    required this.perPage,
+    required this.prevPageUrl,
+    required this.to,
+    required this.total,
+  });
+
+  factory OcurrenceResponse.fromJson(Map<String, dynamic> json) =>
+      OcurrenceResponse(
+        currentPage: json["current_page"],
+        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        firstPageUrl: json["first_page_url"],
+        from: json["from"],
+        lastPage: json["last_page"],
+        lastPageUrl: json["last_page_url"],
+
+        nextPageUrl: json["next_page_url"],
+        path: json["path"],
+        perPage: json["per_page"],
+        prevPageUrl: json["prev_page_url"],
+        to: json["to"],
+        total: json["total"],
+      );
+
+  Map<String, dynamic> toJson() => {
+    "current_page": currentPage,
+    "data": List<dynamic>.from(data.map((x) => x.toJson())),
+    "first_page_url": firstPageUrl,
+    "from": from,
+    "last_page": lastPage,
+    "last_page_url": lastPageUrl,
+
+    "next_page_url": nextPageUrl,
+    "path": path,
+    "per_page": perPage,
+    "prev_page_url": prevPageUrl,
+    "to": to,
+    "total": total,
+  };
+}
+
+class Datum {
+  int id;
+  String classSessionId;
+  String recurringScheduleId;
+  dynamic specialScheduleId;
+  DateTime date;
+  String startTime;
+  String endTime;
+  int capacity;
+  String price;
+  bool isSpecial;
+  bool isCancelled;
+  String reservedCount;
+  DateTime createdAt;
+  DateTime updatedAt;
+  dynamic deletedAt;
+  bool isInPlan;
+  ClassSessionResponse classSession;
+
+  Datum({
     required this.id,
-    this.classSessionId,
-    this.recurringScheduleId,
-    this.specialScheduleId,
+    required this.classSessionId,
+    required this.recurringScheduleId,
+    required this.specialScheduleId,
     required this.date,
-    this.startTime,
-    this.endTime,
+    required this.startTime,
+    required this.endTime,
     required this.capacity,
-    this.price,
+    required this.price,
     required this.isSpecial,
     required this.isCancelled,
-    this.reservedCount,
+    required this.reservedCount,
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
     required this.isInPlan,
-    this.classSession,
+    required this.classSession,
   });
 
-  factory OccurrenceResponse.fromJson(Map<String, dynamic> json) =>
-      OccurrenceResponse(
-        id: json["id"],
-        classSessionId: json["class_session_id"],
-        recurringScheduleId: json["recurring_schedule_id"],
-        specialScheduleId: json["special_schedule_id"],
-        date: DateTime.parse(json["date"]),
-        startTime: json["start_time"],
-        endTime: json["end_time"],
-        capacity: json["capacity"],
-        price: json["price"]?.toString(),
-        isSpecial: json["is_special"],
-        isCancelled: json["is_cancelled"],
-        reservedCount: json["reserved_count"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        deletedAt: json["deleted_at"],
-        isInPlan: json["is_in_plan"],
-        classSession: json["class_session"] != null
-            ? ClassSessionResponse.fromJson(json["class_session"])
-            : null,
-      );
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    id: json["id"],
+    classSessionId: json["class_session_id"],
+    recurringScheduleId: json["recurring_schedule_id"],
+    specialScheduleId: json["special_schedule_id"],
+    date: DateTime.parse(json["date"]),
+    startTime: json["start_time"],
+    endTime: json["end_time"],
+    capacity: json["capacity"],
+    price: json["price"],
+    isSpecial: json["is_special"],
+    isCancelled: json["is_cancelled"],
+    reservedCount: json["reserved_count"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    deletedAt: json["deleted_at"],
+    isInPlan: json["is_in_plan"],
+    classSession: ClassSessionResponse.fromJson(json["class_session"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "class_session_id": classSessionId,
+    "recurring_schedule_id": recurringScheduleId,
+    "special_schedule_id": specialScheduleId,
+    "date":
+        "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+    "start_time": startTime,
+    "end_time": endTime,
+    "capacity": capacity,
+    "price": price,
+    "is_special": isSpecial,
+    "is_cancelled": isCancelled,
+    "reserved_count": reservedCount,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "deleted_at": deletedAt,
+    "is_in_plan": isInPlan,
+    "class_session": classSession.toJson(),
+  };
 }

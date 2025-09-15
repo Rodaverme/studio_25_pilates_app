@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
-import 'package:studio_25_pilates_app/domain/entities/entities.dart';
+
+import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
 
 
 class LessonsToday extends StatelessWidget {
@@ -8,23 +9,23 @@ class LessonsToday extends StatelessWidget {
     super.key,
     required this.textStyle,
     required this.onTap,
-    required this.pilatesClass,
+    required this.ocurrence,
     required this.instructor,
     required this.level,
   });
 
   final TextTheme textStyle;
   final void Function()? onTap;
-  final PilatesClass pilatesClass;
+  final Ocurrence ocurrence;
   final String instructor;
   final String level;
 
   @override
   Widget build(BuildContext context) {
     final horaInicio =
-        pilatesClass.starTime;
+        ocurrence.startTime;
     final horaFin =
-       pilatesClass.endTime;
+       ocurrence.endTime;
 
     
   
@@ -52,7 +53,7 @@ class LessonsToday extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        pilatesClass.nombre,
+                        ocurrence.classSession.nombre,
                         style: textStyle.titleLarge?.copyWith(
                           color: AppColors.almendra,
                         ),
@@ -76,7 +77,7 @@ class LessonsToday extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${pilatesClass.cuposOcupados}/${pilatesClass.cupoMaximo} Cupos',
+                      '${ocurrence.reservedCount}/${ocurrence.classSession.cupoMaximo} Cupos',
                       style: textStyle.titleLarge?.copyWith(
                         color: AppColors.almendra,
                       ),

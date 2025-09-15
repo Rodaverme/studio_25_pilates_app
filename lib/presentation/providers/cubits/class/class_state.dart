@@ -23,7 +23,7 @@ class ClassState extends Equatable {
     this.errorMessage,
   });
   ClassState copyWith({
-    List<PilatesClass>? classes,
+    
     ClassStatus? status,
     PilatesClass? clase,
     List<PilatesClass>? allClasses,
@@ -33,7 +33,7 @@ class ClassState extends Equatable {
     String? errorMessage,
   }) {
     return ClassState(
-      classes: classes ?? this.classes,
+      
       clase: clase ?? this.clase,
       status: status ?? this.status,
       allClasses: allClasses ?? this.allClasses,
@@ -46,7 +46,7 @@ class ClassState extends Equatable {
 
   @override
   List<Object?> get props => [
-    classes,
+   
     status,
     allClasses,
     reservedClasses,
