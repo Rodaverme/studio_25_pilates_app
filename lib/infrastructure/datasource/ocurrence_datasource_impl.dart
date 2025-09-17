@@ -99,9 +99,46 @@ class OcurrenceDatasourceImpl extends OcurrenceDatasouce {
     throw UnimplementedError();
   }
 
+  // @override
+  // Future<PilatesClass> getClassesById(String id) async {
+  //   try {
+  //     final response = await dio.get('/api/classes/$id');
+
+  //     if (response.statusCode == 200 && response.data != null) {
+  //       // ✅ ahora parseamos como objeto
+  //       final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+  //       final cls = ClassSessionResponse.fromJson(data);
+  //       return ClassMapper.classApitoEntity(cls);
+  //     }
+  //     throw Exception('Error al obtener la clase por Id');
+  //   } on DioException catch (e) {
+  //     throw Exception(
+  //       'Error al obtener la clase por id: ${e.response?.data ?? e.message}',
+  //     );
+  //   } catch (e) {
+  //     throw Exception('Error inesperado: $e');
+  //   }
+  // }
+
   @override
-  Future<Ocurrence> getOcurrencesById() {
-    // TODO: implement getOcurrencesById
-    throw UnimplementedError();
+  Future<Ocurrence> getOcurrencesById(int id) async {
+    try {
+      final response = await dio.get('/api/occurrences/$id');
+      if (response.statusCode == 200 && response.data != null) {
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        final ocurrencias = Datum.fromJson(data);
+        final ocurrence = OccurrenceMapper.toEntity(ocurrencias);
+        return ocurrence;
+      }
+      throw Exception(
+        "Error al obtener ocurrencia por Id: status ${response.statusCode}",
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener la Ocurrencia por id: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 }

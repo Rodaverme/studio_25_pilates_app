@@ -1,52 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/full_screen_loader.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const name = 'home-screen';
   final Widget childView;
 
   const HomeScreen({super.key, required this.childView});
 
-  Future<void> _refreshData(BuildContext context) async {
-    // Llamamos a los métodos de recarga de cada cubit
-    final planCubit = context.read<PlanCubit>();
-    final instructorCubit = context.read<InstructorCubit>();
-    final levelCubit = context.read<LevelCubit>();
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-    await Future.wait([
-      planCubit.loadPlans(),
-      planCubit.loadMyPlan(),
-      planCubit.loadStatusPlan(),
-      instructorCubit.loadInstructors(),
-      levelCubit.loadLevels(),
-    ]);
+class _HomeScreenState extends State<HomeScreen> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    final planCubit = context.read<PlanCubit>();
+    final ocurrenceCubit = context.read<OcurrencesCubit>();
+
+    try {
+      await Future.wait([
+        planCubit.loadPlans(),
+        planCubit.loadMyPlan(),
+        planCubit.loadStatusPlan(),
+        ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime(2025, 10, 16)),
+      ]);
+    } catch (_) {}
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await _loadInitialData();
   }
 
   @override
   Widget build(BuildContext context) {
-     final planState = context.watch<PlanCubit>().state;
-
-    // ignore: unrelated_type_equality_checks
-    final bool isPlanLoaded = planState.status == PlanStatus.loaded;
-    // ignore: unrelated_type_equality_checks
-    final bool isMyPlanLoaded = planState.status == PlanStatus.loaded;
-    final bool isStatusPlanLoaded = planState.status == PlanStatus.loaded;
-    
-
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => _refreshData(context),
-        child: (isPlanLoaded && isMyPlanLoaded && isStatusPlanLoaded)
-            ? childView
-            : Center(
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [Center(child: FullScreenLoader())],
-                ),
-              ),
+        onRefresh: _refreshData,
+        child: _isLoading
+            ? Center(
+                child: Center(child: FullScreenLoader()),
+              )
+            : widget.childView,
       ),
       bottomNavigationBar: const CustomBottomNavigation(),
     );

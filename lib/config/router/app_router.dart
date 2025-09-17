@@ -1,6 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart';
@@ -18,23 +23,41 @@ final appRouter = GoRouter(
   routes: [
     ShellRoute(
       builder: (context, state, child) {
-        return HomeScreen(childView: child);
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  PlanCubit(PlanRespoitoryImpl(PlanDatasourceImpl())),
+            ),
+            BlocProvider(
+              create: (_) => OcurrencesCubit(OcurrenceDatasourceImpl()),
+            ),
+          ],
+          child: HomeScreen(childView: child),
+        );
       },
       routes: [
         GoRoute(
           path: '/Home',
           builder: (context, state) {
             return const HomeView();
-          },    
-            ),
+          },
+          routes: [
              GoRoute(
+                  path: '/succesPay',
+                  builder: (context, state) {
+                    return const ReservationSuccessView();
+                  },
+                ),
+            GoRoute(
               name: ClassView.name,
               path: '/class/:id',
               builder: (context, state) {
                 final classId = state.pathParameters['id']!;
-
-                return BlocProvider.value(
-                  value: context.read<ClassCubit>()..loadClasesById(classId),
+                return BlocProvider(
+                  create: (context) =>
+                      OcurrencesCubit(OcurrenceDatasourceImpl())
+                        ..loadOcurrenceById(int.parse(classId)),
                   child: ClassView(classId: classId),
                 );
               },
@@ -43,20 +66,42 @@ final appRouter = GoRouter(
                   path: '/reservation/:id',
                   builder: (context, state) {
                     final classId = state.pathParameters['id']!;
-
-                    return BlocProvider.value(
-                      value: context.read<ClassCubit>()
-                        ..loadClasesById(classId),
+                    return MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (_) =>
+                              MerchantsCubit(MerchantsDatasourceImpl()),
+                        ),
+                        BlocProvider(create: (_) => FormsCreditCardCubit()),
+                        BlocProvider(
+                          create: (_) =>
+                              CreditCardCubit(CreditCardDatasourceImpl())
+                                ..loadMyCard(),
+                        ),
+                        BlocProvider(
+                          create: (context) =>
+                              OcurrencesCubit(OcurrenceDatasourceImpl())
+                                ..loadOcurrenceById(int.parse(classId)),
+                          child: ClassView(classId: classId),
+                        ),
+                        BlocProvider(create: (_) => PaymentCubit()),
+                        BlocProvider(
+                          create: (_) =>
+                              TransactionCubit(TransactionsDatasourceImpl()),
+                        ),
+                        BlocProvider(
+                          create: (_) =>
+                              ReservationCubit(ReservationDatasourceImpl()),
+                        ),
+                      ],
                       child: ReservationView(classId: classId),
                     );
                   },
                 ),
-              GoRoute(
-                  path: '/succesPay',
-                  builder: (context, state) {
-                    return const ReservationSuccessView();
-                  },
-                ),
+                
+              ],
+            ),
+           
           ],
         ),
 
@@ -86,7 +131,18 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/new_card',
-          builder: (context, state) => const CreateNewCardView(),
+          builder: (context, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => FormsCreditCardCubit()),
+              BlocProvider(
+                create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
+              ),
+              BlocProvider(
+                create: (_) => MerchantsCubit(MerchantsDatasourceImpl()),
+              ),
+            ],
+            child: const CreateNewCardView(),
+          ),
         ),
       ],
     ),

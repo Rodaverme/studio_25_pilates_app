@@ -25,12 +25,17 @@ class OcurrencesCubit extends Cubit<OcurrencesState> {
       );
     }
   }
+
   Future<void> loadOcurrenceDay(DateTime day) async {
     emit(state.copyWith(status: OcurrenceStatus.loading));
     try {
       final occurrencesDay = await datasource.getAllOcurrenceByDay(day);
       emit(
-        state.copyWith(status: OcurrenceStatus.loaded, occurrencesDay: occurrencesDay,selectedDate: day),
+        state.copyWith(
+          status: OcurrenceStatus.loaded,
+          occurrencesDay: occurrencesDay,
+          selectedDate: day,
+        ),
       );
     } catch (e) {
       emit(
@@ -42,6 +47,23 @@ class OcurrencesCubit extends Cubit<OcurrencesState> {
     }
   }
 
-
-
+  Future<void> loadOcurrenceById(int id) async {
+    emit(state.copyWith(status: OcurrenceStatus.loading));
+    try {
+      final ocurrence = await datasource.getOcurrencesById(id);
+      emit(
+        state.copyWith(
+          status: OcurrenceStatus.loaded,
+          ocurrenceById: ocurrence,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: OcurrenceStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
 }

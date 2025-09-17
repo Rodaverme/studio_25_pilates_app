@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
@@ -44,16 +45,8 @@ class _HomeViewState extends State<HomeView> {
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
 
-          // final token = await TokenService.getToken();
-          // await NotificationRepositoryImpl(
-          //   datasource: NotificationsDatasourceImpl(),
-          // ).sendToken(token!);
           BlocBuilder<OcurrencesCubit, OcurrencesState>(
             builder: (context, ocurrenceState) {
-              if (ocurrenceState.status == OcurrenceStatus.loading) {
-                return Center(child: CircularProgressIndicator());
-              }
-
               if (ocurrenceState.status == OcurrenceStatus.error) {
                 return Center(
                   child: Text("Error: ${ocurrenceState.errorMessage}"),
@@ -161,6 +154,8 @@ class _NextClass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final horaInicio = DateFormat("HH:mm").format(clase.startTime);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
@@ -193,7 +188,7 @@ class _NextClass extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "Hoy, ${clase.startTime}",
+                      "Hoy, $horaInicio",
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

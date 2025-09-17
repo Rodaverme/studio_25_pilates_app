@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 
 import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
@@ -22,10 +23,8 @@ class LessonsToday extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final horaInicio =
-        ocurrence.startTime;
-    final horaFin =
-       ocurrence.endTime;
+    final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
+    final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
 
     
   
@@ -71,7 +70,7 @@ class LessonsToday extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '$horaInicio - $horaFin',
+                      '$horaInicio - $horaFinal',
                       style: textStyle.titleLarge?.copyWith(
                         color: AppColors.almendra,
                       ),

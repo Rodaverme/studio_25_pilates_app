@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
 OcurrenceResponse ocurrenceResponseFromJson(String str) =>
@@ -81,8 +82,8 @@ class Datum {
   String recurringScheduleId;
   dynamic specialScheduleId;
   DateTime date;
-  String startTime;
-  String endTime;
+  DateTime startTime;
+  DateTime endTime;
   int capacity;
   String price;
   bool isSpecial;
@@ -114,25 +115,51 @@ class Datum {
     required this.classSession,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-    id: json["id"],
-    classSessionId: json["class_session_id"],
-    recurringScheduleId: json["recurring_schedule_id"],
-    specialScheduleId: json["special_schedule_id"],
-    date: DateTime.parse(json["date"]),
-    startTime: json["start_time"],
-    endTime: json["end_time"],
-    capacity: json["capacity"],
-    price: json["price"],
-    isSpecial: json["is_special"],
-    isCancelled: json["is_cancelled"],
-    reservedCount: json["reserved_count"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    deletedAt: json["deleted_at"],
-    isInPlan: json["is_in_plan"],
-    classSession: ClassSessionResponse.fromJson(json["class_session"]),
-  );
+  factory Datum.fromJson(Map<String, dynamic> json) {
+    final date = DateTime.parse(json["date"]);
+
+    // Hora de inicio
+    final startParts = (json["start_time"] as String).split(":");
+    final startTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      int.parse(startParts[0]),
+      int.parse(startParts[1]),
+      int.parse(startParts[2]),
+    );
+
+    // Hora de fin
+    final endParts = (json["end_time"] as String).split(":");
+    final endTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      int.parse(endParts[0]),
+      int.parse(endParts[1]),
+      int.parse(endParts[2]),
+    );
+
+    return Datum(
+      id: json["id"],
+      classSessionId: json["class_session_id"],
+      recurringScheduleId: json["recurring_schedule_id"],
+      specialScheduleId: json["special_schedule_id"],
+      date: date,
+      startTime: startTime,
+      endTime: endTime,
+      capacity: json["capacity"],
+      price: json["price"],
+      isSpecial: json["is_special"],
+      isCancelled: json["is_cancelled"],
+      reservedCount: json["reserved_count"],
+      createdAt: DateTime.parse(json["created_at"]),
+      updatedAt: DateTime.parse(json["updated_at"]),
+      deletedAt: json["deleted_at"],
+      isInPlan: json["is_in_plan"],
+      classSession: ClassSessionResponse.fromJson(json["class_session"]),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -141,8 +168,10 @@ class Datum {
     "special_schedule_id": specialScheduleId,
     "date":
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-    "start_time": startTime,
-    "end_time": endTime,
+    "start_time":
+        "${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}:${startTime.second.toString().padLeft(2, '0')}",
+    "end_time":
+        "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}:${endTime.second.toString().padLeft(2, '0')}",
     "capacity": capacity,
     "price": price,
     "is_special": isSpecial,

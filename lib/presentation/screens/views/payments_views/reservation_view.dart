@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/credit_card.dart';
-import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/credit_card_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_state.dart';
@@ -22,12 +22,12 @@ class ReservationView extends StatelessWidget {
   Widget build(BuildContext context) {
     final creditCards = context.watch<CreditCardCubit>().state.creditCard;
 
-    return BlocBuilder<ClassCubit, ClassState>(
+    return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, state) {
-        if (state.status == ClassStatus.loading) {
+        if (state.status == OcurrenceStatus.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state.status == ClassStatus.loaded) {
-          final PilatesClass? classe = state.clase;
+        } else if (state.status == OcurrenceStatus.loaded) {
+          final Ocurrence? classe = state.ocurrenceById;
           final textStyle = Theme.of(context).textTheme;
           final statePay = context.watch<PaymentCubit>().state;
           final currencyFormatter = NumberFormat.currency(
@@ -62,7 +62,7 @@ class ReservationView extends StatelessWidget {
                               // 👉 Resumen
                               _SumaryClass(
                                 textStyle: textStyle,
-                                classe: classe!,
+                                ocurrence: classe!,
                               ),
                               const SizedBox(height: 40),
                               Text(
@@ -97,7 +97,7 @@ class ReservationView extends StatelessWidget {
                         textStyle: textStyle,
                         statePay: statePay,
                         currencyFormatter: currencyFormatter,
-                        classe: classe,
+                        ocurrence: classe,
                       ),
                     ],
                   ),
@@ -105,7 +105,7 @@ class ReservationView extends StatelessWidget {
               ],
             ),
           );
-        } else if (state.status == ClassStatus.error) {
+        } else if (state.status == OcurrenceStatus.error) {
           return Center(child: Text(state.errorMessage!));
         }
         return const SizedBox.shrink();
@@ -119,13 +119,13 @@ class _TotalPay extends StatelessWidget {
     required this.textStyle,
     required this.statePay,
     required this.currencyFormatter,
-    required this.classe,
+    required this.ocurrence,
   });
 
   final TextTheme textStyle;
   final PaymentState statePay;
   final NumberFormat currencyFormatter;
-  final PilatesClass classe;
+  final Ocurrence ocurrence;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +149,7 @@ class _TotalPay extends StatelessWidget {
                   PaymentSelected(method: final m) => switch (m.type) {
                     PaymentMethodType.credit => '1 Crédito',
                     PaymentMethodType.card =>
-                      '\$${currencyFormatter.format(int.parse(classe.price))}',
+                      '\$${currencyFormatter.format(int.parse(ocurrence.price))}',
                     PaymentMethodType.newCard => 'Ingrese tarjeta',
                   },
                   _ => 'Selecciona un método',
@@ -161,7 +161,7 @@ class _TotalPay extends StatelessWidget {
             ],
           ),
 
-          ReserveButton(classe: classe,),
+          ReserveButton(ocurrence: ocurrence),
         ],
       ),
     );
@@ -169,13 +169,25 @@ class _TotalPay extends StatelessWidget {
 }
 
 class _SumaryClass extends StatelessWidget {
-  const _SumaryClass({required this.textStyle, required this.classe});
+  const _SumaryClass({required this.textStyle, required this.ocurrence});
 
   final TextTheme textStyle;
-  final PilatesClass classe;
+  final Ocurrence ocurrence;
 
   @override
   Widget build(BuildContext context) {
+    final fechaFormateada = DateFormat(
+      "d MMMM ",
+      'es_ES',
+    ).format(ocurrence.date);
+    final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
+    final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
+    final duracion = ocurrence.endTime.difference(ocurrence.startTime);
+    final horas = duracion.inHours;
+    final minutos = duracion.inMinutes.remainder(60);
+    final duracionFormateada = 
+    "${horas > 0 ? "$horas Hora " : ""}${minutos > 0 ? "$minutos minuntos" : ""}";
+
     return CustomCardsType1(
       height: 250,
       width: double.maxFinite,
@@ -195,20 +207,20 @@ class _SumaryClass extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(classe.nombre, style: textStyle.titleMedium),
-                      Text(classe.instructor, style: textStyle.titleMedium),
+                      Text(
+                        ocurrence.classSession.nombre,
+                        style: textStyle.titleMedium,
+                      ),
+                      Text(
+                        ocurrence.classSession.instructor,
+                        style: textStyle.titleMedium,
+                      ),
                       const SizedBox(height: 10),
                       Text('Fecha', style: textStyle.titleLarge),
-                      Text(
-                       '',
-                        style: textStyle.titleMedium,
-                      ),
+                      Text(fechaFormateada, style: textStyle.titleMedium),
                       const SizedBox(height: 10),
                       Text('Duración', style: textStyle.titleLarge),
-                      Text(
-                        ' minutos',
-                        style: textStyle.titleMedium,
-                      ),
+                      Text(duracionFormateada, style: textStyle.titleMedium),
                     ],
                   ),
                 ),
@@ -223,15 +235,18 @@ class _SumaryClass extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 35),
                   child: FilledButton(
                     onPressed: () {},
-                    child: Text(classe.nivel, style: textStyle.bodySmall),
+                    child: Text(
+                      ocurrence.classSession.nivel,
+                      style: textStyle.bodySmall,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 44),
                 Text('Hora', style: textStyle.titleLarge),
-                Text('09 : 15 - 10:00', style: textStyle.titleMedium),
+                Text('$horaInicio - $horaFinal', style: textStyle.titleMedium),
                 const SizedBox(height: 10),
                 Text('Ubicación', style: textStyle.titleLarge),
-                Text(classe.sala, style: textStyle.titleMedium),
+                Text(ocurrence.classSession.sala, style: textStyle.titleMedium),
               ],
             ),
           ],
@@ -357,8 +372,8 @@ class PaymentMethodSelector extends StatelessWidget {
 }
 
 class ReserveButton extends StatelessWidget {
-  final PilatesClass classe;
-  const ReserveButton({super.key, required this.classe});
+  final Ocurrence ocurrence;
+  const ReserveButton({super.key, required this.ocurrence});
 
   @override
   Widget build(BuildContext context) {
@@ -373,18 +388,22 @@ class ReserveButton extends StatelessWidget {
               if (paymentState is PaymentSelected) {
                 final method = paymentState.method;
                 final paymentMethod = method.type.name;
-                final cardId = method.card?.id ;
+                final cardId = method.card?.id;
 
                 // 👉 Cuando la transacción termine, creamos la reserva
                 context.read<ReservationCubit>().createReservation(
-                      ocurrenceId: 1,
-                      paymentMethod: paymentMethod,
-                      cardId: cardId!
-                    );
+                  ocurrenceId: ocurrence.id,
+                  paymentMethod: paymentMethod,
+                  cardId: cardId!,
+                );
               }
             } else if (state.status == TransactionStatus.error) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error en transacción: ${state.errorMessage} ❌')),
+                SnackBar(
+                  content: Text(
+                    'Error en transacción: ${state.errorMessage} ❌',
+                  ),
+                ),
               );
             }
           },
@@ -398,7 +417,11 @@ class ReserveButton extends StatelessWidget {
               context.go('/Home/succesPay');
             } else if (state.status == ReservationStatus.error) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al crear reserva: ${state.errorMessage} ❌')),
+                SnackBar(
+                  content: Text(
+                    'Error al crear reserva: ${state.errorMessage} ❌',
+                  ),
+                ),
               );
             }
           },
@@ -433,13 +456,13 @@ class ReserveButton extends StatelessWidget {
 
                       // 👉 Disparamos la transacción primero
                       context.read<TransactionCubit>().dotransaction(
-                            type: 'plan',
-                            typeId: '2',
-                            amount: int.parse(classe.price),
-                            currency: 'COP',
-                            method: method.type.name,
-                            paymentSourceId: paymentSourceId ?? '',
-                          );
+                        type: 'plan',
+                        typeId: '2',
+                        amount: int.parse(ocurrence.price),
+                        currency: 'COP',
+                        method: method.type.name,
+                        paymentSourceId: paymentSourceId ?? '',
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -467,4 +490,3 @@ class ReserveButton extends StatelessWidget {
     );
   }
 }
-

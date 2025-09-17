@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
-import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 
@@ -17,9 +18,9 @@ class ClassView extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
 
-    return BlocBuilder<ClassCubit, ClassState>(
+    return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, state) {
-        if (state.status == ClassStatus.loading) {
+        if (state.status == OcurrenceStatus.loading) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -27,18 +28,23 @@ class ClassView extends StatelessWidget {
 
         if (state.status == ClassStatus.error) {
           return Scaffold(
-            body: Center(child: Text(state.errorMessage ?? 'Error desconocido')),
+            body: Center(
+              child: Text(state.errorMessage ?? 'Error desconocido'),
+            ),
           );
         }
 
-        if (state.status == ClassStatus.loaded && state.clase != null) {
-          final PilatesClass clase = state.clase!;
+        if (state.status == OcurrenceStatus.loaded &&
+            state.ocurrenceById != null) {
+          final ocurrences = state.ocurrenceById!;
+          final Ocurrence ocurrence = ocurrences;
 
-          final fechaFormateada =
-              DateFormat("d MMMM ", 'es_ES').format(DateTime.now());
-          final horaInicio = DateFormat("HH:mm").format(DateTime.now());
-          final horaFinal =
-              DateFormat("HH:mm").format(DateTime.now());
+          final fechaFormateada = DateFormat(
+            "d MMMM ",
+            'es_ES',
+          ).format(ocurrence.date);
+          final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
+          final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
           final currencyFormatter = NumberFormat.currency(
             locale: 'es_CO',
             name: '',
@@ -47,13 +53,19 @@ class ClassView extends StatelessWidget {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(clase.nombre, style: textStyle.titleLarge),
+              title: Text(
+                ocurrence.classSession.nombre,
+                style: textStyle.titleLarge,
+              ),
               actions: [
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: FilledButton(
                     onPressed: () {},
-                    child: Text(clase.nivel, style: textStyle.bodySmall),
+                    child: Text(
+                      ocurrence.classSession.nivel,
+                      style: textStyle.bodySmall,
+                    ),
                   ),
                 ),
               ],
@@ -72,31 +84,36 @@ class ClassView extends StatelessWidget {
                       /// Info Card
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 20),
+                          horizontal: 30,
+                          vertical: 20,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
                               child: Text(
                                 fechaFormateada,
-                                style: textStyle.titleLarge
-                                    ?.copyWith(fontSize: 15),
+                                style: textStyle.titleLarge?.copyWith(
+                                  fontSize: 15,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 "$horaInicio - $horaFinal",
-                                style: textStyle.titleLarge
-                                    ?.copyWith(fontSize: 15),
+                                style: textStyle.titleLarge?.copyWith(
+                                  fontSize: 15,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Flexible(
                               child: Text(
-                                clase.sala,
-                                style: textStyle.titleLarge
-                                    ?.copyWith(fontSize: 15),
+                                ocurrence.classSession.sala,
+                                style: textStyle.titleLarge?.copyWith(
+                                  fontSize: 15,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -115,17 +132,24 @@ class ClassView extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Lugares Disponibles',
-                                    style: textStyle.titleLarge),
-                                Text("${'2'}/${clase.cupoMaximo}"),
+                                Text(
+                                  'Lugares Disponibles',
+                                  style: textStyle.titleLarge,
+                                ),
+                                Text(
+                                  "${ocurrence.reservedCount}/${ocurrence.classSession.cupoMaximo}",
+                                ),
                               ],
                             ),
                             const SizedBox(height: 10),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                               child: LinearProgressIndicator(
-                                value: 1 / clase.cupoMaximo,
+                                value:
+                                    ocurrence.reservedCount /
+                                    ocurrence.classSession.cupoMaximo,
                                 minHeight: 10,
                                 color: AppColors.cafeNoir,
                                 backgroundColor: AppColors.piedra,
@@ -153,7 +177,9 @@ class ClassView extends StatelessWidget {
                           height: 170,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,15 +187,19 @@ class ClassView extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(clase.instructor,
-                                        style: textStyle.titleLarge
-                                            ?.copyWith(fontSize: 22)),
+                                    Text(
+                                      ocurrence.classSession.instructor,
+                                      style: textStyle.titleLarge?.copyWith(
+                                        fontSize: 22,
+                                      ),
+                                    ),
                                     const SizedBox(height: 5),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
+                                        horizontal: 10,
+                                      ),
                                       child: Text(
-                                        clase.bioInstructor,
+                                        ocurrence.classSession.bioInstructor,
                                         maxLines: 3,
                                         style: textStyle.titleLarge?.copyWith(
                                           color: AppColors.almendra,
@@ -188,12 +218,14 @@ class ClassView extends StatelessWidget {
                                     style: ButtonStyle().copyWith(
                                       backgroundColor:
                                           const WidgetStatePropertyAll(
-                                              AppColors.cafeNoir),
+                                            AppColors.cafeNoir,
+                                          ),
                                     ),
                                     child: Text(
                                       'Ver Perfil',
                                       style: TextStyle().copyWith(
-                                          color: AppColors.piedra),
+                                        color: AppColors.piedra,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -211,10 +243,13 @@ class ClassView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child:
-                                  Text('Beneficios', style: textStyle.titleLarge),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'Beneficios',
+                                style: textStyle.titleLarge,
+                              ),
                             ),
                             const SizedBox(height: 5),
                             Row(
@@ -223,13 +258,15 @@ class ClassView extends StatelessWidget {
                                   height: 40,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
+                                      horizontal: 12,
+                                    ),
                                     child: Center(
-                                      child: Text('Fuerza',
-                                          style:
-                                              textStyle.titleLarge?.copyWith(
-                                            color: AppColors.almendra,
-                                          )),
+                                      child: Text(
+                                        'Fuerza',
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -238,13 +275,15 @@ class ClassView extends StatelessWidget {
                                   height: 40,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
+                                      horizontal: 12,
+                                    ),
                                     child: Center(
-                                      child: Text('Flexibilidad',
-                                          style:
-                                              textStyle.titleLarge?.copyWith(
-                                            color: AppColors.almendra,
-                                          )),
+                                      child: Text(
+                                        'Flexibilidad',
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -253,13 +292,15 @@ class ClassView extends StatelessWidget {
                                   height: 40,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
+                                      horizontal: 12,
+                                    ),
                                     child: Center(
-                                      child: Text('Relajación',
-                                          style:
-                                              textStyle.titleLarge?.copyWith(
-                                            color: AppColors.almendra,
-                                          )),
+                                      child: Text(
+                                        'Relajación',
+                                        style: textStyle.titleLarge?.copyWith(
+                                          color: AppColors.almendra,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -277,21 +318,27 @@ class ClassView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Text('Descripción',
-                                  style: textStyle.titleLarge),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'Descripción',
+                                style: textStyle.titleLarge,
+                              ),
                             ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
                                 child: Text(
-                                  clase.descripcion,
-                                  style: textStyle.titleLarge
-                                      ?.copyWith(color: AppColors.almendra),
+                                  ocurrence.classSession.descripcion,
+                                  style: textStyle.titleLarge?.copyWith(
+                                    color: AppColors.almendra,
+                                  ),
                                 ),
                               ),
                             ),
@@ -307,21 +354,27 @@ class ClassView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child:
-                                  Text('Qué traer', style: textStyle.titleLarge),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'Qué traer',
+                                style: textStyle.titleLarge,
+                              ),
                             ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
                                 child: Text(
                                   'Agua',
-                                  style: textStyle.titleLarge
-                                      ?.copyWith(color: AppColors.almendra),
+                                  style: textStyle.titleLarge?.copyWith(
+                                    color: AppColors.almendra,
+                                  ),
                                 ),
                               ),
                             ),
@@ -336,18 +389,23 @@ class ClassView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Precio por clase',
-                                style: textStyle.titleLarge),
+                            Text(
+                              'Precio por clase',
+                              style: textStyle.titleLarge,
+                            ),
                             CustomCardsType1(
                               height: 50,
                               width: double.maxFinite,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
                                 child: Text(
-                                  '\$${currencyFormatter.format(int.parse(clase.price))}',
-                                  style: textStyle.titleLarge
-                                      ?.copyWith(color: AppColors.almendra),
+                                  '\$${currencyFormatter.format(int.parse(ocurrence.classSession.price))}',
+                                  style: textStyle.titleLarge?.copyWith(
+                                    color: AppColors.almendra,
+                                  ),
                                 ),
                               ),
                             ),
@@ -362,16 +420,19 @@ class ClassView extends StatelessWidget {
                           FilledButton(
                             onPressed: () {
                               context.push(
-                                  '/Home/class/$classId/reservation/$classId');
+                                '/Home/class/$classId/reservation/$classId',
+                              );
                             },
                             style: ButtonStyle(
                               backgroundColor: const WidgetStatePropertyAll(
-                                  AppColors.cafeNoir),
+                                AppColors.cafeNoir,
+                              ),
                               padding: const WidgetStatePropertyAll(
                                 EdgeInsets.symmetric(vertical: 20),
                               ),
                               fixedSize: const WidgetStatePropertyAll(
-                                  Size(300, 60)),
+                                Size(300, 60),
+                              ),
                               shape: WidgetStatePropertyAll(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
@@ -380,8 +441,9 @@ class ClassView extends StatelessWidget {
                             ),
                             child: Text(
                               'Reservar',
-                              style: textStyle.titleLarge
-                                  ?.copyWith(color: AppColors.piedra),
+                              style: textStyle.titleLarge?.copyWith(
+                                color: AppColors.piedra,
+                              ),
                             ),
                           ),
                         ],

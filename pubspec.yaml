@@ -17,6 +17,8 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_launcher_icons: ^0.14.4
   flutter_localization: ^0.3.3
+  flutter_localizations:
+    sdk: flutter
   flutter_native_splash: ^2.4.6
   flutter_secure_storage: ^9.2.4
   formz: ^0.8.0

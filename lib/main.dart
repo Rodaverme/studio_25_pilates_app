@@ -4,14 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_datasource_impl.dart';
-import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/widgets/auth_gate.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,64 +24,16 @@ Future<void> main() async {
               NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
         ),
         BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
-        BlocProvider(
-          create: (_) => InstructorCubit(
-            InstructorRepositoryImpl(datasource: InstructorDatasourceImpl())
-              ..getAllInstructor(),
-          )..loadInstructors(),
-        ),
-        BlocProvider(
-          create: (_) => LevelCubit(
-            LevelRepositoryImpl(datasource: LevelDatasourceImpl())
-              ..getAllLevels(),
-          )..loadLevels(),
-        ),
-
-        BlocProvider(
-          create: (_) => RoomCubit(
-            RoomRepositoryImpl(datasource: RoomDatasourceImpl())..getAllRoom(),
-          )..loadRooms(),
-        ),
-        BlocProvider(
-          create: (context) =>
-              PlanCubit(PlanRespoitoryImpl(PlanDatasourceImpl())),
-        ),
-
-        BlocProvider(create: (_) => PaymentCubit()),
-
-        BlocProvider<ClassCubit>(
-          create: (_) => ClassCubit(
-            ClassRespositoryImpl(datasource: ClassDatasourceImpl()),
-          ),
-        ),
-        BlocProvider(
-          create: (_) =>
-              CreditCardCubit(CreditCardDatasourceImpl())..loadMyCard(),
-        ),
         BlocProvider<LogoutCubit>(
           create: (context) => LogoutCubit(
             authCubit: context.read<AuthCubit>(),
-            planCubit: context.read<PlanCubit>(),
             authRepository: AuthRespositoryImpl(
               datasource: AuthDatasourceImpl(), // tu datasource actual
             ),
           ),
         ),
-        BlocProvider(create: (_) => FormsCreditCardCubit()),
-        BlocProvider(
-          create: (_) =>
-              MerchantsCubit(MerchantsDatasourceImpl()..getTokenPermalink())
-                ..loadMerchants(),
-        ),
-        BlocProvider(
-          create: (_) => TransactionCubit(TransactionsDatasourceImpl()),
-        ),
-        BlocProvider(
-          create: (_) => ReservationCubit(ReservationDatasourceImpl()),
-        ),
-        BlocProvider(create: (_) => OcurrencesCubit(OcurrenceDatasourceImpl()) )
       ],
-      child: AuthGate(child: const MainApp()), // 👈 envolvemos con un listener
+      child: const MainApp(), // 👈 envolvemos con un listener
     ),
   );
 }

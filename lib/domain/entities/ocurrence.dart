@@ -3,8 +3,8 @@ import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
 class Ocurrence {
   final int id;
   final DateTime date;
-  final String startTime;
-  final String endTime;
+  final DateTime startTime;
+  final DateTime endTime;
   final int capacity;
   final String price;
   final bool isSpecial;

@@ -31,8 +31,8 @@ class OcurrenceRepositoryImpl extends OcurrenceRepository {
   }
 
   @override
-  Future<Ocurrence> getOcurrencesById() {
-    return datasourceImpl.getOcurrencesById();
+  Future<Ocurrence> getOcurrencesById(int id) {
+    return datasourceImpl.getOcurrencesById(id);
   }
   
   @override
