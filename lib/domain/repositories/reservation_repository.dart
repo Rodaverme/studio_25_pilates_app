@@ -1,4 +1,5 @@
-import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+
+import 'package:studio_25_pilates_app/domain/entities/reservation.dart';
 
 abstract class ReservationRepository {
   Future<void> createReservation(
@@ -6,5 +7,5 @@ abstract class ReservationRepository {
     String paymentMethod,
     int cardId,
   );
-  Future<PilatesClass> getResevation();
+  Future<List<Reservation>> getResevation();
 }

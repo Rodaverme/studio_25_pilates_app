@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/reservations_datasource.dart';
-import 'package:studio_25_pilates_app/domain/entities/pilates_class.dart';
+import 'package:studio_25_pilates_app/domain/entities/entities.dart';
+import 'package:studio_25_pilates_app/infrastructure/mappers/reservation_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/reservation/reservation_response.dart';
 
 class ReservationDatasourceImpl extends ReservationsDatasource {
   final Dio dio = DioClient.Dio_create();
@@ -35,8 +37,29 @@ class ReservationDatasourceImpl extends ReservationsDatasource {
   }
 
   @override
-  Future<PilatesClass> getResevation() {
-    // TODO: implement getResevation
-    throw UnimplementedError();
+  Future<List<Reservation>> getResevation() async {
+    try {
+      final response = await dio.get('/api/reservations');
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic> data = response.data;
+        final List<Reservation> reserved = data
+            .map(
+              (json) => ReservationMapper.toEntity(
+                ReservationResponse.fromJson(json),
+              ),
+            )
+            .toList();
+
+        print('Estos son las  que existen ${reserved.length}');
+        return reserved;
+      }
+      throw Exception('Error al obtner las reservas');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error al obtener todas las reservas: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
   }
 }

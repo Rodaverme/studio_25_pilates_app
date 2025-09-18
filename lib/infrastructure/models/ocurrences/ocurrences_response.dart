@@ -92,7 +92,7 @@ class Datum {
   DateTime createdAt;
   DateTime updatedAt;
   dynamic deletedAt;
-  bool isInPlan;
+  bool? isInPlan;
   ClassSessionResponse classSession;
 
   Datum({
@@ -111,7 +111,7 @@ class Datum {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.isInPlan,
+    this.isInPlan,
     required this.classSession,
   });
 
@@ -156,7 +156,7 @@ class Datum {
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: DateTime.parse(json["updated_at"]),
       deletedAt: json["deleted_at"],
-      isInPlan: json["is_in_plan"],
+      isInPlan:  json["is_in_plan"] ?? false ,
       classSession: ClassSessionResponse.fromJson(json["class_session"]),
     );
   }

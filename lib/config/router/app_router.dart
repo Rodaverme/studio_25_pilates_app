@@ -19,12 +19,17 @@ import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/
 
 final appRouter = GoRouter(
   initialLocation: '/',
+  
 
   routes: [
     ShellRoute(
       builder: (context, state, child) {
         return MultiBlocProvider(
           providers: [
+            BlocProvider(
+              create: (_) => ReservationCubit(ReservationDatasourceImpl()),
+            ),
+
             BlocProvider(
               create: (_) =>
                   PlanCubit(PlanRespoitoryImpl(PlanDatasourceImpl())),
@@ -43,12 +48,12 @@ final appRouter = GoRouter(
             return const HomeView();
           },
           routes: [
-             GoRoute(
-                  path: '/succesPay',
-                  builder: (context, state) {
-                    return const ReservationSuccessView();
-                  },
-                ),
+            GoRoute(
+              path: '/succesPay',
+              builder: (context, state) {
+                return const ReservationSuccessView();
+              },
+            ),
             GoRoute(
               name: ClassView.name,
               path: '/class/:id',
@@ -98,10 +103,8 @@ final appRouter = GoRouter(
                     );
                   },
                 ),
-                
               ],
             ),
-           
           ],
         ),
 

@@ -18,7 +18,7 @@ class OccurrenceMapper {
       price: json.price,
       isSpecial: json.isSpecial,
       isCancelled: json.isCancelled,
-      isInPlan: json.isInPlan,
+      isInPlan: json.isInPlan ?? false,
       reservedCount: int.tryParse(json.reservedCount) ?? 0,
       classSession: ClassMapper.classApitoEntity(json.classSession),
     );

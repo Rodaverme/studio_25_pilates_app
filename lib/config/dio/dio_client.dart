@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studio_25_pilates_app/presentation/services/Auth/auth_interceptor.dart';
 
 class DioClient {
-  static Dio_create() {
+  static Dio_create( ) {
     final dio = Dio(
       BaseOptions(
         baseUrl: 'https://app.estudio25pilates.com',

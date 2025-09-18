@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
 
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
 class HomeView extends StatefulWidget {
@@ -21,11 +23,12 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-
+    context.read<ReservationCubit>().loadReservations();
     context.read<OcurrencesCubit>().loadOcurrence(
       DateTime.now(),
       DateTime(2025, 10, 12),
     );
+
     // context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
     // final token = await TokenService.getToken();
     // await NotificationRepositoryImpl(
@@ -36,6 +39,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final client = context.watch<AuthCubit>().state.client;
+
     final textStyle = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(),
@@ -93,10 +97,54 @@ class _HomeViewState extends State<HomeView> {
                         ),
 
                         //!tiene que ser mi proxima  reserva
-                        _NextClass(
-                          textStyle: textStyle,
-                          clase: ocurrences.first,
+                        BlocBuilder<ReservationCubit, ReservationState>(
+                          builder: (context, state) {
+                            if (state.status == ReservationStatus.loading) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+                            if (state.status == ReservationStatus.error) {
+                               final error = state.errorMessage;
+                              return  Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Center(
+                                 child: Text (error!),
+                                ),
+                              );
+                            }
+                            if (state.reservations.isEmpty) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Text("No tienes reservas próximas"),
+                              );
+                            }
+                            final nextReservation = (state.reservations
+                              ..sort(
+                                (a, b) => a.ocurrence.startTime.compareTo(
+                                  b.ocurrence.startTime,
+                                ),
+                              ))[0];
+
+                            return _NextClass(
+                              textStyle: textStyle,
+                              clase: nextReservation,
+                            );
+                          },
                         ),
+
                         const SizedBox(height: 20),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -150,11 +198,11 @@ class _NextClass extends StatelessWidget {
   const _NextClass({required this.textStyle, required this.clase});
 
   final TextTheme textStyle;
-  final Ocurrence clase;
+  final Reservation clase;
 
   @override
   Widget build(BuildContext context) {
-    final horaInicio = DateFormat("HH:mm").format(clase.startTime);
+    final horaInicio = DateFormat("HH:mm").format(clase.ocurrence.startTime);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -176,13 +224,13 @@ class _NextClass extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      clase.classSession.nombre,
+                      clase.ocurrence.classSession.nombre,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      clase.classSession.instructor,
+                      clase.ocurrence.classSession.instructor,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
