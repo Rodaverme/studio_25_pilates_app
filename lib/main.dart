@@ -32,6 +32,8 @@ Future<void> main() async {
             ),
           ),
         ),
+        BlocProvider(create: (_) => FormsCreditCardCubit()),
+        
       ],
       child: const MainApp(), // 👈 envolvemos con un listener
     ),

@@ -111,15 +111,13 @@ class _HomeViewState extends State<HomeView> {
                               );
                             }
                             if (state.status == ReservationStatus.error) {
-                               final error = state.errorMessage;
-                              return  Padding(
+                              final error = state.errorMessage;
+                              return Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 20,
                                   vertical: 10,
                                 ),
-                                child: Center(
-                                 child: Text (error!),
-                                ),
+                                child: Center(child: Text(error!)),
                               );
                             }
                             if (state.reservations.isEmpty) {
@@ -131,12 +129,31 @@ class _HomeViewState extends State<HomeView> {
                                 child: Text("No tienes reservas próximas"),
                               );
                             }
-                            final nextReservation = (state.reservations
-                              ..sort(
-                                (a, b) => a.ocurrence.startTime.compareTo(
-                                  b.ocurrence.startTime,
+
+                            final now = DateTime.now();
+
+                            final upcomingReservations = state.reservations
+                                .where(
+                                  (r) => r.ocurrence.startTime.isAfter(now),
+                                )
+                                .toList();
+
+                            if (upcomingReservations.isEmpty) {
+                              return Padding(
+                                padding: EdgeInsetsGeometry.symmetric(
+                                  horizontal: 20,
+                                  vertical: 20,
                                 ),
-                              ))[0];
+                                child: Text('No tienes reservas Ppróximas'),
+                              );
+                            }
+                            upcomingReservations.sort(
+                              (a, b) => a.ocurrence.startTime.compareTo(
+                                b.ocurrence.startTime,
+                              ),
+                            );
+
+                            final nextReservation = upcomingReservations.first;
 
                             return _NextClass(
                               textStyle: textStyle,
@@ -202,7 +219,20 @@ class _NextClass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final horaInicio = DateFormat("HH:mm").format(clase.ocurrence.startTime);
+    final start = clase.ocurrence.startTime;
+    final horaInicio = DateFormat("HH:mm").format(start);
+
+    // Obtenemos solo la parte de la fecha (año, mes, día) para comparar
+    final today = DateTime.now();
+    final isToday =
+        start.year == today.year &&
+        start.month == today.month &&
+        start.day == today.day;
+
+    // Texto de la fecha
+    final fechaTexto = isToday
+        ? "Hoy $horaInicio"
+        : "${DateFormat('dd/MM/yyyy').format(start)} - $horaInicio";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -236,7 +266,7 @@ class _NextClass extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "Hoy, $horaInicio",
+                      fechaTexto,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

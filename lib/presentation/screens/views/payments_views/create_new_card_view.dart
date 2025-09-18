@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/credit_card_cubit.dart';
@@ -111,6 +112,7 @@ class CreateNewCardView extends StatelessWidget {
                         onChanged: formsCreditCardCubit.dateExpiredChange,
                         autocorrect: false,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [ExpirationDateInputFormatter()],
                         decoration:
                             InputDecorations.authInputDecoration(
                               hintText: 'MM/AA',
@@ -224,3 +226,33 @@ class CreateNewCardView extends StatelessWidget {
     );
   }
 }
+
+
+
+class ExpirationDateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var text = newValue.text;
+
+    // Eliminar todo lo que no sea número
+    text = text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (text.length > 2) {
+      text = text.substring(0, 2) + '/' + text.substring(2);
+    }
+
+    // Limitar a 5 caracteres (MM/YY)
+    if (text.length > 5) {
+      text = text.substring(0, 5);
+    }
+
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+}
+

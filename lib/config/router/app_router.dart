@@ -19,7 +19,6 @@ import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/
 
 final appRouter = GoRouter(
   initialLocation: '/',
-  
 
   routes: [
     ShellRoute(
@@ -36,6 +35,16 @@ final appRouter = GoRouter(
             ),
             BlocProvider(
               create: (_) => OcurrencesCubit(OcurrenceDatasourceImpl()),
+            ),
+            BlocProvider(create: (_) => FormsCreditCardCubit()),
+            BlocProvider(
+              create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
+            ),
+
+            BlocProvider(
+              create: (_) =>
+                  MerchantsCubit(MerchantsDatasourceImpl()..getTokenPermalink())
+                    ..loadMerchants(),
             ),
           ],
           child: HomeScreen(childView: child),
@@ -74,16 +83,6 @@ final appRouter = GoRouter(
                     return MultiBlocProvider(
                       providers: [
                         BlocProvider(
-                          create: (_) =>
-                              MerchantsCubit(MerchantsDatasourceImpl()),
-                        ),
-                        BlocProvider(create: (_) => FormsCreditCardCubit()),
-                        BlocProvider(
-                          create: (_) =>
-                              CreditCardCubit(CreditCardDatasourceImpl())
-                                ..loadMyCard(),
-                        ),
-                        BlocProvider(
                           create: (context) =>
                               OcurrencesCubit(OcurrenceDatasourceImpl())
                                 ..loadOcurrenceById(int.parse(classId)),
@@ -96,7 +95,13 @@ final appRouter = GoRouter(
                         ),
                         BlocProvider(
                           create: (_) =>
-                              ReservationCubit(ReservationDatasourceImpl()),
+                              CreditCardCubit(CreditCardDatasourceImpl())
+                                ..loadMyCard(),
+                        ),
+                        BlocProvider(
+                          create: (_) => ReservationCubit(
+                            ReservationDatasourceImpl()..getResevation(),
+                          ),
                         ),
                       ],
                       child: ReservationView(classId: classId),
@@ -134,18 +139,7 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/new_card',
-          builder: (context, state) => MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => FormsCreditCardCubit()),
-              BlocProvider(
-                create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
-              ),
-              BlocProvider(
-                create: (_) => MerchantsCubit(MerchantsDatasourceImpl()),
-              ),
-            ],
-            child: const CreateNewCardView(),
-          ),
+          builder: (context, state) => const CreateNewCardView(),
         ),
       ],
     ),

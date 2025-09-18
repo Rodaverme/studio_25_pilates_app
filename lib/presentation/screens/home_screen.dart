@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/full_screen_loader.dart';
 
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadInitialData() async {
     final planCubit = context.read<PlanCubit>();
     final ocurrenceCubit = context.read<OcurrencesCubit>();
+    final reservedCubit = context.read<ReservationCubit>().loadReservations();
 
     try {
       await Future.wait([
@@ -34,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
         planCubit.loadMyPlan(),
         planCubit.loadStatusPlan(),
         ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime(2025, 10, 16)),
+        reservedCubit
       ]);
     } catch (_) {}
 
