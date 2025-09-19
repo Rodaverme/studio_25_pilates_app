@@ -1,3 +1,4 @@
+import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 
 import 'package:studio_25_pilates_app/domain/repositories/reservation_repository.dart';
@@ -20,5 +21,10 @@ class ReservationRepositoryImpl extends ReservationRepository {
   @override
   Future<List<Reservation>> getResevation() {
     return datasourceImpl.getResevation();
+  }
+  
+  @override
+  Future<CheckReservation> reservationCheck(int ocurrenceId,) {
+   return datasourceImpl.reservationCheck(ocurrenceId);
   }
 }

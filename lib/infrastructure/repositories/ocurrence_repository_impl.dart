@@ -40,4 +40,10 @@ class OcurrenceRepositoryImpl extends OcurrenceRepository {
     // TODO: implement getAllOcurrenceByDay
     throw UnimplementedError();
   }
+  
+  @override
+  Future<List<Ocurrence>> getAvailableOcurrences(int ocurrenceId){
+    // TODO: implement getAvailableOcurrences
+    throw UnimplementedError();
+  }
 }

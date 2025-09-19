@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/reservations_datasource.dart';
+import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
+import 'package:studio_25_pilates_app/infrastructure/mappers/ocurrences/chek_reservation_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/reservation_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/check_response.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/reservation/reservation_response.dart';
 
 class ReservationDatasourceImpl extends ReservationsDatasource {
@@ -57,6 +60,29 @@ class ReservationDatasourceImpl extends ReservationsDatasource {
     } on DioException catch (e) {
       throw Exception(
         'Error al obtener todas las reservas: ${e.response?.data ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Error inesperado: $e');
+    }
+  }
+
+  @override
+  Future<CheckReservation> reservationCheck(int ocurrenceId) async {
+    try {
+      final response = await dio.post(
+        '/api/reservations/check',
+        data: {"occurrence_id": ocurrenceId},
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        final cls = CheckResponse.fromJson(data);
+        final check = ChekReservationMapper.toEntity(cls);
+        return check;
+      }
+      throw Exception('Error al obtener el check');
+    } on DioException catch (e) {
+      throw Exception(
+        'Error el check de la ocurrencia: ${e.response?.data ?? e.message}',
       );
     } catch (e) {
       throw Exception('Error inesperado: $e');

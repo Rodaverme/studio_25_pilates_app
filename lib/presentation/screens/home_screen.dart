@@ -29,13 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final planCubit = context.read<PlanCubit>();
     final ocurrenceCubit = context.read<OcurrencesCubit>();
     final reservedCubit = context.read<ReservationCubit>().loadReservations();
+    context.read<OcurrencesCubit>().loadAvailableOcurrence();
 
     try {
       await Future.wait([
         planCubit.loadPlans(),
         planCubit.loadMyPlan(),
         planCubit.loadStatusPlan(),
-        ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime(2025, 10, 16)),
+        ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime.now()),
         reservedCubit
       ]);
     } catch (_) {}

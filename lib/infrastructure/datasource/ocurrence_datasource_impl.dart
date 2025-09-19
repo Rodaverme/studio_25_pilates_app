@@ -2,8 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/ocurrence_datasouce.dart';
 import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/ocurrences/ocurrence_mapper.dart';
 import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/reservation_repository_impl.dart';
 
 class OcurrenceDatasourceImpl extends OcurrenceDatasouce {
   final Dio dio = DioClient.Dio_create();
@@ -141,4 +143,26 @@ class OcurrenceDatasourceImpl extends OcurrenceDatasouce {
       throw Exception('Error inesperado: $e');
     }
   }
+  
+  @override
+  Future<List<Ocurrence>> getAvailableOcurrences() async {
+  final allOcurrence = await getAllOcurrence(
+    DateTime.now(),
+    DateTime.now(),
+  );
+
+  final results = <Ocurrence>[];
+
+  for (final occ in allOcurrence) {
+    // Llamas al repositorio de reservas pasando el ID de la ocurrencia
+    final availability = await ReservationRepositoryImpl(datasourceImpl: ReservationDatasourceImpl()).reservationCheck(occ.id);
+
+    if (availability.canReserve) {
+      results.add(occ);
+    }
+  }
+
+  return results;
+}
+
 }

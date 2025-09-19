@@ -10,7 +10,6 @@ import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/oc
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/credit_card/credit_card_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/payment_state.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/transactions/transaction_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
@@ -185,8 +184,8 @@ class _SumaryClass extends StatelessWidget {
     final duracion = ocurrence.endTime.difference(ocurrence.startTime);
     final horas = duracion.inHours;
     final minutos = duracion.inMinutes.remainder(60);
-    final duracionFormateada = 
-    "${horas > 0 ? "$horas Hora " : ""}${minutos > 0 ? "$minutos minuntos" : ""}";
+    final duracionFormateada =
+        "${horas > 0 ? "$horas Hora " : ""}${minutos > 0 ? "$minutos minuntos" : ""}";
 
     return CustomCardsType1(
       height: 250,
@@ -373,63 +372,27 @@ class PaymentMethodSelector extends StatelessWidget {
 
 class ReserveButton extends StatelessWidget {
   final Ocurrence ocurrence;
+
   const ReserveButton({super.key, required this.ocurrence});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        // 1. Listener de transacción
-        BlocListener<TransactionCubit, TransactionState>(
-          listener: (context, state) {
-            if (state.status == TransactionStatus.loaded) {
-              final paymentState = context.read<PaymentCubit>().state;
-
-              if (paymentState is PaymentSelected) {
-                final method = paymentState.method;
-                final paymentMethod = method.type.name;
-                final cardId = method.card?.id;
-
-                // 👉 Cuando la transacción termine, creamos la reserva
-                context.read<ReservationCubit>().createReservation(
-                  ocurrenceId: ocurrence.id,
-                  paymentMethod: paymentMethod,
-                  cardId: cardId!,
-                );
-              }
-            } else if (state.status == TransactionStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Error en transacción: ${state.errorMessage} ❌',
-                  ),
-                ),
-              );
-            }
-          },
-        ),
-
-        // 2. Listener de reserva
-        BlocListener<ReservationCubit, ReservationState>(
-          listener: (context, state) {
-            if (state.status == ReservationStatus.loaded) {
-              // 👉 Navegamos solo cuando la reserva esté confirmada
-              context.go('/Home/succesPay');
-            } else if (state.status == ReservationStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Error al crear reserva: ${state.errorMessage} ❌',
-                  ),
-                ),
-              );
-            }
-          },
-        ),
-      ],
-      child: BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocListener<ReservationCubit, ReservationState>(
+      listener: (context, state) {
+        if (state.status == ReservationStatus.loaded) {
+          // 👉 Navegamos solo cuando la reserva esté confirmada
+          context.go('/Home/succesPay');
+        } else if (state.status == ReservationStatus.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al crear reserva: ${state.errorMessage} ❌'),
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<ReservationCubit, ReservationState>(
         builder: (context, state) {
-          final isLoading = state.status == TransactionStatus.loading;
+          final isLoading = state.status == ReservationStatus.loading;
 
           return FilledButton(
             onPressed: isLoading
@@ -439,34 +402,20 @@ class ReserveButton extends StatelessWidget {
 
                     if (paymentState is PaymentSelected) {
                       final method = paymentState.method;
+                      final paymentMethod = method.type.name;
+                      final cardId = method.card?.id;
 
-                      String? paymentSourceId;
-
-                      switch (method.type) {
-                        case PaymentMethodType.credit:
-                          paymentSourceId = 'CREDITS';
-                          break;
-                        case PaymentMethodType.card:
-                          paymentSourceId = method.card?.sourceId;
-                          break;
-                        case PaymentMethodType.newCard:
-                          paymentSourceId = null;
-                          break;
-                      }
-
-                      // 👉 Disparamos la transacción primero
-                      context.read<TransactionCubit>().dotransaction(
-                        type: 'plan',
-                        typeId: '2',
-                        amount: int.parse(ocurrence.price),
-                        currency: 'COP',
-                        method: method.type.name,
-                        paymentSourceId: paymentSourceId ?? '',
+                      context.read<ReservationCubit>().createReservation(
+                        ocurrenceId: ocurrence.id,
+                        paymentMethod: paymentMethod,
+                        cardId: cardId!,
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Selecciona un método de pago'),
+                          content: Text(
+                            'Selecciona un método de pago antes de reservar ⚠️',
+                          ),
                         ),
                       );
                     }

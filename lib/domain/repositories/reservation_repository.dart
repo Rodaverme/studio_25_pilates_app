@@ -1,4 +1,5 @@
 
+import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
 import 'package:studio_25_pilates_app/domain/entities/reservation.dart';
 
 abstract class ReservationRepository {
@@ -8,4 +9,5 @@ abstract class ReservationRepository {
     int cardId,
   );
   Future<List<Reservation>> getResevation();
+   Future<CheckReservation>reservationCheck(int ocurrenceId);
 }

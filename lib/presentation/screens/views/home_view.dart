@@ -5,12 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
-import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
-
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
-import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
 class HomeView extends StatefulWidget {
@@ -25,23 +23,15 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     context.read<ReservationCubit>().loadReservations();
-    context.read<OcurrencesCubit>().loadOcurrence(
-      DateTime.now(),
-      DateTime(2025, 10, 12),
-    );
 
-    // context.read<ClassCubit>().loadPlanClasses(planState.myPlan!.id);
-    // final token = await TokenService.getToken();
-    // await NotificationRepositoryImpl(
-    //   datasource: NotificationsDatasourceImpl(),
-    // ).sendToken(token!);
+    context.read<OcurrencesCubit>().loadAvailableOcurrence();
   }
 
   @override
   Widget build(BuildContext context) {
     final client = context.watch<AuthCubit>().state.client;
-
     final textStyle = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(),
       body: Stack(
@@ -49,189 +39,144 @@ class _HomeViewState extends State<HomeView> {
           Positioned.fill(
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
+          ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Saludo
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'Hola, ${client?.name}',
+                        style: textStyle.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
-          BlocBuilder<OcurrencesCubit, OcurrencesState>(
-            builder: (context, ocurrenceState) {
-              if (ocurrenceState.status == OcurrenceStatus.error) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: CustomCardsType1(
-                    height: 130,
-                    width: double.maxFinite,
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Text(
-                            'No tienes clases reservadas, empieza a reservar',
-                          ),
-                        ),
+                    // Tarjetas Info
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        _InfoCard(label: 'Clases este mes', value: '12'),
+                        SizedBox(width: 20),
+                        _InfoCard(value: '4', label: 'racha'),
                       ],
                     ),
-                  ),
-                );
-              }
+                    const SizedBox(height: 20),
 
-              final ocurrences = ocurrenceState.ocurrences;
-
-              if (ocurrences.isEmpty) {
-                return Center(child: Text("No hay ocurrencias disponibles"));
-              }
-
-              return ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Hola, ${client?.name}',
-                            style: textStyle.titleLarge,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            _InfoCard(label: 'Clases este mes', value: '12'),
-                            SizedBox(width: 20),
-                            _InfoCard(value: '4', label: 'racha'),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Mi Próxima Clase',
-                            style: textStyle.titleLarge,
-                          ),
-                        ),
-
-                        //!tiene que ser mi proxima  reserva
-                        BlocBuilder<ReservationCubit, ReservationState>(
-                          builder: (context, state) {
-                            if (state.status == ReservationStatus.loading) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-                            if (state.status == ReservationStatus.error) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                child: CustomCardsType1(
-                                  height: 130,
-                                  width: double.maxFinite,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Center(
-                                        child: Text(
-                                          'No tienes clases reservadas, empieza a reservar',
-                                        ),
+                    // Próxima clase
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'Mi Próxima Clase',
+                        style: textStyle.titleLarge,
+                      ),
+                    ),
+                    BlocBuilder<ReservationCubit, ReservationState>(
+                      builder: (context, state) {
+                        if (state.status == ReservationStatus.loading) {
+                          print('Cargando');
+                        }
+                        if (state.status == ReservationStatus.error ||
+                            state.reservations.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: CustomCardsType2(
+                                height: 360,
+                                width: double.maxFinite,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        'No tienes reservas próximas ',
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () {
+                                        context.go('/calendar');
+                                      },
+                                      child: Text(
+                                        'Empieza reservando tu primera clase',
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              );
-                            }
-                            if (state.reservations.isEmpty) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                child: Text("No tienes reservas próximas"),
-                              );
-                            }
+                              ),
+                            ),
+                          );
+                        }
 
-                            final now = DateTime.now();
-
-                            final upcomingReservations = state.reservations
+                        final now = DateTime.now();
+                        final upcoming =
+                            state.reservations
                                 .where(
                                   (r) => r.ocurrence.startTime.isAfter(now),
                                 )
-                                .toList();
-
-                            if (upcomingReservations.isEmpty) {
-                              return Padding(
-                                padding: EdgeInsetsGeometry.symmetric(
-                                  horizontal: 20,
-                                  vertical: 20,
+                                .toList()
+                              ..sort(
+                                (a, b) => a.ocurrence.startTime.compareTo(
+                                  b.ocurrence.startTime,
                                 ),
-                                child: Text('No tienes reservas Ppróximas'),
                               );
-                            }
-                            upcomingReservations.sort(
-                              (a, b) => a.ocurrence.startTime.compareTo(
-                                b.ocurrence.startTime,
-                              ),
-                            );
 
-                            final nextReservation = upcomingReservations.first;
+                        if (upcoming.isEmpty) {
+                          return const Text("No tienes reservas próximas");
+                        }
 
-                            return _NextClass(
-                              textStyle: textStyle,
-                              clase: nextReservation,
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 20),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text('Clases de Hoy'),
-                        ),
-                        //!tengo que separarlo en todas las clases y clases del plan
-                        SizedBox(
-                          height: 380,
-                          child: ClassesCarousel(list: ocurrences),
-                        ),
-                        const SizedBox(height: 10),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text('Acciones Rápidas'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            children: [
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text('Mis Clases'),
-                              ),
-                              const Spacer(),
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text('Calendario'),
-                              ),
-                              const Spacer(),
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text('Tarjetas'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        return _NextClass(
+                          textStyle: textStyle,
+                          clase: upcoming.first,
+                        );
+                      },
                     ),
-                  ),
-                ],
-              );
-            },
+
+                    const SizedBox(height: 20),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text('Clases de Hoy'),
+                    ),
+
+                    // 🔹 Ahora ClassesCarousel maneja sus propios estados
+                    const SizedBox(height: 380, child: ClassesCarousel()),
+
+                    const SizedBox(height: 10),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text('Acciones Rápidas'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('Mis Clases'),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('Calendario'),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('Tarjetas'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -335,8 +280,7 @@ class _InfoCard extends StatelessWidget {
 }
 
 class ClassesCarousel extends StatefulWidget {
-  const ClassesCarousel({super.key, required this.list});
-  final List<Ocurrence> list;
+  const ClassesCarousel({super.key});
 
   @override
   State<ClassesCarousel> createState() => _ClassesCarouselState();
@@ -348,58 +292,98 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-    final pagesCount = (widget.list.length / 2).ceil();
 
-    return Column(
-      children: [
-        Expanded(
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: pagesCount,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              final first = index * 2;
-              final second = first + 1;
+    return BlocBuilder<OcurrencesCubit, OcurrencesState>(
+      builder: (context, state) {
+        if (state.status == OcurrenceStatus.loading) {
+          print('Cargando Ocurrencias');
+        }
+        if (state.status == OcurrenceStatus.error ||
+            state.ocurrencesAvalible.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: CustomCardsType2(
+                height: 360,
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(child: Text('Hoy no hay clases programadas ')),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
 
-              return Column(
-                children: [
-                  LessonsToday(
-                    ocurrence: widget.list[first],
-                    textStyle: textStyle,
-                    onTap: () {
-                      context.push('/Home/class/${widget.list[first].id}');
-                    },
-                    instructor: widget.list[first].classSession.instructor,
-                    level: widget.list[first].classSession.nivel,
-                  ),
-                  const SizedBox(height: 12),
-                  if (second < widget.list.length)
-                    LessonsToday(
-                      ocurrence: widget.list[second],
-                      textStyle: textStyle,
-                      onTap: () {
-                        context.push('/Home/class/${widget.list[second].id}');
-                      },
-                      instructor: widget.list[second].classSession.instructor,
-                      level: widget.list[second].classSession.nivel,
-                    ),
-                ],
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 5),
-        SmoothPageIndicator(
-          controller: _pageController,
-          count: pagesCount,
-          effect: ExpandingDotsEffect(
-            activeDotColor: AppColors.cafeNoir,
-            dotHeight: 8,
-            dotWidth: 8,
-            spacing: 6,
-          ),
-        ),
-      ],
+        final pagesCount = (state.ocurrencesAvalible.length / 2).ceil();
+
+        return Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: pagesCount,
+                itemBuilder: (context, index) {
+                  final first = index * 2;
+                  final second = first + 1;
+
+                  return Column(
+                    children: [
+                      LessonsToday(
+                        ocurrence: state.ocurrencesAvalible[first],
+                        textStyle: textStyle,
+                        onTap: () {
+                          context.push(
+                            '/Home/class/${state.ocurrencesAvalible[first].id}',
+                          );
+                        },
+                        instructor: state
+                            .ocurrencesAvalible[first]
+                            .classSession
+                            .instructor,
+                        level:
+                            state.ocurrencesAvalible[first].classSession.nivel,
+                      ),
+                      const SizedBox(height: 12),
+                      if (second < state.ocurrencesAvalible.length)
+                        LessonsToday(
+                          ocurrence: state.ocurrencesAvalible[second],
+                          textStyle: textStyle,
+                          onTap: () {
+                            context.push(
+                              '/Home/class/${state.ocurrencesAvalible[second].id}',
+                            );
+                          },
+                          instructor: state
+                              .ocurrencesAvalible[second]
+                              .classSession
+                              .instructor,
+                          level: state
+                              .ocurrencesAvalible[second]
+                              .classSession
+                              .nivel,
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 5),
+            SmoothPageIndicator(
+              controller: _pageController,
+              count: pagesCount,
+              effect: ExpandingDotsEffect(
+                activeDotColor: AppColors.cafeNoir,
+                dotHeight: 8,
+                dotWidth: 8,
+                spacing: 6,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -6,6 +6,7 @@ abstract class OcurrenceRepository  {
   Future<Ocurrence>getOcurrencesById(int id);
   Future<List<Ocurrence>>getOcurrencesByClassId(int classId,String from,String to);
   Future<List<Ocurrence>>getOcurrencesByClassPlan(int planId,String from,String to);
+  Future<List<Ocurrence>>getAvailableOcurrences(int ocurrenceId);
 
   
 }

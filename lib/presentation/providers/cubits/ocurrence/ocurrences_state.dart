@@ -9,10 +9,13 @@ class OcurrencesState extends Equatable {
   final List<Ocurrence> ocurrences;
   final String? errorMessage;
   final DateTime? selectedDate;
+  final List<Ocurrence> ocurrencesAvalible;
+  
 
   const OcurrencesState({
     this.status = OcurrenceStatus.initial,
     this.ocurrences = const [],
+    this.ocurrencesAvalible = const [],
     this.errorMessage,
     this.occurrencesDay = const [],
     this.selectedDate,
@@ -22,10 +25,12 @@ class OcurrencesState extends Equatable {
   OcurrencesState copyWith({
     OcurrenceStatus? status,
     List<Ocurrence>? ocurrences,
+    List<Ocurrence>? ocurrencesAvalible,
     String? errorMessage,
     List<Ocurrence>? occurrencesDay,
     DateTime? selectedDate,
     Ocurrence? ocurrenceById
+
   }) {
     return OcurrencesState(
       status: status ?? this.status,
@@ -33,10 +38,11 @@ class OcurrencesState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       occurrencesDay: occurrencesDay ?? this.occurrencesDay,
       selectedDate: selectedDate ?? this.selectedDate,
-      ocurrenceById: ocurrenceById ?? this.ocurrenceById
+      ocurrenceById: ocurrenceById ?? this.ocurrenceById,
+      ocurrencesAvalible: ocurrencesAvalible ?? this.ocurrencesAvalible,
     );
   }
 
   @override
-  List<Object> get props => [status, ocurrences, ?errorMessage, occurrencesDay,?ocurrenceById];
+  List<Object> get props => [status, ocurrences, ?errorMessage, occurrencesDay,?ocurrenceById,ocurrencesAvalible];
 }
