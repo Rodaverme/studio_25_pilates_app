@@ -10,6 +10,7 @@ import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
 class HomeView extends StatefulWidget {
@@ -52,8 +53,21 @@ class _HomeViewState extends State<HomeView> {
           BlocBuilder<OcurrencesCubit, OcurrencesState>(
             builder: (context, ocurrenceState) {
               if (ocurrenceState.status == OcurrenceStatus.error) {
-                return Center(
-                  child: Text("Error: ${ocurrenceState.errorMessage}"),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: CustomCardsType1(
+                    height: 130,
+                    width: double.maxFinite,
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            'No tienes clases reservadas, empieza a reservar',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               }
 
@@ -111,13 +125,27 @@ class _HomeViewState extends State<HomeView> {
                               );
                             }
                             if (state.status == ReservationStatus.error) {
-                              final error = state.errorMessage;
                               return Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 20,
                                   vertical: 10,
                                 ),
-                                child: Center(child: Text(error!)),
+                                child: CustomCardsType1(
+                                  height: 130,
+                                  width: double.maxFinite,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          'No tienes clases reservadas, empieza a reservar',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               );
                             }
                             if (state.reservations.isEmpty) {
