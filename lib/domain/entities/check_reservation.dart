@@ -8,6 +8,7 @@ class CheckReservation {
   final int reserved;
   final int available;
   final bool isInPlan;
+  final bool alreadyReserved;
   final bool canReserve;
   final int creditsRemaining;
   final DateTime planExpiresAt;
@@ -22,8 +23,10 @@ class CheckReservation {
     required this.reserved,
     required this.available,
     required this.isInPlan,
+    required this.alreadyReserved,
     required this.canReserve,
     required this.creditsRemaining,
     required this.planExpiresAt,
+
   });
 }

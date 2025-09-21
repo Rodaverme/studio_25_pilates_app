@@ -68,10 +68,19 @@ final appRouter = GoRouter(
               path: '/class/:id',
               builder: (context, state) {
                 final classId = state.pathParameters['id']!;
-                return BlocProvider(
-                  create: (context) =>
-                      OcurrencesCubit(OcurrenceDatasourceImpl())
-                        ..loadOcurrenceById(int.parse(classId)),
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (context) =>
+                          OcurrencesCubit(OcurrenceDatasourceImpl())
+                            ..loadOcurrenceById(int.parse(classId)),
+                    ),
+                    BlocProvider(
+                      create: (context) =>
+                          ReservationCubit(ReservationDatasourceImpl())
+                            ..loadCheckReservation(int.parse(classId)),
+                    ),
+                  ],
                   child: ClassView(classId: classId),
                 );
               },

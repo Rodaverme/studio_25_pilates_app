@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 
@@ -37,6 +38,26 @@ class ReservationCubit extends Cubit<ReservationState> {
         state.copyWith(
           status: ReservationStatus.loaded,
           reservations: reservations,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ReservationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> loadCheckReservation(int ocurrenceId) async {
+    emit(state.copyWith(status: ReservationStatus.loading));
+    try {
+      final checkReservation = await datasource.reservationCheck(ocurrenceId);
+      emit(
+        state.copyWith(
+          status: ReservationStatus.loaded,
+          checkReservation: checkReservation,
         ),
       );
     } catch (e) {

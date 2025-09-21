@@ -23,8 +23,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     context.read<ReservationCubit>().loadReservations();
-
-    context.read<OcurrencesCubit>().loadAvailableOcurrence();
+    context.read<OcurrencesCubit>().loadOcurrence(DateTime.now(),DateTime.now());
   }
 
   @override
@@ -81,8 +80,7 @@ class _HomeViewState extends State<HomeView> {
                         if (state.status == ReservationStatus.loading) {
                           print('Cargando');
                         }
-                        if (state.status == ReservationStatus.error ||
-                            state.reservations.isEmpty) {
+                        if (state.status == ReservationStatus.error) {
                           return Center(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
@@ -296,10 +294,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
     return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, state) {
         if (state.status == OcurrenceStatus.loading) {
-          print('Cargando Ocurrencias');
+          const CircularProgressIndicator(strokeWidth: 4);
         }
-        if (state.status == OcurrenceStatus.error ||
-            state.ocurrencesAvalible.isEmpty) {
+        if (state.status == OcurrenceStatus.error) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -316,8 +313,11 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
             ),
           );
         }
+        if (state.ocurrences.isEmpty) {
+          const CircularProgressIndicator(strokeWidth: 4);
+        }
 
-        final pagesCount = (state.ocurrencesAvalible.length / 2).ceil();
+        final pagesCount = (state.ocurrences.length / 2).ceil();
 
         return Column(
           children: [
@@ -332,36 +332,36 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                   return Column(
                     children: [
                       LessonsToday(
-                        ocurrence: state.ocurrencesAvalible[first],
+                        ocurrence: state.ocurrences[first],
                         textStyle: textStyle,
                         onTap: () {
                           context.push(
-                            '/Home/class/${state.ocurrencesAvalible[first].id}',
+                            '/Home/class/${state.ocurrences[first].id}',
                           );
                         },
                         instructor: state
-                            .ocurrencesAvalible[first]
+                            .ocurrences[first]
                             .classSession
                             .instructor,
                         level:
-                            state.ocurrencesAvalible[first].classSession.nivel,
+                            state.ocurrences[first].classSession.nivel,
                       ),
                       const SizedBox(height: 12),
-                      if (second < state.ocurrencesAvalible.length)
+                      if (second < state.ocurrences.length)
                         LessonsToday(
-                          ocurrence: state.ocurrencesAvalible[second],
+                          ocurrence: state.ocurrences[second],
                           textStyle: textStyle,
                           onTap: () {
                             context.push(
-                              '/Home/class/${state.ocurrencesAvalible[second].id}',
+                              '/Home/class/${state.ocurrences[second].id}',
                             );
                           },
                           instructor: state
-                              .ocurrencesAvalible[second]
+                              .ocurrences[second]
                               .classSession
                               .instructor,
                           level: state
-                              .ocurrencesAvalible[second]
+                              .ocurrences[second]
                               .classSession
                               .nivel,
                         ),
