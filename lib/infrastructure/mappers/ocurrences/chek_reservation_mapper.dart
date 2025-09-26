@@ -17,6 +17,8 @@ class ChekReservationMapper {
       occurrenceId: json.occurrenceId,
       planExpiresAt: json.planExpiresAt,
       reserved: json.reserved,
+      reservationsRemaining: json.reservationsRemaining,
+      planId: json.planId
     );
   }
 }

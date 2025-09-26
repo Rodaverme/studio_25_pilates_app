@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
 OcurrenceResponse ocurrenceResponseFromJson(String str) =>
@@ -79,16 +78,13 @@ class OcurrenceResponse {
 class Datum {
   int id;
   String classSessionId;
-  String recurringScheduleId;
   dynamic specialScheduleId;
   DateTime date;
   DateTime startTime;
   DateTime endTime;
   int capacity;
   String price;
-  bool isSpecial;
-  bool isCancelled;
-  String reservedCount;
+
   DateTime createdAt;
   DateTime updatedAt;
   dynamic deletedAt;
@@ -98,16 +94,12 @@ class Datum {
   Datum({
     required this.id,
     required this.classSessionId,
-    required this.recurringScheduleId,
     required this.specialScheduleId,
     required this.date,
     required this.startTime,
     required this.endTime,
     required this.capacity,
     required this.price,
-    required this.isSpecial,
-    required this.isCancelled,
-    required this.reservedCount,
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
@@ -143,20 +135,16 @@ class Datum {
     return Datum(
       id: json["id"],
       classSessionId: json["class_session_id"],
-      recurringScheduleId: json["recurring_schedule_id"],
       specialScheduleId: json["special_schedule_id"],
       date: date,
       startTime: startTime,
       endTime: endTime,
       capacity: json["capacity"],
       price: json["price"],
-      isSpecial: json["is_special"],
-      isCancelled: json["is_cancelled"],
-      reservedCount: json["reserved_count"],
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: DateTime.parse(json["updated_at"]),
       deletedAt: json["deleted_at"],
-      isInPlan:  json["is_in_plan"] ?? false ,
+      isInPlan: json["is_in_plan"] ?? false,
       classSession: ClassSessionResponse.fromJson(json["class_session"]),
     );
   }
@@ -164,7 +152,7 @@ class Datum {
   Map<String, dynamic> toJson() => {
     "id": id,
     "class_session_id": classSessionId,
-    "recurring_schedule_id": recurringScheduleId,
+
     "special_schedule_id": specialScheduleId,
     "date":
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
@@ -174,9 +162,6 @@ class Datum {
         "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}:${endTime.second.toString().padLeft(2, '0')}",
     "capacity": capacity,
     "price": price,
-    "is_special": isSpecial,
-    "is_cancelled": isCancelled,
-    "reserved_count": reservedCount,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "deleted_at": deletedAt,

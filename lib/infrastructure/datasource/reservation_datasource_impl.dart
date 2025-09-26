@@ -14,7 +14,8 @@ class ReservationDatasourceImpl extends ReservationsDatasource {
   Future<void> createReservation(
     int ocurrenceId,
     String paymentMethod,
-    int cardId,
+    int? cardId,
+    int? planId
   ) async {
     try {
       final response = await dio.post(
@@ -23,6 +24,7 @@ class ReservationDatasourceImpl extends ReservationsDatasource {
           "occurrence_id": ocurrenceId,
           "payment_method": paymentMethod,
           "card_id": cardId,
+          "plan_id": planId
         },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {

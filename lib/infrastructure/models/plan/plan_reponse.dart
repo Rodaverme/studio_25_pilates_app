@@ -1,60 +1,78 @@
 // To parse this JSON data, do
 //
-//     final plansResponse = plansResponseFromJson(jsonString);
+//     final planResponse = planResponseFromJson(jsonString);
 
 import 'dart:convert';
 
-import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_api.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
-List<PlansResponse> plansResponseFromJson(String str) => List<PlansResponse>.from(json.decode(str).map((x) => PlansResponse.fromJson(x)));
+List<PlanResponse> planResponseFromJson(String str) => List<PlanResponse>.from(json.decode(str).map((x) => PlanResponse.fromJson(x)));
 
-String plansResponseToJson(List<PlansResponse> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String planResponseToJson(List<PlanResponse> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class PlansResponse {
+class PlanResponse {
     int id;
-    String clientId;
-    String planId;
-    String cardId;
-    DateTime startDate;
     bool isActive;
+    String name;
+    String? description;
+    int classLimit;
+    String price;
+    bool allowGuests;
+    int guestPerPeriod;
     DateTime createdAt;
     DateTime updatedAt;
-    PlansApi plan;
+    dynamic deletedAt;
+    List<ClassSessionResponse>? classSessions;
 
-    PlansResponse({
+    PlanResponse({
         required this.id,
-        required this.clientId,
-        required this.planId,
-        required this.cardId,
-        required this.startDate,
         required this.isActive,
+        required this.name,
+        this.description,
+        required this.classLimit,
+        required this.price,
+        required this.allowGuests,
+        required this.guestPerPeriod,
         required this.createdAt,
         required this.updatedAt,
-        required this.plan,
+        required this.deletedAt,
+        this.classSessions,
     });
 
-    factory PlansResponse.fromJson(Map<String, dynamic> json) => PlansResponse(
+    factory PlanResponse.fromJson(Map<String, dynamic> json) => PlanResponse(
         id: json["id"],
-        clientId: json["client_id"],
-        planId: json["plan_id"],
-        cardId: json["card_id"],
-        startDate: DateTime.parse(json["start_date"]),
         isActive: json["is_active"],
+        name: json["name"],
+        description: json["description"] ?? '',
+        classLimit: json["class_limit"],
+        price: json["price"],
+        allowGuests: json["allow_guests"],
+        guestPerPeriod: json["guest_per_period"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        plan: PlansApi.fromJson(json["plan"]),
+        deletedAt: json["deleted_at"],
+         classSessions: json["class_sessions"] == null
+            ? null
+            : List<ClassSessionResponse>.from(
+                json["class_sessions"].map(
+                  (x) => ClassSessionResponse.fromJson(x),
+                ),
+              ),
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
-        "client_id": clientId,
-        "plan_id": planId,
-        "card_id": cardId,
-        "start_date": startDate.toIso8601String(),
         "is_active": isActive,
+        "name": name,
+        "description": description,
+        "class_limit": classLimit,
+        "price": price,
+        "allow_guests": allowGuests,
+        "guest_per_period": guestPerPeriod,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "plan": plan.toJson(),
+        "deleted_at": deletedAt,
+        "class_sessions": List<dynamic>.from(classSessions?.map((x) => x.toJson()) ?? []),
     };
 }
 

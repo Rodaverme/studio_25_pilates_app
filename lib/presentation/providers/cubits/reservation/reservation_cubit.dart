@@ -13,13 +13,19 @@ class ReservationCubit extends Cubit<ReservationState> {
   Future<void> createReservation({
     required int ocurrenceId,
     required String paymentMethod,
-    required int cardId,
+    int? cardId,
+    int? planId,
   }) async {
     emit(state.copyWith(status: ReservationStatus.loading));
     try {
-      await datasource.createReservation(ocurrenceId, paymentMethod, cardId);
+      await datasource.createReservation(
+        ocurrenceId,
+        paymentMethod,
+        cardId,
+        planId,
+      );
 
-      emit(state.copyWith(status: ReservationStatus.loaded));
+      emit(state.copyWith(status: ReservationStatus.reserved));
     } catch (e) {
       emit(
         state.copyWith(

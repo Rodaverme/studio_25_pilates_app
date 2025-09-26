@@ -23,7 +23,10 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     context.read<ReservationCubit>().loadReservations();
-    context.read<OcurrencesCubit>().loadOcurrence(DateTime.now(),DateTime.now());
+    context.read<OcurrencesCubit>().loadOcurrence(
+      DateTime.now(),
+      DateTime.now(),
+    );
   }
 
   @override
@@ -87,23 +90,13 @@ class _HomeViewState extends State<HomeView> {
                                 horizontal: 10,
                               ),
                               child: CustomCardsType2(
-                                height: 360,
+                                height: 130,
                                 width: double.maxFinite,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Center(
-                                      child: Text(
-                                        'No tienes reservas próximas ',
-                                      ),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () {
-                                        context.go('/calendar');
-                                      },
-                                      child: Text(
-                                        'Empieza reservando tu primera clase',
-                                      ),
+                                      child: Text('Ocurrio un problema 😞  )'),
                                     ),
                                   ],
                                 ),
@@ -126,7 +119,31 @@ class _HomeViewState extends State<HomeView> {
                               );
 
                         if (upcoming.isEmpty) {
-                          return const Text("No tienes reservas próximas");
+                          return CustomCardsType2(
+                            height: 130,
+                            width: double.maxFinite,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: Text('No tienes reservas próximas '),
+                                ),
+                                FilledButton(
+                                  onPressed: () {
+                                    context.go('/calendar');
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor: WidgetStatePropertyAll(
+                                      AppColors.almendra,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Empieza reservando tu primera clase',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         }
 
                         return _NextClass(
@@ -339,12 +356,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                             '/Home/class/${state.ocurrences[first].id}',
                           );
                         },
-                        instructor: state
-                            .ocurrences[first]
-                            .classSession
-                            .instructor,
-                        level:
-                            state.ocurrences[first].classSession.nivel,
+                        instructor:
+                            state.ocurrences[first].classSession.instructor,
+                        level: state.ocurrences[first].classSession.nivel,
                       ),
                       const SizedBox(height: 12),
                       if (second < state.ocurrences.length)
@@ -356,14 +370,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                               '/Home/class/${state.ocurrences[second].id}',
                             );
                           },
-                          instructor: state
-                              .ocurrences[second]
-                              .classSession
-                              .instructor,
-                          level: state
-                              .ocurrences[second]
-                              .classSession
-                              .nivel,
+                          instructor:
+                              state.ocurrences[second].classSession.instructor,
+                          level: state.ocurrences[second].classSession.nivel,
                         ),
                     ],
                   );

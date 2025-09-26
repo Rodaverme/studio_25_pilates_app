@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/domain/entities/plan.dart';
@@ -69,22 +68,28 @@ class PlanCubit extends Cubit<PlanState> {
       );
     }
   }
+
+  Future<void> loadPlanById(int planId) async {
+    emit(state.copyWith(status: PlanStatus.loading));
+    try {
+      final planById = await repository.getPlanById(planId);
+      emit(state.copyWith(status: PlanStatus.loaded, planById: planById));
+    } catch (e) {
+      emit(
+        state.copyWith(status: PlanStatus.error, errorMessage: e.toString()),
+      );
+    }
+  }
+
+  Future<void> planPurchase(int planId,int cardId) async {
+    emit(state.copyWith(status: PlanStatus.loading));
+    try {
+      await repository.planPurchase(planId,cardId);
+      emit(state.copyWith(status: PlanStatus.purchase));
+    } catch (e) {
+      emit(
+        state.copyWith(status: PlanStatus.error, errorMessage: e.toString()),
+      );
+    }
+  }
 }
-
-
-  // Future<void> getAllPlans() async {
-    
-  //   emit(PlanLoading());
-  //   try {
-  //     final plans = await repository.getAllPlans();
-  //     final myPlan = await repository.getMyPlan();
-  //     StatusPlan? statusPlan;
-  //     print( 'Este es el Id de mi plan  ${myPlan.id }');
-  //     statusPlan = await repository.statusPlan(); // aquí usas el id
-  //         emit(AllPlansLoaded(plans: plans,myPlan: myPlan,statusPlan: statusPlan));
-  //   } catch (e) {
-  //     emit(PlanError(e.toString()));
-  //   }
-  // }
-
-

@@ -1,6 +1,14 @@
 part of 'plan_cubit.dart';
 
-enum PlanStatus { initial, loading, loaded, canceled, error }
+enum PlanStatus {
+  initial,
+  loading,
+  loaded,
+  canceled,
+  error,
+  purchase,
+  reserved,
+}
 
 class PlanState extends Equatable {
   final PlanStatus status;
@@ -8,6 +16,7 @@ class PlanState extends Equatable {
   final Plan? myPlan;
   final StatusPlan? statusPlan;
   final String? errorMessage;
+  final Plan? planById;
 
   const PlanState({
     this.status = PlanStatus.initial,
@@ -15,6 +24,7 @@ class PlanState extends Equatable {
     this.myPlan,
     this.statusPlan,
     this.errorMessage,
+    this.planById,
   });
 
   PlanState copyWith({
@@ -23,6 +33,7 @@ class PlanState extends Equatable {
     Plan? myPlan,
     StatusPlan? statusPlan,
     String? errorMessage,
+    Plan? planById,
   }) {
     return PlanState(
       status: status ?? this.status,
@@ -30,9 +41,17 @@ class PlanState extends Equatable {
       myPlan: myPlan ?? this.myPlan,
       statusPlan: statusPlan ?? this.statusPlan,
       errorMessage: errorMessage ?? this.errorMessage,
+      planById: planById ?? this.planById,
     );
   }
 
   @override
-  List<Object?> get props => [status, plans, myPlan, statusPlan, errorMessage];
+  List<Object?> get props => [
+    status,
+    plans,
+    myPlan,
+    statusPlan,
+    errorMessage,
+    planById,
+  ];
 }

@@ -6,4 +6,7 @@ abstract class PlanRepository {
   Future<void>cancelMyPlan();
   Future<List<Plan>>getAllPlans();
   Future<StatusPlan>statusPlan();
+  Future<Plan>getPlanById(int planId);
+  Future<void>planPurchase(int planId,int cardId);
+
 }

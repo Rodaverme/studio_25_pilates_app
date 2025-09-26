@@ -7,10 +7,9 @@ class Ocurrence {
   final DateTime endTime;
   final int capacity;
   final String price;
-  final bool isSpecial;
-  final bool isCancelled;
+
   final bool isInPlan;
-  final int reservedCount;
+
   final PilatesClass classSession;
 
   Ocurrence({
@@ -20,10 +19,9 @@ class Ocurrence {
     required this.endTime,
     required this.capacity,
     required this.price,
-    required this.isSpecial,
-    required this.isCancelled,
+
     required this.isInPlan,
-    required this.reservedCount,
+
     required this.classSession,
   });
 }

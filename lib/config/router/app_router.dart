@@ -89,6 +89,7 @@ final appRouter = GoRouter(
                   path: '/reservation/:id',
                   builder: (context, state) {
                     final classId = state.pathParameters['id']!;
+
                     return MultiBlocProvider(
                       providers: [
                         BlocProvider(
@@ -108,12 +109,16 @@ final appRouter = GoRouter(
                                 ..loadMyCard(),
                         ),
                         BlocProvider(
-                          create: (_) => ReservationCubit(
-                            ReservationDatasourceImpl()..getResevation(),
-                          ),
+                          create: (context) =>
+                              ReservationCubit(ReservationDatasourceImpl())
+                                ..loadCheckReservation(int.parse(classId)),
                         ),
                       ],
-                      child: ReservationView(classId: classId),
+                      child: ReservationView(
+                        classId: classId,
+
+                        type: ReservationType.classReservation,
+                      ),
                     );
                   },
                 ),
@@ -132,7 +137,40 @@ final appRouter = GoRouter(
           path: '/plans',
           builder: (context, state) {
             return const PlanesView();
+
+            ///plans/reservation/:id
           },
+          routes: [
+            GoRoute(
+              path: '/reservation/:id',
+              builder: (context, state) {
+                final planId = state.pathParameters['id']!;
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (_) =>
+                          PlanCubit(PlanRespoitoryImpl(PlanDatasourceImpl()))
+                            ..loadPlanById(int.parse(planId)),
+                    ),
+                    BlocProvider(create: (_) => PaymentCubit()),
+                    BlocProvider(
+                      create: (_) =>
+                          CreditCardCubit(CreditCardDatasourceImpl())
+                            ..loadMyCard(),
+                    ),
+                    BlocProvider(
+                      create: (_) =>
+                          ReservationCubit(ReservationDatasourceImpl()),
+                    ),
+                  ],
+                  child: ReservationView(
+                    type: ReservationType.planPurchase,
+                    planId: planId,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/notifications',
@@ -159,28 +197,5 @@ final appRouter = GoRouter(
       builder: (context, state) => ResetPasswordScreen(),
     ),
     GoRoute(path: '/register', builder: (context, state) => RegisterScreen()),
-
-    // GoRoute(path: '/', builder: (context, state) => LoginScreen()),
-    // GoRoute(
-    //   path: '/resetPassword',
-    //   builder: (context, state) => ResetPasswordScreen(),
-    // ),
-    // GoRoute(path: '/register', builder: (context, state) => RegisterScreen()),
-
-    // GoRoute(
-    //   path: '/home-screen/:page',
-    //   name: HomeScreen.name,
-    //   builder: (context, state) {
-    //     final pageIndex = int.parse(state.pathParameters['page'] ?? '0');
-    //     return HomeScreen(pageIndex: pageIndex);
-    //   },
-    // ),
-    // GoRoute(
-    //   path: 'class/:id',
-    //   name: ClassView.name,
-    //   builder: (context, state) {
-    //     return ClassView(movieId: state.pathParameters['id'] ?? 'no id');
-    //   },
-    // ),
   ],
 );

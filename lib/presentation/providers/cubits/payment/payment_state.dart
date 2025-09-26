@@ -1,17 +1,21 @@
 import 'package:equatable/equatable.dart';
 import 'package:studio_25_pilates_app/domain/entities/credit_card.dart';
 
-enum PaymentMethodType { credit, card, newCard }
+enum PaymentMethodType { credit, card, newCard, cash }
 
 class PaymentMethod extends Equatable {
   final PaymentMethodType type;
-  final CreditCard? card; // si el método es card, aquí guardamos la tarjeta completa
+  final CreditCard?
+  card; // si el método es card, aquí guardamos la tarjeta completa
 
   const PaymentMethod._(this.type, {this.card});
 
   const PaymentMethod.credit() : this._(PaymentMethodType.credit);
 
-  const PaymentMethod.card(CreditCard card) : this._(PaymentMethodType.card, card: card);
+  const PaymentMethod.cash() : this._(PaymentMethodType.cash);
+
+  const PaymentMethod.card(CreditCard card)
+    : this._(PaymentMethodType.card, card: card);
 
   const PaymentMethod.newCard() : this._(PaymentMethodType.newCard);
 

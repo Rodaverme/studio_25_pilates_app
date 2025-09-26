@@ -6,6 +6,7 @@ abstract class ReservationsDatasource {
     int ocurrenceId,
     String paymentMethod,
     int cardId,
+    int planId
   );
   Future<List<Reservation>> getResevation();
   Future<CheckReservation>reservationCheck(int ocurrenceId);

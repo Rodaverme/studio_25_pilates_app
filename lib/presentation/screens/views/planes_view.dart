@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/entities.dart';
@@ -32,6 +33,7 @@ class PlanesView extends StatelessWidget {
                 final plans = state.plans;
                 final myPlan = state.myPlan;
                 final status = state.statusPlan;
+               
                 // final status = state.statusPlan;
     
                 if (plans.isEmpty) {
@@ -52,6 +54,7 @@ class PlanesView extends StatelessWidget {
                           isActive: isActive,
                           textStyle: Theme.of(context).textTheme,
                           plan: plan,
+
                           status: isActive ? status : null,
                         ),
                       );
@@ -97,8 +100,8 @@ class _CustomPlanes extends StatelessWidget {
       final startDate = status!.startDate;
       final endDate = status!.expiresAt;
 
-      final totalDays = endDate?.difference(startDate!).inDays;
-      final usedDays = totalDays! - status!.daysRemaining;
+      final totalDays = endDate.difference(startDate).inDays;
+      final usedDays = totalDays - status!.daysRemaining;
       progress = usedDays / totalDays;
     }
 
@@ -186,17 +189,20 @@ class _CustomPlanes extends StatelessWidget {
                     const Text('Cancelación Gratuita'),
                     const SizedBox(height: 20),
                     Center(
-                      child: Container(
-                        height: 60,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.black,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Seleccionar Plan',
-                            style: TextStyle(color: Colors.white),
+                      child: GestureDetector(
+                        onTap: () => context.push('/plans/reservation/${plan.id}'),  
+                        child: Container(
+                          height: 60,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: AppColors.almendra,
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Seleccionar Plan',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
                       ),

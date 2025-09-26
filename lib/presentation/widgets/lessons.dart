@@ -79,7 +79,7 @@ class LessonsToday extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${ocurrence.reservedCount}/${ocurrence.classSession.cupoMaximo} Cupos',
+                          '${0}/${ocurrence.classSession.cupoMaximo} Cupos',
                           style: textStyle.titleLarge?.copyWith(
                             color: AppColors.almendra,
                           ),

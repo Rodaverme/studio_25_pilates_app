@@ -14,8 +14,9 @@ class ReservationRepositoryImpl extends ReservationRepository {
     int ocurrenceId,
     String paymentMethod,
     int cardId,
+    int planId
   ) {
-    return datasourceImpl.createReservation(ocurrenceId, paymentMethod, cardId);
+    return datasourceImpl.createReservation(ocurrenceId, paymentMethod, cardId,planId);
   }
 
   @override
