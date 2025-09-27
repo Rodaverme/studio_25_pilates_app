@@ -9,7 +9,7 @@ class ChekReservationMapper {
       canReserve: json.canReserve,
       capacity: json.capacity,
       classId: json.classId,
-      creditsRemaining: json.creditsRemaining ,
+      creditsRemaining: json.creditsRemaining,
       date: json.date,
       endTime: json.endTime,
       isInPlan: json.isInPlan,
@@ -18,7 +18,8 @@ class ChekReservationMapper {
       planExpiresAt: json.planExpiresAt,
       reserved: json.reserved,
       reservationsRemaining: json.reservationsRemaining,
-      planId: json.planId
+      planId: json.planId,
+      invitationRemaining: json.invitationRemaining,
     );
   }
 }

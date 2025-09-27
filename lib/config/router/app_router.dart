@@ -4,11 +4,13 @@ import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_dataso
 import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/form_invitation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/guest_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/notifications_views.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
@@ -113,12 +115,25 @@ final appRouter = GoRouter(
                               ReservationCubit(ReservationDatasourceImpl())
                                 ..loadCheckReservation(int.parse(classId)),
                         ),
+
+                        BlocProvider(create: (_) => FormInvitationCubit()),
                       ],
                       child: ReservationView(
                         classId: classId,
 
                         type: ReservationType.classReservation,
                       ),
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: '/invite/:id',
+                  builder: (context, state) {
+                    final classId = state.pathParameters['id'];
+
+                    return BlocProvider(
+                      create: (context) => FormInvitationCubit(),
+                      child: GuestView(classId: classId),
                     );
                   },
                 ),

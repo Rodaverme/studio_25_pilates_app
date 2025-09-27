@@ -76,7 +76,9 @@ class ReservationDatasourceImpl extends ReservationsDatasource {
         data: {"occurrence_id": ocurrenceId},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
+
         final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        print(' data del check $data');
         final cls = CheckResponse.fromJson(data);
         final check = ChekReservationMapper.toEntity(cls);
         return check;

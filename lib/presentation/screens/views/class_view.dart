@@ -76,8 +76,13 @@ class ClassView extends StatelessWidget {
                   ? check.canReserve
                   : true;
 
+              // final canGuest =
+              //     (check?.alreadyReserved == true &&
+              //     check!.invitationRemaining > 0);
+              final invitationRemaining = check?.invitationRemaining;
+
               final reservedCount = check?.reserved ?? 0;
-              final capacity = check?.capacity ?? 0;
+              final capacity = check?.available ?? 0;
               final progress = capacity > 0 ? reservedCount / capacity : 0.0;
 
               return Scaffold(
@@ -207,6 +212,7 @@ class ClassView extends StatelessWidget {
                                     canReserve: canReserve,
                                     classId: classId,
                                     textStyle: textStyle,
+                                    invitationReserved: invitationRemaining!,
                                   ),
                                 ],
                               ),
@@ -236,11 +242,13 @@ class SubmitButton extends StatelessWidget {
     required this.canReserve,
     required this.classId,
     required this.textStyle,
+    required this.invitationReserved,
   });
 
   final bool canReserve;
   final String classId;
   final TextTheme textStyle;
+  final int invitationReserved;
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +259,7 @@ class SubmitButton extends StatelessWidget {
           if (canReserve) {
             context.push('/Home/class/$classId/reservation/$classId');
           } else {
+            if (invitationReserved == 0 ) return;
             context.push('/Home/class/$classId/invite/$classId');
           }
         },
@@ -290,9 +299,10 @@ class DescriptionClass extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String cleanHtml(String html) {
-  final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
-  return html.replaceAll(regex, '').trim();
-}
+      final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+      return html.replaceAll(regex, '').trim();
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -321,7 +331,7 @@ class DescriptionClass extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                cleanHtml( ocurrence.classSession.descripcion,),
+                cleanHtml(ocurrence.classSession.descripcion),
                 style: textStyle.titleLarge?.copyWith(
                   color: AppColors.almendra,
                 ),
