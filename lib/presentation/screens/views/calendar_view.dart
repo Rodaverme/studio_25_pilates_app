@@ -7,8 +7,16 @@ import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/oc
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/week_calendar.dart';
 
-class CalendarView extends StatelessWidget {
+class CalendarView extends StatefulWidget {
   const CalendarView({super.key});
+
+  @override
+  State<CalendarView> createState() => _CalendarViewState();
+}
+
+class _CalendarViewState extends State<CalendarView> {
+  String? _selectedInstructor;
+  String? _selectedNivel;
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +31,30 @@ class CalendarView extends StatelessWidget {
           ),
           Column(
             children: [
-              /// 📅 Calendario
-              WeekCalendar(
-                onDaySelected: (day) {
-                  context.read<OcurrencesCubit>().loadOcurrenceDay(day);
+              /// 📅 Calendario con filtros dinámicos
+              BlocBuilder<OcurrencesCubit, OcurrencesState>(
+                builder: (context, state) {
+                  return WeekCalendar(
+                    onDaySelected: (day) {
+                      context.read<OcurrencesCubit>().loadOcurrenceDay(day);
+                    },
+                    onFilterChanged: (filter) {
+                      setState(() {
+                        _selectedInstructor = filter['instructor'];
+                        _selectedNivel = filter['nivel'];
+                      });
+                    },
+                    occurrences: state.status == OcurrenceStatus.loaded
+                        ? state.occurrencesDay
+                        : [],
+                  );
                 },
               ),
+
+   
+
+
+
 
               /// 📌 Lista de clases
               Expanded(
@@ -39,7 +65,37 @@ class CalendarView extends StatelessWidget {
                     }
 
                     if (state.status == OcurrenceStatus.loaded) {
-                      if (state.occurrencesDay.isEmpty) {
+                      final now = DateTime.now();
+                      final reservationLimit = now.add(
+                        const Duration(minutes: 15),
+                      );
+
+                      // 👉 Filtrar las ocurrencias del día (mínimo 15 min antes)
+                      var validOccurrences = state.occurrencesDay.where((o) {
+                        return o.startTime.isAfter(reservationLimit);
+                      }).toList();
+
+                      // 👉 Filtro por instructor
+                      if (_selectedInstructor != null &&
+                          _selectedInstructor!.isNotEmpty) {
+                        validOccurrences = validOccurrences
+                            .where((o) => o.classSession!.instructor
+                                .toLowerCase()
+                                .contains(_selectedInstructor!.toLowerCase()))
+                            .toList();
+                      }
+
+                      // 👉 Filtro por nivel
+                      if (_selectedNivel != null &&
+                          _selectedNivel!.isNotEmpty) {
+                        validOccurrences = validOccurrences
+                            .where((o) => o.classSession!.nivel
+                                .toLowerCase()
+                                .contains(_selectedNivel!.toLowerCase()))
+                            .toList();
+                      }
+
+                      if (validOccurrences.isEmpty) {
                         return const Center(
                           child: Text("No hay clases para este día"),
                         );
@@ -47,18 +103,19 @@ class CalendarView extends StatelessWidget {
 
                       return ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        itemCount: state.occurrencesDay.length,
+                        itemCount: validOccurrences.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 20),
                         itemBuilder: (context, index) {
-                          final c = state.occurrencesDay[index];
+                          final c = validOccurrences[index];
 
                           return FadeInLeft(
                             child: LessonsToday(
                               ocurrence: c,
                               textStyle: textStyle,
-                              onTap: () => context.push('/Home/class/${c.id}'),
-                              instructor: c.classSession.instructor,
-                              level: c.classSession.nivel,
+                              onTap: () =>
+                                  context.push('/Home/class/${c.id}'),
+                              instructor: c.classSession!.instructor,
+                              level: c.classSession!.nivel,
                             ),
                           );
                         },
@@ -70,7 +127,7 @@ class CalendarView extends StatelessWidget {
                     }
 
                     return const Center(
-                      child:  Center(child: CircularProgressIndicator()),
+                      child: CircularProgressIndicator(),
                     );
                   },
                 ),

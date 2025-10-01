@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
 class CustomBottomNavigation extends StatelessWidget {
-  
-  const CustomBottomNavigation({super.key, });
+  const CustomBottomNavigation({super.key});
 
-
-
-  int getCurrentIndex( BuildContext context ) {
+  int getCurrentIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
 
-    switch(location) {
+    switch (location) {
       case '/home':
         return 0;
-      
+
       case '/calendar':
         return 1;
 
@@ -24,18 +23,13 @@ class CustomBottomNavigation extends StatelessWidget {
         return 3;
       case '/perfil':
         return 4;
-        
-      
+
       default:
         return 0;
     }
   }
 
-
-  
-
   void onItemTapped(BuildContext context, int index) {
-   
     switch (index) {
       case 0:
         context.go('/Home');
@@ -58,29 +52,70 @@ class CustomBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifications = context
+        .watch<NotificationsBloc>()
+        .state
+        .notifications;
+
+    // 👉 Solo las no leídas
+    final int unreadCount = notifications.where((n) => !n.isRead).length;
+
     return BottomNavigationBar(
-      
       type: BottomNavigationBarType.fixed,
       currentIndex: getCurrentIndex(context),
       onTap: (value) => onItemTapped(context, value),
       elevation: 0,
-      backgroundColor: Color.fromRGBO(228, 214, 188, 1),
+      backgroundColor: const Color.fromRGBO(228, 214, 188, 1),
 
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'inicio'),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home_filled),
+          label: 'inicio',
+        ),
+        const BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendario',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.star_border),
           label: 'Planes',
         ),
+
         BottomNavigationBarItem(
-          icon: Icon(Icons.notifications_active_outlined),
+          icon: Stack(
+            children: [
+              const Icon(Icons.notifications_active_outlined),
+              if (unreadCount > 0) // 👈 Solo si hay no leídas
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '$unreadCount', // 👈 Aquí va el número de no leídas
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           label: 'Notificaciones',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.person_2_outlined),
           label: 'Perfil',
         ),

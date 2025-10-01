@@ -1,11 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/notifications_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/payment_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/form_invitation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/my_payments/my_payments_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
@@ -15,7 +19,10 @@ import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart'
 import 'package:studio_25_pilates_app/presentation/screens/views/notifications_views.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
-import 'package:studio_25_pilates_app/presentation/screens/views/perfil_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_classes.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_pays.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_reservations.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/perfil_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/planes_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_view.dart';
 
@@ -190,14 +197,38 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/notifications',
           builder: (context, state) {
-            return const NotificationsViews();
+            return BlocProvider(
+              create: (context) =>
+                  NotificationsBloc(NotificationsDatasourceImpl()),
+              child: const NotificationsViews(),
+            );
           },
         ),
         GoRoute(
           path: '/perfil',
           builder: (context, state) {
-            return const PerfilView();
+            return BlocProvider(
+              create: (context) => MyPaymentsCubit(PaymentDatasourceImpl()),
+              child: const PerfilView(),
+            );
           },
+          routes: [
+            GoRoute(
+              path: '/mis_classes',
+              builder: (context, state) => const MyClasses(),
+            ),
+            GoRoute(
+              path: '/mis_reservas',
+              builder: (context, state) => const MyReservations(),
+            ),
+            GoRoute(
+              path: '/mis_pagos',
+              builder: (context, state) => BlocProvider(
+                create: (context) => MyPaymentsCubit(PaymentDatasourceImpl())..loadpayments(),
+                child: const MyPayments(),
+              ),
+            ),
+          ],
         ),
         GoRoute(
           path: '/new_card',

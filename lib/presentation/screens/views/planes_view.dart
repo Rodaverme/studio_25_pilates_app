@@ -21,25 +21,22 @@ class PlanesView extends StatelessWidget {
           Positioned.fill(
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
-    
+
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
-             
               if (state.status == PlanStatus.error) {
                 return Center(child: Text("Error: ${state.errorMessage}"));
               }
-    
+
               if (state.status == PlanStatus.loaded) {
                 final plans = state.plans;
                 final myPlan = state.myPlan;
                 final status = state.statusPlan;
-               
+
                 // final status = state.statusPlan;
-    
+
                 if (plans.isEmpty) {
-                  return const Center(
-                    child: Text("No hay planes disponibles"),
-                  );
+                  return const Center(child: Text("No hay planes disponibles"));
                 }
                 return SingleChildScrollView(
                   child: Column(
@@ -47,7 +44,7 @@ class PlanesView extends StatelessWidget {
                       final isActive = myPlan != null && plan.id == myPlan.id;
                       // final clases = plan.classes?.map((c) => c.nombre).toList() ?? [];
                       // print('Clases del plan ${plan.name}: $clases');
-    
+
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: _CustomPlanes(
@@ -62,10 +59,8 @@ class PlanesView extends StatelessWidget {
                   ),
                 );
               }
-    
-              return const Center(
-                child: Text(""),
-              );
+
+              return const Center(child: Text(""));
             },
           ),
         ],
@@ -110,7 +105,6 @@ class _CustomPlanes extends StatelessWidget {
       child: isActive
           ? CustomCardsType1(
               width: double.maxFinite,
-              height: 300,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -157,7 +151,6 @@ class _CustomPlanes extends StatelessWidget {
             )
           : CustomCardsType2(
               width: double.maxFinite,
-              height: 300,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
@@ -190,7 +183,8 @@ class _CustomPlanes extends StatelessWidget {
                     const SizedBox(height: 20),
                     Center(
                       child: GestureDetector(
-                        onTap: () => context.push('/plans/reservation/${plan.id}'),  
+                        onTap: () =>
+                            context.push('/plans/reservation/${plan.id}'),
                         child: Container(
                           height: 60,
                           width: 200,

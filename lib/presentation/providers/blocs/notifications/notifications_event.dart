@@ -6,6 +6,10 @@ sealed class NotificationsEvent  {
   
 }
 
+class LoadNotifications extends NotificationsEvent {}
+class ClearNotifications extends NotificationsEvent {}
+
+
 class NotificationStatusChanged extends NotificationsEvent {
   final AuthorizationStatus status;
   NotificationStatusChanged(this.status);

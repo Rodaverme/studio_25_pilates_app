@@ -256,11 +256,11 @@ class _SumaryClass extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        ocurrence.classSession.nombre,
+                        ocurrence.classSession!.nombre,
                         style: textStyle.titleMedium,
                       ),
                       Text(
-                        ocurrence.classSession.instructor,
+                        ocurrence.classSession!.instructor,
                         style: textStyle.titleMedium,
                       ),
                       const SizedBox(height: 10),
@@ -284,7 +284,7 @@ class _SumaryClass extends StatelessWidget {
                   child: FilledButton(
                     onPressed: () {},
                     child: Text(
-                      ocurrence.classSession.nivel,
+                      ocurrence.classSession!.nivel,
                       style: textStyle.bodySmall,
                     ),
                   ),
@@ -294,7 +294,10 @@ class _SumaryClass extends StatelessWidget {
                 Text('$horaInicio - $horaFinal', style: textStyle.titleMedium),
                 const SizedBox(height: 10),
                 Text('Ubicación', style: textStyle.titleLarge),
-                Text(ocurrence.classSession.sala, style: textStyle.titleMedium),
+                Text(
+                  ocurrence.classSession!.sala,
+                  style: textStyle.titleMedium,
+                ),
               ],
             ),
           ],

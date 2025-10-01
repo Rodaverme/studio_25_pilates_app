@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/router/app_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/notifications_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +22,8 @@ Future<void> main() async {
       providers: [
         BlocProvider(
           create: (_) =>
-              NotificationsBloc()..handleRemoteMessageIfNotNull(initialMessage),
+              NotificationsBloc(NotificationsDatasourceImpl())
+                ..handleRemoteMessageIfNotNull(initialMessage),
         ),
         BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
         BlocProvider<LogoutCubit>(
@@ -34,7 +35,6 @@ Future<void> main() async {
           ),
         ),
         BlocProvider(create: (_) => FormsCreditCardCubit()),
-        
       ],
       child: const MainApp(), // 👈 envolvemos con un listener
     ),
@@ -83,7 +83,7 @@ class _HandleNotificationInteractionsState
 
   void _handleMessage(RemoteMessage message) {
     context.read<NotificationsBloc>().handleRemoteMessage(message);
-
+    message.messageId?.replaceAll(':', '').replaceAll('%', '');
     appRouter.go('/');
   }
 

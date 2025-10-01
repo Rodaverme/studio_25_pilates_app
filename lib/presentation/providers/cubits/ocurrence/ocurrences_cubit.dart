@@ -67,23 +67,5 @@ class OcurrencesCubit extends Cubit<OcurrencesState> {
     }
   }
 
-  Future<void> loadAvailableOcurrence() async {
-    emit(state.copyWith(status: OcurrenceStatus.loading));
-    try {
-      final ocurrences = await datasource.getAvailableOcurrences();
-      emit(
-        state.copyWith(
-          status: OcurrenceStatus.loaded,
-          ocurrencesAvalible: ocurrences,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: OcurrenceStatus.error,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
-  }
+ 
 }

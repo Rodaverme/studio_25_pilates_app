@@ -5,12 +5,12 @@ class CustomCardsType2 extends StatelessWidget {
   const CustomCardsType2({
     super.key,
     this.width,
-    required this.height,
+    this.height,
     required this.child,
   });
 
   final double? width;
-  final double height;
+  final double? height;
   final Widget child;
 
   @override

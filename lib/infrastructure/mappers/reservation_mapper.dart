@@ -6,9 +6,11 @@ class ReservationMapper {
   static Reservation toEntity(ReservationResponse json) {
     return Reservation(
       id: json.id,
-      clienteId: json.clientId,
+      clienteId: json.clientId ?? '1',
       pagada: json.status,
-      ocurrence: OccurrenceMapper.toEntity(json.occurrence),
+      ocurrence: json.occurrence != null 
+      ? OccurrenceMapper.toEntity(json.occurrence!)
+      : null,
     );
   }
 }

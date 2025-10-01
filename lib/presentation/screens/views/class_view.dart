@@ -88,7 +88,7 @@ class ClassView extends StatelessWidget {
               return Scaffold(
                 appBar: AppBar(
                   title: Text(
-                    ocurrence.classSession.nombre,
+                    ocurrence.classSession!.nombre,
                     style: textStyle.titleLarge,
                   ),
                   actions: [
@@ -97,7 +97,7 @@ class ClassView extends StatelessWidget {
                       child: FilledButton(
                         onPressed: () {},
                         child: Text(
-                          ocurrence.classSession.nivel,
+                          ocurrence.classSession!.nivel,
                           style: textStyle.bodySmall,
                         ),
                       ),
@@ -155,7 +155,7 @@ class ClassView extends StatelessWidget {
                                         ),
                                         Flexible(
                                           child: Text(
-                                            ocurrence.classSession.sala,
+                                            ocurrence.classSession!.sala,
                                             style: textStyle.titleLarge
                                                 ?.copyWith(fontSize: 15),
                                             overflow: TextOverflow.ellipsis,
@@ -316,7 +316,7 @@ class DescriptionClass extends StatelessWidget {
                 Text('Descripción', style: textStyle.titleLarge),
                 Text(
                   !check.isInPlan
-                      ? '\$${currencyFormatter.format(int.parse(ocurrence.classSession.price))}'
+                      ? '\$${currencyFormatter.format(int.parse(ocurrence.classSession!.price))}'
                       : '',
                   style: textStyle.titleLarge?.copyWith(
                     color: AppColors.almendra,
@@ -331,7 +331,7 @@ class DescriptionClass extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                cleanHtml(ocurrence.classSession.descripcion),
+                cleanHtml(ocurrence.classSession!.descripcion),
                 style: textStyle.titleLarge?.copyWith(
                   color: AppColors.almendra,
                 ),
@@ -371,14 +371,14 @@ class InstructorDescription extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    ocurrence.classSession.instructor,
+                    ocurrence.classSession!.instructor,
                     style: textStyle.titleLarge?.copyWith(fontSize: 22),
                   ),
                   const SizedBox(height: 5),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
-                      ocurrence.classSession.bioInstructor,
+                      ocurrence.classSession!.bioInstructor,
                       maxLines: 3,
                       style: textStyle.titleLarge?.copyWith(
                         color: AppColors.almendra,

@@ -24,6 +24,7 @@ class LogoutCubit extends Cubit<LogoutState> {
 
       // 👇 limpiar los cubits locales
       authCubit.logout();
+      
        // este método lo agregas en PlanCubit
 
       emit(LogoutSuccess());

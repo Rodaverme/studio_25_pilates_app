@@ -51,8 +51,6 @@ class LoginScreen extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/Logo6.png',
                   fit: BoxFit.cover,
-
-                  // modo de mezcla
                 ),
               ),
               SafeArea(

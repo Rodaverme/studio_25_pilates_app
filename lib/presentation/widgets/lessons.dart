@@ -26,6 +26,7 @@ class LessonsToday extends StatelessWidget {
     final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
 
     final bool isInPlan = ocurrence.isInPlan;
+    
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -55,7 +56,7 @@ class LessonsToday extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            ocurrence.classSession.nombre,
+                            ocurrence.classSession!.nombre,
                             style: textStyle.titleLarge?.copyWith(
                               color: AppColors.almendra,
                             ),
@@ -79,7 +80,7 @@ class LessonsToday extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${0}/${ocurrence.classSession.cupoMaximo} Cupos',
+                          '${0}/${ocurrence.classSession?.cupoMaximo} Cupos',
                           style: textStyle.titleLarge?.copyWith(
                             color: AppColors.almendra,
                           ),

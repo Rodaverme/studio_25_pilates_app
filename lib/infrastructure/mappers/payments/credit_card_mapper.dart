@@ -6,11 +6,11 @@ class CreditCardMapper {
   static CreditCard cardApitoEntity(CreditCardResponse card) => CreditCard(
     id: card.id,
     brand: card.brand,
-    clientId: card.clientId,
+    clientId: card.clientId ?? '',
     expMonth: card.expMonth,
     expYear: card.expYear,
     lastFour: card.lastFour,
-    token: card.token,
+    token: card.token ?? '',
     sourceId: card.sourceId ?? ' '
   );
 }

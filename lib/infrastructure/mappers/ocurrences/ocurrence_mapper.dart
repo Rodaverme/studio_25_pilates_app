@@ -16,10 +16,9 @@ class OccurrenceMapper {
       endTime: json.endTime,
       capacity: json.capacity,
       price: json.price,
-      
       isInPlan: json.isInPlan ?? false,
-      
-      classSession: ClassMapper.classApitoEntity(json.classSession),
+      classSession: json.classSession != null  ?    
+       ClassMapper.classApitoEntity(json.classSession!) : null,
     );
   }
 }

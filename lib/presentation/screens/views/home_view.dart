@@ -96,7 +96,22 @@ class _HomeViewState extends State<HomeView> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Center(
-                                      child: Text('Ocurrio un problema 😞  )'),
+                                      child: Text(
+                                        'No tienes reservas próximas ',
+                                      ),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () {
+                                        context.go('/calendar');
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor: WidgetStatePropertyAll(
+                                          AppColors.almendra,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Empieza reservando tu primera clase',
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -109,12 +124,12 @@ class _HomeViewState extends State<HomeView> {
                         final upcoming =
                             state.reservations
                                 .where(
-                                  (r) => r.ocurrence.startTime.isAfter(now),
+                                  (r) => r.ocurrence!.startTime.isAfter(now),
                                 )
                                 .toList()
                               ..sort(
-                                (a, b) => a.ocurrence.startTime.compareTo(
-                                  b.ocurrence.startTime,
+                                (a, b) => a.ocurrence!.startTime.compareTo(
+                                  b.ocurrence!.startTime,
                                 ),
                               );
 
@@ -207,8 +222,8 @@ class _NextClass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final start = clase.ocurrence.startTime;
-    final horaInicio = DateFormat("HH:mm").format(start);
+    final start = clase.ocurrence?.startTime;
+    final horaInicio = DateFormat("HH:mm").format(start!);
 
     // Obtenemos solo la parte de la fecha (año, mes, día) para comparar
     final today = DateTime.now();
@@ -242,13 +257,13 @@ class _NextClass extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      clase.ocurrence.classSession.nombre,
+                      clase.ocurrence!.classSession!.nombre,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      clase.ocurrence.classSession.instructor,
+                      clase.ocurrence!.classSession!.instructor,
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -311,8 +326,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
     return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, state) {
         if (state.status == OcurrenceStatus.loading) {
-          const CircularProgressIndicator(strokeWidth: 4);
+          return const Center(child: CircularProgressIndicator(strokeWidth: 4));
         }
+
         if (state.status == OcurrenceStatus.error) {
           return Center(
             child: Padding(
@@ -330,11 +346,20 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
             ),
           );
         }
-        if (state.ocurrences.isEmpty) {
-          const CircularProgressIndicator(strokeWidth: 4);
+
+        // 👉 Filtramos las ocurrencias para mostrar solo las que no han pasado
+        final now = DateTime.now();
+        final reservationLimit = now.add(const Duration(minutes: 15));
+        final validOcurrences = state.ocurrences.where((o) {
+          // ajusta `endDate` o `startDate` según lo que quieras usar
+          return o.startTime.isAfter(reservationLimit);
+        }).toList();
+
+        if (validOcurrences.isEmpty) {
+          return const Center(child: Text('No hay clases disponibles'));
         }
 
-        final pagesCount = (state.ocurrences.length / 2).ceil();
+        final pagesCount = (validOcurrences.length / 2).ceil();
 
         return Column(
           children: [
@@ -349,30 +374,30 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                   return Column(
                     children: [
                       LessonsToday(
-                        ocurrence: state.ocurrences[first],
+                        ocurrence: validOcurrences[first],
                         textStyle: textStyle,
                         onTap: () {
                           context.push(
-                            '/Home/class/${state.ocurrences[first].id}',
+                            '/Home/class/${validOcurrences[first].id}',
                           );
                         },
                         instructor:
-                            state.ocurrences[first].classSession.instructor,
-                        level: state.ocurrences[first].classSession.nivel,
+                            validOcurrences[first].classSession!.instructor,
+                        level: validOcurrences[first].classSession!.nivel,
                       ),
                       const SizedBox(height: 12),
-                      if (second < state.ocurrences.length)
+                      if (second < validOcurrences.length)
                         LessonsToday(
-                          ocurrence: state.ocurrences[second],
+                          ocurrence: validOcurrences[second],
                           textStyle: textStyle,
                           onTap: () {
                             context.push(
-                              '/Home/class/${state.ocurrences[second].id}',
+                              '/Home/class/${validOcurrences[second].id}',
                             );
                           },
                           instructor:
-                              state.ocurrences[second].classSession.instructor,
-                          level: state.ocurrences[second].classSession.nivel,
+                              validOcurrences[second].classSession!.instructor,
+                          level: validOcurrences[second].classSession!.nivel,
                         ),
                     ],
                   );

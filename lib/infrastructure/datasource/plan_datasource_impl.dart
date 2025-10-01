@@ -29,7 +29,7 @@ class PlanDatasourceImpl extends PlansDatasource {
         final plans = data.map((e) => PlanResponse.fromJson(e)).toList();
 
         final activePlan = plans.firstWhere(
-          (p) => p.isActive,
+          (p) => p.isActive!,
           orElse: () => plans.first,
         );
 

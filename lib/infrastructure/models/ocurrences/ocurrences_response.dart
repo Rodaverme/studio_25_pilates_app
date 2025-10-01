@@ -84,12 +84,11 @@ class Datum {
   DateTime endTime;
   int capacity;
   String price;
-
   DateTime createdAt;
   DateTime updatedAt;
   dynamic deletedAt;
   bool? isInPlan;
-  ClassSessionResponse classSession;
+  ClassSessionResponse? classSession;
 
   Datum({
     required this.id,
@@ -104,7 +103,7 @@ class Datum {
     required this.updatedAt,
     required this.deletedAt,
     this.isInPlan,
-    required this.classSession,
+     this.classSession,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) {
@@ -166,6 +165,6 @@ class Datum {
     "updated_at": updatedAt.toIso8601String(),
     "deleted_at": deletedAt,
     "is_in_plan": isInPlan,
-    "class_session": classSession.toJson(),
+    "class_session": classSession?.toJson(),
   };
 }

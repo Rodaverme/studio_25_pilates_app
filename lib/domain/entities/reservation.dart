@@ -4,7 +4,7 @@ class Reservation {
   final int id;
   final String clienteId;
   final String pagada;
-  final Ocurrence ocurrence;
+  final Ocurrence? ocurrence;
 
   Reservation({
     required this.id,

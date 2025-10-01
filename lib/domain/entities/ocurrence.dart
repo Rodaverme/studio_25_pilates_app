@@ -10,7 +10,7 @@ class Ocurrence {
 
   final bool isInPlan;
 
-  final PilatesClass classSession;
+  final PilatesClass? classSession;
 
   Ocurrence({
     required this.id,
