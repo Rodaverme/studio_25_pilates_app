@@ -1,6 +1,6 @@
 class RoomResponse {
-  final int id;
-  final String name;
+  final int? id;
+  final String? name;
   final String? capacity;
   final dynamic location;
   final DateTime? createdAt;
@@ -8,7 +8,7 @@ class RoomResponse {
   final dynamic deletedAt;
 
   RoomResponse({
-    required this.id,
+    this.id,
     this.name = "Sin sala",
     this.capacity,
     this.location,

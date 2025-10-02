@@ -24,8 +24,9 @@ class CheckResponse {
   bool canReserve;
   int creditsRemaining; // <- ahora siempre es int, no nullable
   DateTime planExpiresAt;
-  int reservationsRemaining ;
+  int reservationsRemaining;
   int invitationRemaining;
+  bool canInvite;
 
   CheckResponse({
     required this.occurrenceId,
@@ -42,8 +43,9 @@ class CheckResponse {
     required this.creditsRemaining,
     required this.planExpiresAt,
     required this.planId,
-    required this .reservationsRemaining,
-    required this.invitationRemaining
+    required this.reservationsRemaining,
+    required this.invitationRemaining,
+    required this.canInvite,
   });
 
   factory CheckResponse.fromJson(Map<String, dynamic> json) => CheckResponse(
@@ -65,7 +67,8 @@ class CheckResponse {
         : DateTime.now(),
     planId: json["plan_id"],
     reservationsRemaining: json["reservations_remaining"],
-    invitationRemaining: json["invitations_remaining"] // Si viene null => DateTime.now()
+    invitationRemaining: json["invitations_remaining"],
+    canInvite: json["can_invite"], // Si viene null => DateTime.now()
   );
 
   Map<String, dynamic> toJson() => {
@@ -85,8 +88,8 @@ class CheckResponse {
     "plan_expires_at":
         "${planExpiresAt.year.toString().padLeft(4, '0')}-${planExpiresAt.month.toString().padLeft(2, '0')}-${planExpiresAt.day.toString().padLeft(2, '0')}",
     "plan_active_id": planId,
-    "reservations_remaining" : reservationsRemaining,
-    "invitation_remaining": invitationRemaining
-
+    "reservations_remaining": reservationsRemaining,
+    "invitation_remaining": invitationRemaining,
+    "can_invite": canInvite,
   };
 }

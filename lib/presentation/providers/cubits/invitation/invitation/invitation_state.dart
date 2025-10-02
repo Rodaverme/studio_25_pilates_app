@@ -1,10 +1,30 @@
 part of 'invitation_cubit.dart';
 
-sealed class InvitationState extends Equatable {
-  const InvitationState();
+enum InvitationStatus { initial, loading, loaded, error }
+
+class InvitationState extends Equatable {
+  final InvitationStatus status;
+  final List<GuestResponse> guests;
+  final String? errorMessage;
+
+  const InvitationState({
+    this.status = InvitationStatus.initial,
+    this.guests = const [],
+    this.errorMessage,
+  });
+
+  InvitationState copyWith({
+    InvitationStatus? status,
+    List<GuestResponse>? guests,
+    String? errorMessage,
+  }) {
+    return InvitationState(
+      status: status ?? this.status,
+      guests: guests ?? this.guests,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [status, guests, errorMessage];
 }
-
-final class InvitationInitial extends InvitationState {}

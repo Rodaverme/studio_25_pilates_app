@@ -2,40 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/form_invitation_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/invitation/invitation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/guest_datasource_impl.dart';
 
 class GuestView extends StatelessWidget {
-  const GuestView({super.key, this.classId});
-  final String? classId;
+  const GuestView({super.key, this.reservationId});
+  final String? reservationId;
 
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
 
-    return BlocProvider(
-      create: (_) => FormInvitationCubit(),
-      child: BlocListener<FormInvitationCubit, FormsInvitationState>(
-        listener: (context, state) {
-          if (state.formStauts == FormInvitationStauts.validating) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text("Validando datos...")));
-          }
-          if (state.formStauts == FormInvitationStauts.posting) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Enviando invitación...")),
-            );
-          }
-          if (state.formStauts == FormInvitationStauts.valid) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("✅ Invitación enviada"),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pop(context);
-          }
-        },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => FormInvitationCubit()),
+        BlocProvider(create: (_) => InvitationCubit(GuestDatasourceImpl())),
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<InvitationCubit, InvitationState>(
+            listener: (context, state) {
+              if (state.status == InvitationStatus.loading) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Enviando invitación...")),
+                );
+              }
+              if (state.status == InvitationStatus.loaded) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("✅ Invitación enviada"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+
+                Navigator.pop(context);
+              }
+              if (state.status == InvitationStatus.error) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("❌ Error: ${state.errorMessage}"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
         child: Scaffold(
           appBar: AppBar(
             title: Text('Invita a un acompañante', style: textStyle.titleLarge),
@@ -52,11 +65,10 @@ class GuestView extends StatelessWidget {
               BlocBuilder<FormInvitationCubit, FormsInvitationState>(
                 builder: (context, state) {
                   final cubit = context.read<FormInvitationCubit>();
-                  final name = FormInvitationCubit().state.username;
-                  final identification =
-                      FormInvitationCubit().state.identificationInvitation;
-                  final email = FormInvitationCubit().state.email;
-                  final phone = FormInvitationCubit().state.phone;
+                  final name = state.username;
+                  final identification = state.identificationInvitation;
+                  final email = state.email;
+                  final phone = state.phone;
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(
@@ -70,7 +82,8 @@ class GuestView extends StatelessWidget {
                         children: [
                           const SizedBox(height: 20),
                           Form(
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             child: Column(
                               children: [
                                 // Nombre
@@ -90,7 +103,7 @@ class GuestView extends StatelessWidget {
                                       ),
                                 ),
                                 const SizedBox(height: 20),
-                      
+
                                 // Identificación
                                 TextFormField(
                                   onChanged: cubit.identificationChange,
@@ -109,7 +122,7 @@ class GuestView extends StatelessWidget {
                                       ),
                                 ),
                                 const SizedBox(height: 20),
-                      
+
                                 // Email (opcional)
                                 TextFormField(
                                   onChanged: cubit.emailChange,
@@ -129,7 +142,7 @@ class GuestView extends StatelessWidget {
                                       ),
                                 ),
                                 const SizedBox(height: 20),
-                      
+
                                 // Teléfono (opcional)
                                 TextFormField(
                                   onChanged: cubit.phoneChange,
@@ -137,7 +150,8 @@ class GuestView extends StatelessWidget {
                                   decoration:
                                       InputDecorations.authInputDecoration(
                                         hintText: 'Celular',
-                                        labelText: 'Número de celular (opcional)',
+                                        labelText:
+                                            'Número de celular (opcional)',
                                         errorText: phone.errorMessage,
                                       ).copyWith(
                                         icon: const Icon(
@@ -151,14 +165,38 @@ class GuestView extends StatelessWidget {
                               ],
                             ),
                           ),
-                      
+
                           /// Botón Invitar
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton(
                               onPressed: state.isValid
                                   ? () {
-                                      cubit.onSubmit();
+                                      final formCubit = context
+                                          .read<FormInvitationCubit>();
+                                      final invitationCubit = context
+                                          .read<InvitationCubit>();
+
+                                      invitationCubit.createGuest(
+                                        reservationId: int.parse(
+                                          reservationId!,
+                                        ),
+                                        name: formCubit.state.username.value,
+                                        document: formCubit
+                                            .state
+                                            .identificationInvitation
+                                            .value,
+                                        email:
+                                            formCubit.state.email.value.isEmpty
+                                            ? null
+                                            : formCubit.state.email.value,
+                                        phone:
+                                            formCubit.state.phone.value.isEmpty
+                                            ? null
+                                            : formCubit.state.phone.value,
+                                      );
+
+                                      formCubit.onSubmit();
                                     }
                                   : null,
                               style: ButtonStyle(
@@ -177,7 +215,8 @@ class GuestView extends StatelessWidget {
                                 ),
                               ),
                               child:
-                                  state.formStauts == FormInvitationStauts.posting
+                                  state.formStauts ==
+                                      FormInvitationStauts.posting
                                   ? const SizedBox(
                                       height: 20,
                                       width: 20,

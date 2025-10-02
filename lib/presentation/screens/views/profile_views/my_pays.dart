@@ -5,7 +5,6 @@ import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/payment.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/my_payments/my_payments_cubit.dart';
 
-
 class MyPayments extends StatelessWidget {
   const MyPayments({super.key});
 
@@ -53,100 +52,113 @@ class MyPayments extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Mis pagos")),
-      body: BlocBuilder<MyPaymentsCubit, MyPaymentsState>(
-        builder: (context, state) {
-          if (state.status == MyPaymentsStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.status == MyPaymentsStatus.loaded) {
-            final payments = state.myPayments;
-
-            if (payments.isEmpty) {
-              return const Center(child: Text("No tienes pagos registrados"));
-            }
-
-            // ✅ Agrupar pagos por sección
-            final grouped = <String, List<Payment>>{};
-            final sectionDates = <String, DateTime>{};
-
-            for (final payment in payments) {
-              final date = payment.createdAt;
-              final sectionTitle = _getSectionTitle(date);
-
-              grouped.putIfAbsent(sectionTitle, () => []);
-              grouped[sectionTitle]!.add(payment);
-
-              if (!sectionDates.containsKey(sectionTitle) ||
-                  date.isAfter(sectionDates[sectionTitle]!)) {
-                sectionDates[sectionTitle] = date;
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+          ),
+          BlocBuilder<MyPaymentsCubit, MyPaymentsState>(
+            builder: (context, state) {
+              if (state.status == MyPaymentsStatus.loading) {
+                return const Center(child: CircularProgressIndicator());
               }
-            }
 
-            // ✅ Ordenar secciones
-            final sectionTitles = sectionDates.keys.toList()
-              ..sort((a, b) {
-                final prioA = _getSectionPriority(a);
-                final prioB = _getSectionPriority(b);
+              if (state.status == MyPaymentsStatus.loaded) {
+                final payments = state.myPayments;
 
-                if (prioA != prioB) return prioA.compareTo(prioB);
-                return sectionDates[a]!.compareTo(sectionDates[b]!);
-              });
+                if (payments.isEmpty) {
+                  return const Center(
+                    child: Text("No tienes pagos registrados"),
+                  );
+                }
 
-            return ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              itemCount: sectionTitles.length,
-              itemBuilder: (context, sectionIndex) {
-                final sectionTitle = sectionTitles[sectionIndex];
-                final sectionPayments = grouped[sectionTitle]!;
+                // ✅ Agrupar pagos por sección
+                final grouped = <String, List<Payment>>{};
+                final sectionDates = <String, DateTime>{};
 
-                // ✅ Ordenar pagos dentro de cada sección
-                sectionPayments.sort(
-                  (a, b) => a.createdAt.compareTo(b.createdAt),
-                );
+                for (final payment in payments) {
+                  final date = payment.createdAt;
+                  final sectionTitle = _getSectionTitle(date);
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 👇 Título de sección
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        sectionTitle,
-                        style: textStyle.titleLarge?.copyWith(
-                          color: AppColors.almendra,
-                          fontWeight: FontWeight.bold,
+                  grouped.putIfAbsent(sectionTitle, () => []);
+                  grouped[sectionTitle]!.add(payment);
+
+                  if (!sectionDates.containsKey(sectionTitle) ||
+                      date.isAfter(sectionDates[sectionTitle]!)) {
+                    sectionDates[sectionTitle] = date;
+                  }
+                }
+
+                // ✅ Ordenar secciones
+                final sectionTitles = sectionDates.keys.toList()
+                  ..sort((a, b) {
+                    final prioA = _getSectionPriority(a);
+                    final prioB = _getSectionPriority(b);
+
+                    if (prioA != prioB) return prioA.compareTo(prioB);
+                    return sectionDates[a]!.compareTo(sectionDates[b]!);
+                  });
+
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 20),
+                  itemCount: sectionTitles.length,
+                  itemBuilder: (context, sectionIndex) {
+                    final sectionTitle = sectionTitles[sectionIndex];
+                    final sectionPayments = grouped[sectionTitle]!;
+
+                    // ✅ Ordenar pagos dentro de cada sección
+                    sectionPayments.sort(
+                      (a, b) => a.createdAt.compareTo(b.createdAt),
+                    );
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 👇 Título de sección
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            sectionTitle,
+                            style: textStyle.titleLarge?.copyWith(
+                              color: AppColors.almendra,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
 
-                    // 👇 Lista de pagos
-                    ...sectionPayments.map((payment) {
-                      return PaymentHistory(
-                        payment: payment,
-                        textStyle: textStyle,
-                      );
-                    }),
-                  ],
+                        // 👇 Lista de pagos
+                        ...sectionPayments.map((payment) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: PaymentHistory(
+                              payment: payment,
+                              textStyle: textStyle,
+                            ),
+                          );
+                        }),
+                      ],
+                    );
+                  },
                 );
-              },
-            );
-          }
+              }
 
-          if (state.status == MyPaymentsStatus.error) {
-            return Center(
-              child: Text(
-                state.errorMessage ?? "Error cargando pagos",
-                style: textStyle.bodyMedium?.copyWith(
-                  color: AppColors.cafeNoir,
-                ),
-              ),
-            );
-          }
+              if (state.status == MyPaymentsStatus.error) {
+                return Center(
+                  child: Text(
+                    state.errorMessage ?? "Error cargando pagos",
+                    style: textStyle.bodyMedium?.copyWith(
+                      color: AppColors.cafeNoir,
+                    ),
+                  ),
+                );
+              }
 
-          return const Center(child: Text("Cargando pagos..."));
-        },
+              return const Center(child: Text("Cargando pagos..."));
+            },
+          ),
+        ],
       ),
     );
   }

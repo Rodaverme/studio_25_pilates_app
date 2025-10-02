@@ -5,9 +5,9 @@ import 'package:studio_25_pilates_app/infrastructure/models/reservation/reservat
 class ReservationMapper {
   static Reservation toEntity(ReservationResponse json) {
     return Reservation(
-      id: json.id,
+      id: json.id ?? 1,
       clienteId: json.clientId ?? '1',
-      pagada: json.status,
+      pagada: json.status ?? '',
       ocurrence: json.occurrence != null 
       ? OccurrenceMapper.toEntity(json.occurrence!)
       : null,

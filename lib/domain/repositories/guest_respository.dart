@@ -8,5 +8,6 @@ abstract class GuestRespository {
     String document,
     String? email,
     String? phone,
+    int reservationId
   );
 }

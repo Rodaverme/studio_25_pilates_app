@@ -1,25 +1,12 @@
-// To parse this JSON data, do
-//
-//     final planResponse = planResponseFromJson(jsonString);
-
-import 'dart:convert';
-
 import 'package:studio_25_pilates_app/infrastructure/models/class/class_session_response.dart';
 
-List<PlanResponse> planResponseFromJson(String str) => List<PlanResponse>.from(
-  json.decode(str).map((x) => PlanResponse.fromJson(x)),
-);
-
-String planResponseToJson(List<PlanResponse> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class PlanResponse {
-  int id;
+  int? id;
   bool? isActive;
-  String name;
+  String? name;
   String? description;
   int? classLimit;
-  String price;
+  String? price;
   bool? allowGuests;
   int? guestPerPeriod;
   DateTime? createdAt;
@@ -28,12 +15,12 @@ class PlanResponse {
   List<ClassSessionResponse>? classSessions;
 
   PlanResponse({
-    required this.id,
+    this.id,
     this.isActive,
-    required this.name,
+    this.name,
     this.description,
     this.classLimit,
-    required this.price,
+    this.price,
     this.allowGuests,
     this.guestPerPeriod,
     this.createdAt,
@@ -46,19 +33,23 @@ class PlanResponse {
     id: json["id"],
     isActive: json["is_active"],
     name: json["name"],
-    description: json["description"] ?? '',
+    description: json["description"],
     classLimit: json["class_limit"],
     price: json["price"],
     allowGuests: json["allow_guests"],
     guestPerPeriod: json["guest_per_period"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] != null
+        ? DateTime.tryParse(json["created_at"])
+        : null,
+    updatedAt: json["updated_at"] != null
+        ? DateTime.tryParse(json["updated_at"])
+        : null,
     deletedAt: json["deleted_at"],
-    classSessions: json["class_sessions"] == null
-        ? null
-        : List<ClassSessionResponse>.from(
+    classSessions: json["class_sessions"] != null
+        ? List<ClassSessionResponse>.from(
             json["class_sessions"].map((x) => ClassSessionResponse.fromJson(x)),
-          ),
+          )
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -73,8 +64,6 @@ class PlanResponse {
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
     "deleted_at": deletedAt,
-    "class_sessions": List<dynamic>.from(
-      classSessions?.map((x) => x.toJson()) ?? [],
-    ),
+    "class_sessions": classSessions?.map((x) => x.toJson()).toList(),
   };
 }

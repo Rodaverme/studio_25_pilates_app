@@ -1,6 +1,6 @@
 class InstructorResponse {
-  final int id;
-  final String name;
+  final int? id;
+  final String? name;
   final String? email;
   final bool isActive;
   final String? bio;
@@ -10,7 +10,7 @@ class InstructorResponse {
   final dynamic deletedAt;
 
   InstructorResponse({
-    required this.id,
+    this.id,
     this.name = '',
     this.email,
     this.isActive = false,

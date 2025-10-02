@@ -1,12 +1,12 @@
 class ClassLevelResponse {
-  final int id;
-  final String name;
+  final int? id;
+  final String? name;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final dynamic deletedAt;
 
   ClassLevelResponse({
-    required this.id,
+    this.id,
     this.name = 'Sin Nivel',
     this.createdAt,
     this.updatedAt,

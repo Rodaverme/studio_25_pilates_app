@@ -8,5 +8,6 @@ abstract class GuestDatasource {
     String document,
     String? email,
     String? phone,
+    int reservationId
   );
 }

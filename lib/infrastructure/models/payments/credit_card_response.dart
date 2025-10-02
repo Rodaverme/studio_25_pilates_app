@@ -1,43 +1,40 @@
-// To parse this JSON data, do
-//
-//     final creditCard = creditCardFromJson(jsonString);
-
 import 'dart:convert';
 
 CreditCardResponse creditCardFromJson(String str) =>
     CreditCardResponse.fromJson(json.decode(str));
 
-String creditCardToJson(CreditCardResponse data) => json.encode(data.toJson());
+String creditCardToJson(CreditCardResponse data) =>
+    json.encode(data.toJson());
 
 class CreditCardResponse {
-  int id;
+  int? id;
   String? clientId;
-  String brand;
-  dynamic name;
-  dynamic bin;
-  dynamic cardHolder;
-  String lastFour;
+  String? brand;
+  String? name;
+  String? bin;
+  String? cardHolder;
+  String? lastFour;
   String? token;
   String? sourceId;
-  String expMonth;
-  String expYear;
+  String? expMonth;
+  String? expYear;
   bool? isDefault;
   DateTime? createdAt;
   DateTime? updatedAt;
   dynamic deletedAt;
 
   CreditCardResponse({
-    required this.id,
+    this.id,
     this.clientId,
-    required this.brand,
+    this.brand,
     this.name,
     this.bin,
     this.cardHolder,
-    required this.lastFour,
+    this.lastFour,
     this.token,
     this.sourceId,
-    required this.expMonth,
-    required this.expYear,
+    this.expMonth,
+    this.expYear,
     this.isDefault,
     this.createdAt,
     this.updatedAt,
@@ -59,10 +56,10 @@ class CreditCardResponse {
         expYear: json["exp_year"],
         isDefault: json["is_default"],
         createdAt: json["created_at"] != null
-            ? DateTime.parse(json["created_at"])
+            ? DateTime.tryParse(json["created_at"])
             : null,
         updatedAt: json["updated_at"] != null
-            ? DateTime.parse(json["updated_at"])
+            ? DateTime.tryParse(json["updated_at"])
             : null,
         deletedAt: json["deleted_at"],
       );

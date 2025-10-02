@@ -6,8 +6,8 @@ import 'package:studio_25_pilates_app/infrastructure/models/plan/plan_reponse.da
 class PlanMapper {
   static Plan planApitoEntity(PlanResponse plan) {
     return Plan(
-      id: plan.id,
-      name: plan.name,
+      id: plan.id ?? 1,
+      name: plan.name ?? '',
       classLimit: plan.classLimit ?? 0,
       allowGuests: plan.allowGuests ?? false,
       isActive: plan.isActive ?? false,

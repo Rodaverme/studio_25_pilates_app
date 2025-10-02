@@ -499,11 +499,9 @@ class ConfirmPayButton extends StatelessWidget {
           listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             if (state.status == ReservationStatus.reserved) {
-              context.go('/Home/succesPay');
+              context.go('/Home/succesPay/$ocurrenceId');
             } else if (state.status == ReservationStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${state.errorMessage} ❌')),
-              );
+              context.go('/Home/errorPay/$ocurrenceId');
             }
           },
         ),

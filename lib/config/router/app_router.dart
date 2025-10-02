@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/guest_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/notifications_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/payment_datasource_impl.dart';
@@ -8,6 +9,7 @@ import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/form_invitation_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/invitation/invitation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/my_payments/my_payments_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
@@ -18,6 +20,7 @@ import 'package:studio_25_pilates_app/presentation/screens/views/guest_view.dart
 import 'package:studio_25_pilates_app/presentation/screens/views/home_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/notifications_views.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_error_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_classes.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_pays.dart';
@@ -67,11 +70,20 @@ final appRouter = GoRouter(
           },
           routes: [
             GoRoute(
-              path: '/succesPay',
+              path: '/succesPay/:id',
               builder: (context, state) {
-                return const ReservationSuccessView();
+                final ocurrenceId = state.pathParameters['id']!;
+                return ReservationSuccessView(occurrenceId: ocurrenceId);
               },
             ),
+            GoRoute(
+              path: '/errorPay/:id',
+              builder: (context, state) {
+                final ocurrenceId = state.pathParameters['id']!;
+                return ReservationErrorView(ocurrenceId: ocurrenceId);
+              },
+            ),
+
             GoRoute(
               name: ClassView.name,
               path: '/class/:id',
@@ -133,20 +145,26 @@ final appRouter = GoRouter(
                     );
                   },
                 ),
-                GoRoute(
-                  path: '/invite/:id',
-                  builder: (context, state) {
-                    final classId = state.pathParameters['id'];
-
-                    return BlocProvider(
-                      create: (context) => FormInvitationCubit(),
-                      child: GuestView(classId: classId),
-                    );
-                  },
-                ),
               ],
             ),
           ],
+        ),
+
+        GoRoute(
+          path: '/invite/:id',
+          builder: (context, state) {
+            final classId = state.pathParameters['id'];
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) => FormInvitationCubit()),
+                BlocProvider(
+                  create: (context) => InvitationCubit(GuestDatasourceImpl()),
+                ),
+              ],
+              child: GuestView(reservationId: classId),
+            );
+          },
         ),
 
         GoRoute(
@@ -224,7 +242,8 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/mis_pagos',
               builder: (context, state) => BlocProvider(
-                create: (context) => MyPaymentsCubit(PaymentDatasourceImpl())..loadpayments(),
+                create: (context) =>
+                    MyPaymentsCubit(PaymentDatasourceImpl())..loadpayments(),
                 child: const MyPayments(),
               ),
             ),

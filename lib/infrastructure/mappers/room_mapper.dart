@@ -7,8 +7,8 @@ import 'package:studio_25_pilates_app/infrastructure/models/class/nivel/class_ni
 
 class LevelMapper {
   static Nivel levelApitoEntity(ClassLevelResponse nivel) => Nivel(
-    id: nivel.id,
-    nombre: nivel.name
+    id: nivel.id ?? 1,
+    nombre: nivel.name ?? ''
     
     
   );

@@ -1,34 +1,20 @@
-// To parse this JSON data, do
-//
-//     final reservationResponse = reservationResponseFromJson(jsonString);
-
-import 'dart:convert';
-
 import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/ocurrences_response.dart';
 
-List<ReservationResponse> reservationResponseFromJson(String str) =>
-    List<ReservationResponse>.from(
-      json.decode(str).map((x) => ReservationResponse.fromJson(x)),
-    );
-
-String reservationResponseToJson(List<ReservationResponse> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class ReservationResponse {
-  int id;
+  int? id;
   String? clientId;
   String? occurrenceId;
-  String status;
+  String? status;
   DateTime? createdAt;
   DateTime? updatedAt;
   dynamic deletedAt;
   Datum? occurrence;
 
   ReservationResponse({
-    required this.id,
+    this.id,
     this.clientId,
     this.occurrenceId,
-    required this.status,
+    this.status,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -42,14 +28,15 @@ class ReservationResponse {
         occurrenceId: json["occurrence_id"],
         status: json["status"],
         createdAt: json["created_at"] != null
-            ? DateTime.parse(json["created_at"])
+            ? DateTime.tryParse(json["created_at"])
             : null,
         updatedAt: json["updated_at"] != null
-            ? DateTime.parse(json["updated_at"])
+            ? DateTime.tryParse(json["updated_at"])
             : null,
         deletedAt: json["deleted_at"],
-        occurrence:
-            json["occurrence"] != null ? Datum.fromJson(json["occurrence"]) : null,
+        occurrence: json["occurrence"] != null
+            ? Datum.fromJson(json["occurrence"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,4 +50,3 @@ class ReservationResponse {
         "occurrence": occurrence?.toJson(),
       };
 }
-

@@ -11,26 +11,27 @@ class GuestDatasourceImpl extends GuestDatasource {
     String document,
     String? email,
     String? phone,
+    int reservationId
   ) async {
     try {
       final response = await dio.post(
-        '/api/cards',
+        '/api/guests',
         data: {
-          "name": "4242424242424242",
-          "document": "1312312312",
-          "email": "asdl@adasd.com", //opcional
-          "phone": "113223232", //opcional
-          "reservation_id": 1,
+          "name": name,
+          "document": document,
+          "email": email ,
+          "phone": phone, //opcional
+          "reservation_id": reservationId,
         },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Creacion Exitosa');
         return;
       }
-      throw Exception('Error al obtener la tarjeta de credito');
+      throw Exception('Error al obtener al crear la invitacion');
     } on DioException catch (e) {
       throw Exception(
-        'Error al obtener mi tarjeta de credito: ${e.response?.data ?? e.message}',
+        'Error en la creacion de la invitacion: ${e.response?.data ?? e.message}',
       );
     } catch (e) {
       throw Exception('Error inesperado: $e');

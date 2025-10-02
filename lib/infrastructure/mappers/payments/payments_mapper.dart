@@ -7,7 +7,7 @@ import 'package:studio_25_pilates_app/infrastructure/models/payments/payments_re
 class PaymentsMapper {
   static Payment paymentApiToEntity(PaymentResponse payment) {
     return Payment(
-      id: payment.id,
+      id: payment.id ?? 1,
       amount: payment.amount ?? '',
       description: payment.description ?? '',
       currency: payment.currency ?? '',

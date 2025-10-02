@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final paymentResponse = paymentResponseFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:studio_25_pilates_app/infrastructure/models/payments/credit_card_response.dart';
@@ -17,7 +13,7 @@ String paymentResponseToJson(List<PaymentResponse> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class PaymentResponse {
-  int id;
+  int? id;
   String? type;
   String? typeId;
   String? amount;
@@ -32,7 +28,7 @@ class PaymentResponse {
   ReservationResponse? reservation;
 
   PaymentResponse({
-    required this.id,
+    this.id,
     this.type,
     this.typeId,
     this.amount,
@@ -47,8 +43,7 @@ class PaymentResponse {
     this.reservation,
   });
 
-  factory PaymentResponse.fromJson(Map<String, dynamic> json) =>
-      PaymentResponse(
+  factory PaymentResponse.fromJson(Map<String, dynamic> json) => PaymentResponse(
         id: json["id"],
         type: json["type"],
         typeId: json["type_id"],
@@ -58,29 +53,31 @@ class PaymentResponse {
         methodId: json["method_id"],
         status: json["status"],
         description: json["description"],
-        createdAt: DateTime.parse(json["created_at"]),
-        plan: json["plan"] == null ? null : PlanResponse.fromJson(json["plan"]),
-        card: json["card"] == null
-            ? null
-            : CreditCardResponse.fromJson(json["card"]),
-        reservation: json["reservation"] == null
-            ? null
-            : ReservationResponse.fromJson(json["reservation"]),
+        createdAt: json["created_at"] != null
+            ? DateTime.tryParse(json["created_at"])
+            : null,
+        plan: json["plan"] != null ? PlanResponse.fromJson(json["plan"]) : null,
+        card: json["card"] != null
+            ? CreditCardResponse.fromJson(json["card"])
+            : null,
+        reservation: json["reservation"] != null
+            ? ReservationResponse.fromJson(json["reservation"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "type": type,
-    "type_id": typeId,
-    "amount": amount,
-    "currency": currency,
-    "method": method,
-    "method_id": methodId,
-    "status": status,
-    "description": description,
-    "created_at": createdAt?.toIso8601String(),
-    "plan": plan?.toJson(),
-    "card": card?.toJson(),
-    "reservation": reservation?.toJson(),
-  };
+        "id": id,
+        "type": type,
+        "type_id": typeId,
+        "amount": amount,
+        "currency": currency,
+        "method": method,
+        "method_id": methodId,
+        "status": status,
+        "description": description,
+        "created_at": createdAt?.toIso8601String(),
+        "plan": plan?.toJson(),
+        "card": card?.toJson(),
+        "reservation": reservation?.toJson(),
+      };
 }

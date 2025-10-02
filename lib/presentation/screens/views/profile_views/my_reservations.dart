@@ -146,7 +146,7 @@ class MyReservations extends StatelessWidget {
                               ocurrence: ocurrence,
                               textStyle: textStyle,
                               onTap: () {
-                                context.push('/Home/class/${ocurrence.id}');
+                                context.push('/invite/${reservation.id}');
                               },
                               instructor: ocurrence.classSession.instructor,
                               level: ocurrence.classSession.nivel,

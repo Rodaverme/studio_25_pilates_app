@@ -15,6 +15,7 @@ class CheckReservation {
   final int reservationsRemaining;
   final int planId;
   final int invitationRemaining;
+  final bool canInvite;
 
   CheckReservation({
     required this.occurrenceId,
@@ -32,7 +33,8 @@ class CheckReservation {
     required this.planExpiresAt,
     required this.reservationsRemaining,
     required this.planId,
-    required this.invitationRemaining
+    required this.invitationRemaining,
+    required this.canInvite
 
   });
 }

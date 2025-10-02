@@ -7,7 +7,7 @@ class Ocurrence {
   final DateTime endTime;
   final int capacity;
   final String price;
-
+  final double duracion;
   final bool isInPlan;
 
   final PilatesClass? classSession;
@@ -19,6 +19,7 @@ class Ocurrence {
     required this.endTime,
     required this.capacity,
     required this.price,
+    required this.duracion,
 
     required this.isInPlan,
 

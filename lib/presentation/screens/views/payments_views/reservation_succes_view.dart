@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 
 class ReservationSuccessView extends StatelessWidget {
-  const ReservationSuccessView({super.key});
+  final String occurrenceId;
+  const ReservationSuccessView({super.key, required this.occurrenceId});
 
   @override
   Widget build(BuildContext context) {
     final textSytle = Theme.of(context).textTheme.titleLarge;
 
+    // Accedemos al estado del cubit
+    final ocurrencesState = context.watch<OcurrencesCubit>().state;
+    final ocurrences = ocurrencesState.occurrencesDay;
+
+    // Buscar la ocurrencia con el id recibido
+    final occurrence = ocurrences.firstWhere(
+      (o) => o.id.toString() == occurrenceId,
+      orElse: () => throw Exception("Ocurrence no encontrada"),
+    );
+
+    final horaInicio = DateFormat("HH:mm").format(occurrence.startTime);
     return Scaffold(
       body: Stack(
         children: [
-          /// Fondo curvado
           Positioned.fill(child: CustomPaint(painter: FondoPainter())),
 
-          /// Contenido
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -24,7 +37,6 @@ class ReservationSuccessView extends StatelessWidget {
                 children: [
                   const SizedBox(height: 40),
 
-                  /// Títulos
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -45,10 +57,9 @@ class ReservationSuccessView extends StatelessWidget {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Color.fromRGBO(228, 214, 188, 1),
+                        color: const Color.fromRGBO(228, 214, 188, 1),
                         width: 6,
                       ),
                     ),
@@ -57,9 +68,9 @@ class ReservationSuccessView extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  /// Mensaje
+                  /// Mensaje dinámico
                   Text(
-                    "Tu lugar en\nNOMBRE DE LA CLASE\nestá reservado",
+                    "Tu lugar en\n${occurrence.classSession?.nombre}\nestá reservado",
                     textAlign: TextAlign.center,
                     style: textSytle,
                   ),
@@ -68,22 +79,28 @@ class ReservationSuccessView extends StatelessWidget {
 
                   const SizedBox(height: 40),
 
-                  /// Detalle clase
+                  /// Detalle clase dinámico
                   Column(
                     children: [
-                      Text("Nombre de la Clase", style: textSytle),
-                      SizedBox(height: 8),
+                      Text(occurrence.classSession!.nombre, style: textSytle),
+                      const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text("10:30", style: TextStyle(color: Colors.brown)),
-                          Text("25/09", style: TextStyle(color: Colors.brown)),
+                          Text(
+                            horaInicio, // o formatea el DateTime
+                            style: const TextStyle(color: Colors.brown),
+                          ),
+                          Text(
+                            "${occurrence.date.day}/${occurrence.date.month}",
+                            style: const TextStyle(color: Colors.brown),
+                          ),
                         ],
                       ),
                     ],
                   ),
 
-                  SizedBox(height: 100),
+                  const Spacer(),
 
                   /// Botones
                   Column(
@@ -106,25 +123,7 @@ class ReservationSuccessView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: Size(150, 55),
-                            backgroundColor: AppColors.almendra,
-                            foregroundColor: AppColors.piedra,
-                            side: BorderSide(color: Colors.brown.shade300),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            "Invitar Acompañante",
-                            style: textSytle?.copyWith(color: AppColors.piedra),
-                          ),
-                        ),
-                      ),
+                     
                     ],
                   ),
 

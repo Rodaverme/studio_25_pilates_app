@@ -8,8 +8,8 @@ final datasource = GuestDatasourceImpl();
 
   
   @override
-  Future<void> createGuest(String name, String document, String? email, String? phone) {
-    return datasource.createGuest(name, document, email, phone);
+  Future<void> createGuest(String name, String document, String? email, String? phone,int reservationId) {
+    return datasource.createGuest(name, document, email, phone,reservationId);
   }
 
   @override

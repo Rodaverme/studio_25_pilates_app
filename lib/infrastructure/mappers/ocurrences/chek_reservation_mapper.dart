@@ -20,6 +20,7 @@ class ChekReservationMapper {
       reservationsRemaining: json.reservationsRemaining,
       planId: json.planId,
       invitationRemaining: json.invitationRemaining,
+      canInvite: json.canInvite
     );
   }
 }

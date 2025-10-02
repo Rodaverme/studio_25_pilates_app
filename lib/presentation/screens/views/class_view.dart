@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
 import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
+import 'package:studio_25_pilates_app/domain/entities/reservation.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
@@ -22,6 +23,7 @@ class ClassView extends StatelessWidget {
     return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, occState) {
         if (occState.status == OcurrenceStatus.loading) {
+         
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -44,7 +46,6 @@ class ClassView extends StatelessWidget {
             'es_ES',
           ).format(ocurrence.date);
           final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
-          final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
 
           final currencyFormatter = NumberFormat.currency(
             locale: 'es_CO',
@@ -55,6 +56,7 @@ class ClassView extends StatelessWidget {
           return BlocBuilder<ReservationCubit, ReservationState>(
             builder: (context, resState) {
               if (resState.status == ReservationStatus.loading) {
+                context.read<ReservationCubit>().loadReservations();
                 return const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 );
@@ -62,9 +64,7 @@ class ClassView extends StatelessWidget {
 
               if (resState.status == ReservationStatus.error) {
                 return Scaffold(
-                  body: Center(
-                    child: Text('Error cargando reserva ${classId}'),
-                  ),
+                  body: Center(child: Text('Error cargando clase $classId')),
                 );
               }
 
@@ -76,14 +76,40 @@ class ClassView extends StatelessWidget {
                   ? check.canReserve
                   : true;
 
-              // final canGuest =
-              //     (check?.alreadyReserved == true &&
-              //     check!.invitationRemaining > 0);
               final invitationRemaining = check?.invitationRemaining;
 
               final reservedCount = check?.reserved ?? 0;
               final capacity = check?.available ?? 0;
               final progress = capacity > 0 ? reservedCount / capacity : 0.0;
+              final capacity1 = check?.capacity;
+              final available = check?.available;
+
+              // 🔎 Buscar la reserva asociada a esta ocurrencia
+              final matchingList = resState.reservations
+                  .where((r) => r.ocurrence?.id == ocurrence.id)
+                  .toList();
+
+              final Reservation? matchingReservation = matchingList.isNotEmpty
+                  ? matchingList.first
+                  : null;
+
+              final String? reservationId = matchingReservation?.id.toString();
+              print('Este es el reservation ID $reservationId');
+              print('Este es el ocurrence id $classId');
+
+              String formatDuration(double minutes) {
+                final int totalMinutes = minutes.round(); // redondeamos
+                final int hours = totalMinutes ~/ 60;
+                final int mins = totalMinutes % 60;
+
+                if (hours > 0 && mins > 0) {
+                  return "${hours}h ${mins}min";
+                } else if (hours > 0) {
+                  return "${hours}h";
+                } else {
+                  return "${mins}min";
+                }
+              }
 
               return Scaffold(
                 appBar: AppBar(
@@ -138,27 +164,77 @@ class ClassView extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Flexible(
-                                          child: Text(
-                                            fechaFormateada,
-                                            style: textStyle.titleLarge
-                                                ?.copyWith(fontSize: 15),
-                                            overflow: TextOverflow.ellipsis,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Inicio",
+                                                style: textStyle.bodySmall
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                              Text(
+                                                fechaFormateada,
+                                                style: textStyle.titleLarge
+                                                    ?.copyWith(fontSize: 15),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                horaInicio,
+                                                style: textStyle.titleLarge
+                                                    ?.copyWith(fontSize: 15),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         Flexible(
-                                          child: Text(
-                                            "$horaInicio - $horaFinal",
-                                            style: textStyle.titleLarge
-                                                ?.copyWith(fontSize: 15),
-                                            overflow: TextOverflow.ellipsis,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "Duración",
+                                                style: textStyle.bodySmall
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                              Text(
+                                                formatDuration(
+                                                  ocurrence.duracion,
+                                                ),
+                                                style: textStyle.titleLarge
+                                                    ?.copyWith(fontSize: 15),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         Flexible(
-                                          child: Text(
-                                            ocurrence.classSession!.sala,
-                                            style: textStyle.titleLarge
-                                                ?.copyWith(fontSize: 15),
-                                            overflow: TextOverflow.ellipsis,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                "Ubicación",
+                                                style: textStyle.bodySmall
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                              Text(
+                                                ocurrence.classSession!.sala,
+                                                style: textStyle.titleLarge
+                                                    ?.copyWith(fontSize: 15),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -197,20 +273,21 @@ class ClassView extends StatelessWidget {
 
                                   const SizedBox(height: 20),
 
-                                  const SizedBox(height: 20),
-
                                   PlacesAvailable(
                                     textStyle: textStyle,
-                                    reservedCount: reservedCount,
-                                    capacity: capacity,
+                                    reservedCount: available!,
+                                    capacity: capacity1!,
                                     progress: progress,
                                   ),
                                   const SizedBox(height: 20),
 
                                   /// Botón Reservar / Invitar
                                   SubmitButton(
+                                    canInvite: check.canInvite,
                                     canReserve: canReserve,
                                     classId: classId,
+                                    reservationId:
+                                        reservationId, // 👈 se pasa acá
                                     textStyle: textStyle,
                                     invitationReserved: invitationRemaining!,
                                   ),
@@ -241,12 +318,16 @@ class SubmitButton extends StatelessWidget {
     super.key,
     required this.canReserve,
     required this.classId,
+    required this.reservationId,
     required this.textStyle,
     required this.invitationReserved,
+    required this.canInvite,
   });
 
+  final bool canInvite;
   final bool canReserve;
   final String classId;
+  final String? reservationId; // 👈 ahora puede ser null
   final TextTheme textStyle;
   final int invitationReserved;
 
@@ -259,8 +340,17 @@ class SubmitButton extends StatelessWidget {
           if (canReserve) {
             context.push('/Home/class/$classId/reservation/$classId');
           } else {
-            if (invitationReserved == 0 ) return;
-            context.push('/Home/class/$classId/invite/$classId');
+            if (canInvite) return;
+
+            if (reservationId != null && reservationId!.isNotEmpty) {
+              context.push('/invite/$reservationId');
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("No se encontró la reserva para esta clase"),
+                ),
+              );
+            }
           }
         },
         style: ButtonStyle(
