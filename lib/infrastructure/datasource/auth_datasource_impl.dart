@@ -3,6 +3,8 @@ import 'package:studio_25_pilates_app/config/dio/dio_client.dart';
 import 'package:studio_25_pilates_app/domain/datasources/auth_datasource.dart';
 import 'package:studio_25_pilates_app/domain/entities/user.dart';
 import 'package:studio_25_pilates_app/infrastructure/mappers/client_mapper.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/auth/client_api.dart';
+
 import 'package:studio_25_pilates_app/infrastructure/models/auth/login_response.dart';
 import 'package:studio_25_pilates_app/presentation/services/Auth/token_service.dart';
 
@@ -68,31 +70,36 @@ class AuthDatasourceImpl extends AuthDatasource {
     }
   }
 
-  // @override
-  // Future<User> getCurrentClient() async {
-  //   try {
-  //     final token = await TokenService.getToken();
-  //     if (token == null) throw Exception('No hay token guardado');
+@override
+Future<User> getCurrentClient() async {
+  try {
+    final response = await dio.get('/api/client/me');
 
-  //     final response = await dio.get(
-  //       '/api/client/me',
-  //       options: Options(headers: {'Authorization': 'Bearer $token'}),
-  //     );
+    if (response.statusCode == 200 && response.data != null) {
+      // Convertir la respuesta en un Map<String, dynamic>
+      final data = Map<String, dynamic>.from(response.data);
 
-  //     if (response.statusCode == 200 && response.data != null) {
-  //       // Aquí asumo que tu backend devuelve algo compatible con Client
-  //       return Client.fromJson(response.data['client']);
-  //     }
+      // Crear un Client a partir del JSON
+      final client = Client.fromJson(data);
 
-  //     throw Exception('No se pudo obtener el cliente');
-  //   } on DioException catch (e) {
-  //     throw Exception(
-  //       'Error al obtener el cliente: ${e.response?.data ?? e.message}',
-  //     );
-  //   } catch (e) {
-  //     throw Exception('Error inesperado: $e');
-  //   }
-  // }
+      // Mapear a User
+      final user = ClientMapper.clientApitoEntity(client);
+      print('El cliente actual es ${user.name}');
+
+      return user;
+    }
+
+    throw Exception('Error al obtener el cliente');
+  } on DioException catch (e) {
+    throw Exception(
+      'Error al obtener el cliente: ${e.response?.data ?? e.message}',
+    );
+  } catch (e) {
+    throw Exception('Error inesperado: $e');
+  }
+}
+
+
 
 @override
 Future<void> logOut() async {
@@ -119,9 +126,5 @@ Future<void> logOut() async {
   }
 }
 
-  @override
-  Future<User> getCurrentClient() {
-    // TODO: implement getCurrentClient
-    throw UnimplementedError();
-  }
+  
 }

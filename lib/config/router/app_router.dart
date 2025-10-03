@@ -31,6 +31,23 @@ import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/
 
 final appRouter = GoRouter(
   initialLocation: '/',
+  redirect: (context, state) {
+    final isAuth = context.read<AuthCubit>().state.isAuthenticated;
+    final loggingIn = state.matchedLocation == '/';
+
+    if (!isAuth && !loggingIn) {
+      // 🔹 No está autenticado → mándalo al login
+      return '/';
+    }
+
+    if (isAuth && loggingIn) {
+      // 🔹 Ya está autenticado → mándalo al home
+      return '/Home';
+    }
+
+    // 🔹 En cualquier otro caso → no redirige
+    return null;
+  },
 
   routes: [
     ShellRoute(
@@ -52,6 +69,7 @@ final appRouter = GoRouter(
             BlocProvider(
               create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
             ),
+            BlocProvider(create: (_) => AuthCubit(AuthDatasourceImpl())..getCurrentClient()),
 
             BlocProvider(
               create: (_) =>
@@ -225,8 +243,13 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/perfil',
           builder: (context, state) {
-            return BlocProvider(
-              create: (context) => MyPaymentsCubit(PaymentDatasourceImpl()),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => MyPaymentsCubit(PaymentDatasourceImpl()),
+                ),
+                
+              ],
               child: const PerfilView(),
             );
           },

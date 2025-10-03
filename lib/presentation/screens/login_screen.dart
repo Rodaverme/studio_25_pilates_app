@@ -12,7 +12,6 @@ import 'package:studio_25_pilates_app/presentation/providers/cubits/login/login_
 import 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
-
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -32,7 +31,6 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
-        
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -57,7 +55,10 @@ class LoginScreen extends StatelessWidget {
                 child: BlocConsumer<LoginCubit, LoginState>(
                   listener: (context, state) async {
                     if (state is LoginSuccess) {
-                    
+                      final authState = context.read<AuthCubit>().state;
+                      print(
+                        "🔥 Token guardado en AuthCubit: ${authState.client?.name}",
+                      );
                       context.go('/Home');
                     }
                     if (state is LoginError) {
