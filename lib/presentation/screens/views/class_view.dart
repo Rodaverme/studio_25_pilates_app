@@ -23,7 +23,6 @@ class ClassView extends StatelessWidget {
     return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, occState) {
         if (occState.status == OcurrenceStatus.loading) {
-         
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -62,43 +61,41 @@ class ClassView extends StatelessWidget {
                 );
               }
 
-              if (resState.status == ReservationStatus.error) {
-                return Scaffold(
-                  body: Center(child: Text('Error cargando clase $classId')),
-                );
-              }
-
               // Datos de la reserva
-              final check = resState.checkReservation;
-              final isSameOcurrence = ocurrence.id == check?.occurrenceId;
+              final CheckReservation? check = resState.checkReservation;
+              final bool isSameOcurrence = ocurrence.id == check?.occurrenceId;
 
-              final canReserve = (isSameOcurrence && check != null)
+              final bool canReserve = (isSameOcurrence && check != null)
                   ? check.canReserve
                   : true;
 
-              final invitationRemaining = check?.invitationRemaining;
+              final int reservedCount = check?.reserved ?? 0;
+              final int capacity = check?.capacity ?? 0;
+              final int available = check?.available ?? 0;
+              final int invitationRemaining = check?.invitationRemaining ?? 0;
 
-              final reservedCount = check?.reserved ?? 0;
-              final capacity = check?.available ?? 0;
-              final progress = capacity > 0 ? reservedCount / capacity : 0.0;
-              final capacity1 = check?.capacity;
-              final available = check?.available;
+              final double progress = capacity > 0
+                  ? reservedCount / capacity
+                  : 0.0;
 
-              // 🔎 Buscar la reserva asociada a esta ocurrencia
-              final matchingList = resState.reservations
-                  .where((r) => r.ocurrence?.id == ocurrence.id)
-                  .toList();
-
-              final Reservation? matchingReservation = matchingList.isNotEmpty
-                  ? matchingList.first
+              // Buscar la reserva asociada a esta ocurrencia
+              final Reservation? matchingReservation =
+                  resState.reservations
+                      .where((r) => r.ocurrence?.id == ocurrence.id)
+                      .toList()
+                      .isNotEmpty
+                  ? resState.reservations
+                        .where((r) => r.ocurrence?.id == ocurrence.id)
+                        .first
                   : null;
 
-              final String? reservationId = matchingReservation?.id.toString();
-              print('Este es el reservation ID $reservationId');
-              print('Este es el ocurrence id $classId');
+              final String? reservationId = matchingReservation?.id?.toString();
+
+              // print('Este es el reservation ID $reservationId');
+              // print('Este es el ocurrence id $classId');
 
               String formatDuration(double minutes) {
-                final int totalMinutes = minutes.round(); // redondeamos
+                final int totalMinutes = minutes.round();
                 final int hours = totalMinutes ~/ 60;
                 final int mins = totalMinutes % 60;
 
@@ -132,15 +129,12 @@ class ClassView extends StatelessWidget {
                 ),
                 body: Stack(
                   children: [
-                    /// Fondo
                     Positioned.fill(
                       child: Image.asset(
                         'assets/images/Logo6.png',
                         fit: BoxFit.cover,
                       ),
                     ),
-
-                    /// Contenido
                     LayoutBuilder(
                       builder: (context, constraints) {
                         return SingleChildScrollView(
@@ -153,7 +147,6 @@ class ClassView extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  /// Info Card (fecha, hora, sala)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 30,
@@ -180,13 +173,11 @@ class ClassView extends StatelessWidget {
                                                 fechaFormateada,
                                                 style: textStyle.titleLarge
                                                     ?.copyWith(fontSize: 15),
-                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               Text(
                                                 horaInicio,
                                                 style: textStyle.titleLarge
                                                     ?.copyWith(fontSize: 15),
-                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
@@ -210,7 +201,6 @@ class ClassView extends StatelessWidget {
                                                 ),
                                                 style: textStyle.titleLarge
                                                     ?.copyWith(fontSize: 15),
-                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
@@ -232,7 +222,6 @@ class ClassView extends StatelessWidget {
                                                 ocurrence.classSession!.sala,
                                                 style: textStyle.titleLarge
                                                     ?.copyWith(fontSize: 15),
-                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
@@ -240,20 +229,14 @@ class ClassView extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-
                                   const SizedBox(height: 10),
-
-                                  /// Progreso (lugares disponibles)
                                   DescriptionClass(
                                     textStyle: textStyle,
                                     ocurrence: ocurrence,
                                     currencyFormatter: currencyFormatter,
-                                    check: check!,
+                                    check: check,
                                   ),
-
                                   const SizedBox(height: 20),
-
-                                  /// Profesor
                                   Align(
                                     alignment: Alignment.topLeft,
                                     child: Padding(
@@ -270,26 +253,21 @@ class ClassView extends StatelessWidget {
                                     ocurrence: ocurrence,
                                     textStyle: textStyle,
                                   ),
-
                                   const SizedBox(height: 20),
-
                                   PlacesAvailable(
                                     textStyle: textStyle,
-                                    reservedCount: available!,
-                                    capacity: capacity1!,
+                                    reservedCount: available,
+                                    capacity: capacity,
                                     progress: progress,
                                   ),
                                   const SizedBox(height: 20),
-
-                                  /// Botón Reservar / Invitar
                                   SubmitButton(
-                                    canInvite: check.canInvite,
+                                    canInvite: check?.canInvite ?? false,
                                     canReserve: canReserve,
                                     classId: classId,
-                                    reservationId:
-                                        reservationId, // 👈 se pasa acá
+                                    reservationId: reservationId,
                                     textStyle: textStyle,
-                                    invitationReserved: invitationRemaining!,
+                                    invitationReserved: invitationRemaining,
                                   ),
                                 ],
                               ),
@@ -327,7 +305,7 @@ class SubmitButton extends StatelessWidget {
   final bool canInvite;
   final bool canReserve;
   final String classId;
-  final String? reservationId; // 👈 ahora puede ser null
+  final String? reservationId;
   final TextTheme textStyle;
   final int invitationReserved;
 
@@ -335,39 +313,45 @@ class SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
-      child: FilledButton(
-        onPressed: () {
-          if (canReserve) {
-            context.push('/Home/class/$classId/reservation/$classId');
-          } else {
-            if (canInvite) return;
-
-            if (reservationId != null && reservationId!.isNotEmpty) {
-              context.push('/invite/$reservationId');
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("No se encontró la reserva para esta clase"),
+      child: (canInvite && canReserve)
+          ? FilledButton(
+              onPressed: () {
+                if (canReserve) {
+                  context.push('/Home/class/$classId/reservation/$classId');
+                } else {
+                  if (canInvite && reservationId != null) {
+                    context.push('/invite/$reservationId');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "No tienes una reserva activa para invitar",
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: const WidgetStatePropertyAll(
+                  AppColors.cafeNoir,
                 ),
-              );
-            }
-          }
-        },
-        style: ButtonStyle(
-          backgroundColor: const WidgetStatePropertyAll(AppColors.cafeNoir),
-          padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(vertical: 20),
-          ),
-          fixedSize: const WidgetStatePropertyAll(Size(300, 60)),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          ),
-        ),
-        child: Text(
-          canReserve ? 'Reservar' : 'Invitar acompañante',
-          style: textStyle.titleLarge?.copyWith(color: AppColors.piedra),
-        ),
-      ),
+                padding: const WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(vertical: 20),
+                ),
+                fixedSize: const WidgetStatePropertyAll(Size(300, 60)),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+              ),
+              child: Text(
+                canReserve ? 'Reservar' : 'Invitar acompañante',
+                style: textStyle.titleLarge?.copyWith(color: AppColors.piedra),
+              ),
+            )
+          : SizedBox(height: 10, width: 10),
     );
   }
 }
@@ -384,7 +368,7 @@ class DescriptionClass extends StatelessWidget {
   final TextTheme textStyle;
   final Ocurrence ocurrence;
   final NumberFormat currencyFormatter;
-  final CheckReservation check;
+  final CheckReservation? check;
 
   @override
   Widget build(BuildContext context) {
@@ -405,9 +389,11 @@ class DescriptionClass extends StatelessWidget {
               children: [
                 Text('Descripción', style: textStyle.titleLarge),
                 Text(
-                  !check.isInPlan
-                      ? '\$${currencyFormatter.format(int.parse(ocurrence.classSession!.price))}'
-                      : '',
+                  check?.alreadyReserved == true
+                      ? 'Reservado'
+                      : (check?.isInPlan == false
+                            ? '\$${currencyFormatter.format(int.parse(ocurrence.classSession!.price))}'
+                            : ''),
                   style: textStyle.titleLarge?.copyWith(
                     color: AppColors.almendra,
                   ),
@@ -479,23 +465,6 @@ class InstructorDescription extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: FilledButton(
-                  onPressed: () {},
-                  style: const ButtonStyle().copyWith(
-                    backgroundColor: const WidgetStatePropertyAll(
-                      AppColors.cafeNoir,
-                    ),
-                  ),
-                  child: Text(
-                    'Ver Perfil',
-                    style: textStyle.bodyMedium?.copyWith(
-                      color: AppColors.piedra,
-                    ),
-                  ),
-                ),
               ),
             ],
           ),

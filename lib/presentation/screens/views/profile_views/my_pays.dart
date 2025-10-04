@@ -147,7 +147,7 @@ class MyPayments extends StatelessWidget {
               if (state.status == MyPaymentsStatus.error) {
                 return Center(
                   child: Text(
-                    state.errorMessage ?? "Error cargando pagos",
+                     "No tienes pagos aún",
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.cafeNoir,
                     ),

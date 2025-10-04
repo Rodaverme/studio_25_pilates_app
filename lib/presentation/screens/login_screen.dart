@@ -180,7 +180,7 @@ class _LoginForm extends StatelessWidget {
                 context.read<NotificationsBloc>().requestPermission();
               },
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(AppColors.cafeNoir),
+                backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
                 padding: const WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 20),
                 ),

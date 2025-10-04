@@ -24,16 +24,10 @@ class PlanDatasourceImpl extends PlansDatasource {
       final response = await dio.get('/api/client/plans');
 
       if (response.statusCode == 200 && response.data != null) {
-        final List<dynamic> data = response.data;
+        // 👇 Aquí ya no es lista, es un único JSON
+        final planResponse = PlanResponse.fromJson(response.data);
 
-        final plans = data.map((e) => PlanResponse.fromJson(e)).toList();
-
-        final activePlan = plans.firstWhere(
-          (p) => p.isActive!,
-          orElse: () => plans.first,
-        );
-
-        final plan = PlanMapper.planApitoEntity(activePlan);
+        final plan = PlanMapper.planApitoEntity(planResponse);
 
         return plan;
       }
@@ -42,7 +36,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       throw Exception(
         'Error al obtener mi plan: ${e.response?.data ?? e.message}',
       );
-    } catch (e,st) {
+    } catch (e, st) {
       print("❌ Error parseando My Plan Plan: $e");
       print("STACK: $st");
       throw Exception('Error inesperado: $e');
@@ -56,7 +50,9 @@ class PlanDatasourceImpl extends PlansDatasource {
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> data = response.data;
         final List<Plan> plans = data
-            .map((json) => PlanMapper.planApitoEntity(PlanResponse.fromJson(json)))
+            .map(
+              (json) => PlanMapper.planApitoEntity(PlanResponse.fromJson(json)),
+            )
             .toList();
 
         return plans;
@@ -66,7 +62,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       throw Exception(
         'Error al obtener todos los planes: ${e.response?.data ?? e.message}',
       );
-    } catch (e,st) {
+    } catch (e, st) {
       print("❌ Error parseando StatusPlan: $e");
       print("STACK: $st");
       throw Exception('Error inesperado: $e');
@@ -111,7 +107,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       throw Exception(
         'Error al obtener mi plan: ${e.response?.data ?? e.message}',
       );
-    } catch (e,st) {
+    } catch (e, st) {
       print("❌ Error parseando PlanById: $e");
       print("STACK: $st");
       throw Exception('Error inesperado: $e');
@@ -134,7 +130,7 @@ class PlanDatasourceImpl extends PlansDatasource {
       throw Exception(
         'Error al obtener la reserva: ${e.response?.data ?? e.message}',
       );
-    } catch (e,st) {
+    } catch (e, st) {
       print("❌ Error parseando StatusPlan: $e");
       print("STACK: $st");
       throw Exception('Error inesperado: $e');

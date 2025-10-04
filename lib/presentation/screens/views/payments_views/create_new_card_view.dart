@@ -52,9 +52,9 @@ class CreateNewCardView extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  "❌ Error: ${state.errorMessage ?? 'No se pudo guardar'}",
+                  "❌ No se pudo guardar la tarjeta de credito",
                 ),
-                backgroundColor: Colors.red,
+                backgroundColor:AppColors.cafeNoir,
               ),
             );
             break;

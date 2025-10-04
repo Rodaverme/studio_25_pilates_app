@@ -11,7 +11,7 @@ String checkResponseToJson(CheckResponse data) => json.encode(data.toJson());
 
 class CheckResponse {
   int occurrenceId;
-  int planId;
+  int? planId;
   String classId;
   DateTime date;
   String startTime;
@@ -42,7 +42,7 @@ class CheckResponse {
     required this.canReserve,
     required this.creditsRemaining,
     required this.planExpiresAt,
-    required this.planId,
+    this.planId,
     required this.reservationsRemaining,
     required this.invitationRemaining,
     required this.canInvite,
@@ -65,7 +65,7 @@ class CheckResponse {
     planExpiresAt: json["plan_expires_at"] != null
         ? DateTime.parse(json["plan_expires_at"])
         : DateTime.now(),
-    planId: json["plan_id"],
+    planId: json["plan_id"] ?? 0,
     reservationsRemaining: json["reservations_remaining"],
     invitationRemaining: json["invitations_remaining"],
     canInvite: json["can_invite"], // Si viene null => DateTime.now()

@@ -162,7 +162,7 @@ class MyReservations extends StatelessWidget {
               if (state.status == ReservationStatus.error) {
                 return Center(
                   child: Text(
-                    state.errorMessage ?? "Error desconocido",
+                    'No tienes reservas Aun',
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.cafeNoir,
                     ),

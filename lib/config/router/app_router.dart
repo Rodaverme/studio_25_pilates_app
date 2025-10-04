@@ -34,19 +34,21 @@ final appRouter = GoRouter(
   redirect: (context, state) {
     final isAuth = context.read<AuthCubit>().state.isAuthenticated;
     final loggingIn = state.matchedLocation == '/';
+  final isRegister = state.matchedLocation == '/register';
+  final isRecover =state.matchedLocation == '/resetPassword';
 
-    if (!isAuth && !loggingIn) {
-      // 🔹 No está autenticado → mándalo al login
-      return '/';
-    }
+     if (!isAuth && !(loggingIn || isRegister || isRecover)) {
+    // 🔹 No autenticado → solo puede entrar a login, register o recover
+    return '/';
+  }
 
-    if (isAuth && loggingIn) {
-      // 🔹 Ya está autenticado → mándalo al home
-      return '/Home';
-    }
+  if (isAuth && (loggingIn || isRegister || isRecover)) {
+    // 🔹 Ya autenticado → si va a login/register/recover lo mandamos al home
+    return '/Home';
+  }
 
-    // 🔹 En cualquier otro caso → no redirige
-    return null;
+  // 🔹 En cualquier otro caso → no redirige
+  return null;
   },
 
   routes: [

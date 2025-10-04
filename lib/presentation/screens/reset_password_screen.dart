@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
@@ -13,26 +14,36 @@ class ResetPasswordScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nombre de la Aplicación'),
+        title: const Text('Olvidaste tu contraseña?'),
         centerTitle: true,
       ),
-      body: BlocProvider(
-        create: (context) => FormsCubit(),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: _ResetPassword(textStyle: textStyle),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+          ),
+
+          BlocProvider(
+            create: (context) => FormsCubit(),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _ResetPassword(textStyle: textStyle),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -61,7 +72,7 @@ class _ResetPassword extends StatelessWidget {
             decoration: InputDecorations.authInputDecoration(
               hintText: 'Correoelectrónico@dominio.com',
               labelText: 'Ingrese su correo',
-              errorText: email.errorMessage
+              errorText: email.errorMessage,
             ),
           ),
           const SizedBox(height: 20),
@@ -71,12 +82,12 @@ class _ResetPassword extends StatelessWidget {
               onPressed: () {
                 // TODO: Validar login y navegar al home
                 if (email.isValid) {
-                  //TODO ENVIAR CORREO PARA RECUPERAR CONTRASEÑA 
-                  
+                  //TODO ENVIAR CORREO PARA RECUPERAR CONTRASEÑA
                 }
-                  formsCubit.onSubmit();
+                formsCubit.onSubmit();
               },
               style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
                 padding: const WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 20),
                 ),

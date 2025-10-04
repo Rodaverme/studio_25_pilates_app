@@ -53,7 +53,7 @@ class _NotificationView extends StatelessWidget {
     }
 
     if (notifications.isEmpty) {
-      return const Center(child: Text("No hay notificaciones"));
+      return const Center(child: Text("No tienes  notificaciones  aún"));
     }
 
     // 👉 Agrupamos las notificaciones por fecha (dd/MM/yyyy)

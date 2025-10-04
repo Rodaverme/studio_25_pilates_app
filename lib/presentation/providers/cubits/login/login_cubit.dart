@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
+import 'package:studio_25_pilates_app/presentation/helpers/app_error.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 
 part 'login_state.dart';
@@ -19,7 +20,8 @@ class LoginCubit extends Cubit<LoginState> {
       authCubit.setUser(user);
       emit(LoginSuccess());
         } catch (e) {
-      emit(LoginError("Error inesperado: $e"));
+           final message = (e is AppError) ? e.message : "Error desconocido";
+      emit(LoginError(message));
     }
   }
 }

@@ -87,6 +87,8 @@
     void _handleMessage(RemoteMessage message) {
       context.read<NotificationsBloc>().handleRemoteMessage(message);
       message.messageId?.replaceAll(':', '').replaceAll('%', '');
+      print( 'Esta es la informacion de la data ${message.data['notification_id']}');
+
       appRouter.go('/');
     }
 

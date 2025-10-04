@@ -18,7 +18,7 @@ class ChekReservationMapper {
       planExpiresAt: json.planExpiresAt,
       reserved: json.reserved,
       reservationsRemaining: json.reservationsRemaining,
-      planId: json.planId,
+      planId: json.planId ?? 0,
       invitationRemaining: json.invitationRemaining,
       canInvite: json.canInvite
     );

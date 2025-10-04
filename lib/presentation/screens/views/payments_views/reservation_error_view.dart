@@ -53,7 +53,7 @@ class ReservationErrorView extends StatelessWidget {
                         width: 6,
                       ),
                     ),
-                    child: ThickX(size: 150, color: Colors.red),
+                    child: ThickX(size: 150, color: AppColors.cafeNoir),
                   ),
 
                   const SizedBox(height: 30),

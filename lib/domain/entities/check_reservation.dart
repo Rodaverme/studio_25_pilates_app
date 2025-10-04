@@ -13,7 +13,7 @@ class CheckReservation {
   final int creditsRemaining;
   final DateTime planExpiresAt;
   final int reservationsRemaining;
-  final int planId;
+  final int? planId;
   final int invitationRemaining;
   final bool canInvite;
 
@@ -32,7 +32,7 @@ class CheckReservation {
     required this.creditsRemaining,
     required this.planExpiresAt,
     required this.reservationsRemaining,
-    required this.planId,
+    this.planId,
     required this.invitationRemaining,
     required this.canInvite
 

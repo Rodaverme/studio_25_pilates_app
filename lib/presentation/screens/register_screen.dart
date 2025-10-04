@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
 
@@ -16,98 +17,111 @@ class RegisterScreen extends StatelessWidget {
     final textStyle = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(title: Text('Registrate'), centerTitle: true),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => FormsCubit()),
-          BlocProvider(
-            create: (context) => RegisterCubit(
-              authRespository: AuthRespositoryImpl(
-                datasource: AuthDatasourceImpl(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+          ),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => FormsCubit()),
+              BlocProvider(
+                create: (context) => RegisterCubit(
+                  authRespository: AuthRespositoryImpl(
+                    datasource: AuthDatasourceImpl(),
+                  ),
+                ),
+              ),
+            ],
+            child: SafeArea(
+              child: BlocConsumer<RegisterCubit, RegisterState>(
+                listener: (context, state) {
+                  if (state is RegisterSuccess) {
+                    context.go('/Home');
+                  }
+
+                  if (state is RegisterError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Erro al realizar el registro, vuelve a intentarlo',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: IntrinsicHeight(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Spacer(),
+                                  SizedBox(height: 20),
+                                  Text(
+                                    'Únete a nuestra comunidad',
+                                    style: textStyle.titleLarge,
+                                  ),
+                                  SizedBox(height: 60),
+
+                                  _RegisterForm(
+                                    isLoading: state is RegisterLoading,
+                                  ),
+
+                                  Spacer(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text('Volver al'),
+                                      TextButton(
+                                        onPressed: () {
+                                          context.go('/Home');
+                                        },
+                                        child: Text('Login'),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 30),
+
+                                  Text('¿Aun no tienes cuenta?'),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      'Términos de servicio y Política de privacidad',
+                                      style: textStyle.titleMedium?.copyWith(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 30),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),
         ],
-        child: SafeArea(
-          child: BlocConsumer<RegisterCubit, RegisterState>(
-            listener: (context, state) {
-              if (state is RegisterSuccess) {
-                context.go('/');
-              }
-
-              if (state is RegisterError) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(state.message)));
-              }
-              // TODO: implement listener
-            },
-            builder: (context, state) {
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: IntrinsicHeight(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Spacer(),
-                              SizedBox(height: 20),
-                              Text(
-                                'Únete a nuestra comunidad',
-                                style: textStyle.titleLarge,
-                              ),
-                              SizedBox(height: 60),
-
-                              _RegisterForm(
-                                isLoading: state is RegisterLoading,
-                              ),
-
-                              Spacer(),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text('Volver al'),
-                                  TextButton(
-                                    onPressed: () {
-                                      context.go('/Home');
-                                    },
-                                    child: Text('Login'),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 30),
-
-                              Text('¿Aun no tienes cuenta?'),
-                              TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'Términos de servicio y Política de privacidad',
-                                  style: textStyle.titleMedium?.copyWith(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 30),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
       ),
     );
   }
@@ -159,7 +173,7 @@ class _RegisterForm extends StatelessWidget {
               errorText: password.errorMessage,
             ),
           ),
-            SizedBox(height: 20),
+          SizedBox(height: 20),
           TextFormField(
             onChanged: formsCubit.confirmedPasswordChange,
             obscureText: true,
@@ -178,19 +192,18 @@ class _RegisterForm extends StatelessWidget {
                 if (!username.isValid ||
                     !email.isValid ||
                     !password.isValid ||
-                    !confirmedPassword.isValid
-                    ) {
+                    !confirmedPassword.isValid) {
                   return;
                 }
                 context.read<RegisterCubit>().register(
                   username.value,
                   email.value,
                   password.value,
-                  confirmedPassword.value
-                  
+                  confirmedPassword.value,
                 );
               },
               style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
                 padding: WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 20),
                 ),

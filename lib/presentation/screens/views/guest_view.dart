@@ -41,8 +41,8 @@ class GuestView extends StatelessWidget {
               if (state.status == InvitationStatus.error) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("❌ Error: ${state.errorMessage}"),
-                    backgroundColor: Colors.red,
+                    content: Text("Error al realizar la invitación "),
+                    backgroundColor: AppColors.cafeNoir,
                   ),
                 );
               }

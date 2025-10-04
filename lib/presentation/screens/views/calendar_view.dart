@@ -2,7 +2,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studio_25_pilates_app/presentation/providers/cubits/class/class_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/week_calendar.dart';
@@ -51,16 +50,11 @@ class _CalendarViewState extends State<CalendarView> {
                 },
               ),
 
-   
-
-
-
-
               /// 📌 Lista de clases
               Expanded(
                 child: BlocBuilder<OcurrencesCubit, OcurrencesState>(
                   builder: (context, state) {
-                    if (state.status == ClassStatus.loading) {
+                    if (state.status == OcurrenceStatus.loading) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
@@ -79,9 +73,11 @@ class _CalendarViewState extends State<CalendarView> {
                       if (_selectedInstructor != null &&
                           _selectedInstructor!.isNotEmpty) {
                         validOccurrences = validOccurrences
-                            .where((o) => o.classSession!.instructor
-                                .toLowerCase()
-                                .contains(_selectedInstructor!.toLowerCase()))
+                            .where(
+                              (o) => o.classSession!.instructor
+                                  .toLowerCase()
+                                  .contains(_selectedInstructor!.toLowerCase()),
+                            )
                             .toList();
                       }
 
@@ -89,9 +85,11 @@ class _CalendarViewState extends State<CalendarView> {
                       if (_selectedNivel != null &&
                           _selectedNivel!.isNotEmpty) {
                         validOccurrences = validOccurrences
-                            .where((o) => o.classSession!.nivel
-                                .toLowerCase()
-                                .contains(_selectedNivel!.toLowerCase()))
+                            .where(
+                              (o) => o.classSession!.nivel
+                                  .toLowerCase()
+                                  .contains(_selectedNivel!.toLowerCase()),
+                            )
                             .toList();
                       }
 
@@ -112,8 +110,7 @@ class _CalendarViewState extends State<CalendarView> {
                             child: LessonsToday(
                               ocurrence: c,
                               textStyle: textStyle,
-                              onTap: () =>
-                                  context.push('/Home/class/${c.id}'),
+                              onTap: () => context.push('/Home/class/${c.id}'),
                               instructor: c.classSession!.instructor,
                               level: c.classSession!.nivel,
                             ),
@@ -123,12 +120,14 @@ class _CalendarViewState extends State<CalendarView> {
                     }
 
                     if (state.status == OcurrenceStatus.error) {
-                      return Center(child: Text(state.errorMessage!));
+                      return Center(
+                        child: Text(
+                          'Ocurrio un problema al encontrar las clases',
+                        ),
+                      );
                     }
 
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   },
                 ),
               ),

@@ -21,7 +21,6 @@ class PlanesView extends StatelessWidget {
           Positioned.fill(
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
-
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
               if (state.status == PlanStatus.error) {
@@ -33,17 +32,14 @@ class PlanesView extends StatelessWidget {
                 final myPlan = state.myPlan;
                 final status = state.statusPlan;
 
-                // final status = state.statusPlan;
-
                 if (plans.isEmpty) {
                   return const Center(child: Text("No hay planes disponibles"));
                 }
+
                 return SingleChildScrollView(
                   child: Column(
                     children: plans.map((plan) {
                       final isActive = myPlan != null && plan.id == myPlan.id;
-                      // final clases = plan.classes?.map((c) => c.nombre).toList() ?? [];
-                      // print('Clases del plan ${plan.name}: $clases');
 
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -51,7 +47,6 @@ class PlanesView extends StatelessWidget {
                           isActive: isActive,
                           textStyle: Theme.of(context).textTheme,
                           plan: plan,
-
                           status: isActive ? status : null,
                         ),
                       );
@@ -60,7 +55,7 @@ class PlanesView extends StatelessWidget {
                 );
               }
 
-              return const Center(child: Text(""));
+              return const Center(child: CircularProgressIndicator());
             },
           ),
         ],
@@ -76,6 +71,7 @@ class _CustomPlanes extends StatelessWidget {
     required this.isActive,
     this.status,
   });
+
   final Plan plan;
   final TextTheme textStyle;
   final bool isActive;
@@ -86,8 +82,7 @@ class _CustomPlanes extends StatelessWidget {
     final currencyFormatter = NumberFormat.currency(
       locale: 'es_CO',
       name: '',
-
-      decimalDigits: 0, // 👈 así no muestra los decimales
+      decimalDigits: 0,
     );
 
     double? progress;
@@ -113,38 +108,36 @@ class _CustomPlanes extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Aquí va todo el contenido cuando está activo
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(plan.name, style: textStyle.titleLarge),
-                        Text(
-                          'se renueva en ${status?.daysRemaining},días',
-                          style: textStyle.bodyLarge,
-                        ),
-                      ],
-                    ),
+                    Text(plan.name, style: textStyle.titleLarge),
+
+                    if (status != null)
+                      Text(
+                        'Se renueva en ${status!.daysRemaining} días',
+                        style: textStyle.bodyLarge,
+                      )
+                    else
+                      Text('Plan activo', style: textStyle.bodyLarge),
+
                     const SizedBox(height: 30),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Asistencia', style: textStyle.titleLarge),
-                          ],
-                        ),
-                        LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 10,
-                          color: AppColors.cafeNoir,
-                          backgroundColor: Colors.grey,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        SizedBox(height: 10),
-                        Text(limpiarDescripcion(plan.description)),
-                      ],
-                    ),
+
+                    if (status != null) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Asistencia', style: textStyle.titleLarge),
+                        ],
+                      ),
+                      LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 10,
+                        color: AppColors.cafeNoir,
+                        backgroundColor: Colors.grey,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+
+                    Text(limpiarDescripcion(plan.description)),
                   ],
                 ),
               ),
@@ -156,7 +149,6 @@ class _CustomPlanes extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Aquí va todo el contenido cuando NO está activo
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -177,9 +169,7 @@ class _CustomPlanes extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    const Text('Acceso a clases privadas'),
-                    const Text('Reserva prioritaria'),
-                    const Text('Cancelación Gratuita'),
+                    Text(limpiarDescripcion(plan.description)),
                     const SizedBox(height: 20),
                     Center(
                       child: GestureDetector(
@@ -209,9 +199,7 @@ class _CustomPlanes extends StatelessWidget {
   }
 
   String limpiarDescripcion(String raw) {
-    // Eliminar etiquetas HTML como <p>, </p>, etc.
     final sinHtml = raw.replaceAll(RegExp(r'<[^>]*>'), '');
-    // Reemplazar \n por saltos de línea reales
     return sinHtml.replaceAll(r'\n', '\n');
   }
 }

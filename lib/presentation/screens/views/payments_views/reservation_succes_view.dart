@@ -20,7 +20,7 @@ class ReservationSuccessView extends StatelessWidget {
     // Buscar la ocurrencia con el id recibido
     final occurrence = ocurrences.firstWhere(
       (o) => o.id.toString() == occurrenceId,
-      orElse: () => throw Exception("Ocurrence no encontrada"),
+      orElse: () => throw Exception("No se encontro la clase"),
     );
 
     final horaInicio = DateFormat("HH:mm").format(occurrence.startTime);

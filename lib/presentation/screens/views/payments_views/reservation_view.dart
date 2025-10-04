@@ -511,11 +511,9 @@ class ConfirmPayButton extends StatelessWidget {
           listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             if (state.status == PlanStatus.purchase) {
-              context.go('/Home/succesPay');
+              context.go('/Home/succesPay/$ocurrenceId');
             } else if (state.status == PlanStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${state.errorMessage} ❌')),
-              );
+              context.go('/Home/errorPay/$ocurrenceId');
             }
           },
         ),
@@ -554,7 +552,7 @@ class ConfirmPayButton extends StatelessWidget {
                           if (cardId == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Selecciona una tarjeta ⚠️'),
+                                content: Text('Selecciona una tarjeta'),
                               ),
                             );
                             return;
@@ -577,7 +575,7 @@ class ConfirmPayButton extends StatelessWidget {
                         if (cardId == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Selecciona una tarjeta ⚠️'),
+                              content: Text('Selecciona una tarjeta'),
                             ),
                           );
                           return;
@@ -590,7 +588,7 @@ class ConfirmPayButton extends StatelessWidget {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Selecciona un método de pago ⚠️'),
+                          content: Text('Selecciona un método de pago'),
                         ),
                       );
                     }

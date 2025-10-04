@@ -27,10 +27,7 @@ class _HomeViewState extends State<HomeView> {
     context.read<OcurrencesCubit>().loadOcurrence(
       DateTime.now(),
       DateTime.now(),
-      
     );
-    
-   
   }
 
   @override
@@ -85,7 +82,7 @@ class _HomeViewState extends State<HomeView> {
                     BlocBuilder<ReservationCubit, ReservationState>(
                       builder: (context, state) {
                         if (state.status == ReservationStatus.loading) {
-                          print('Cargando');
+                          return Center(child: CircularProgressIndicator());
                         }
                         if (state.status == ReservationStatus.error) {
                           return Center(
@@ -101,20 +98,7 @@ class _HomeViewState extends State<HomeView> {
                                   children: [
                                     Center(
                                       child: Text(
-                                        'No tienes reservas próximas ',
-                                      ),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () {
-                                        context.go('/calendar');
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor: WidgetStatePropertyAll(
-                                          AppColors.almendra,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        'Empieza reservando tu primera clase',
+                                        'Ocurrió un error al cargar las reservas, inténtalo de nuevo ',
                                       ),
                                     ),
                                   ],
@@ -245,7 +229,7 @@ class _NextClass extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
         width: double.maxFinite,
-        height: 130,
+        height: 170,
         decoration: BoxDecoration(
           color: AppColors.piedra,
           borderRadius: BorderRadius.circular(15),
@@ -255,7 +239,7 @@ class _NextClass extends StatelessWidget {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,6 +261,36 @@ class _NextClass extends StatelessWidget {
                       style: textStyle.titleLarge,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 30,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    FilledButton(
+                      onPressed: () {},
+                      child: Text(
+                        clase.ocurrence!.classSession!.nivel,
+                        style: textStyle.bodySmall,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.push('/Home/class/${clase.ocurrence?.id}');
+                      },
+                      child: const Text(
+                        'Ver',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
@@ -343,7 +357,11 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Center(child: Text('Hoy no hay clases programadas ')),
+                    Center(
+                      child: Text(
+                        'Ocurrió un error al cargar las clases, inténtalo de nuevo ',
+                      ),
+                    ),
                   ],
                 ),
               ),
