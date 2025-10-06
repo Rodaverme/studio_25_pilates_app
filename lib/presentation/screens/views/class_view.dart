@@ -23,8 +23,19 @@ class ClassView extends StatelessWidget {
     return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, occState) {
         if (occState.status == OcurrenceStatus.loading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/Logo6.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                const Center(child: CircularProgressIndicator()),
+              ],
+            ),
           );
         }
 
@@ -56,8 +67,19 @@ class ClassView extends StatelessWidget {
             builder: (context, resState) {
               if (resState.status == ReservationStatus.loading) {
                 context.read<ReservationCubit>().loadReservations();
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
+                return Scaffold(
+                  body: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/Logo6.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  ),
                 );
               }
 
@@ -313,8 +335,9 @@ class SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
-      child: (canInvite && canReserve)
-          ? FilledButton(
+      child: (!canInvite && !canReserve)
+          ? SizedBox(height: 10, width: 10)
+          : FilledButton(
               onPressed: () {
                 if (canReserve) {
                   context.push('/Home/class/$classId/reservation/$classId');
@@ -350,8 +373,7 @@ class SubmitButton extends StatelessWidget {
                 canReserve ? 'Reservar' : 'Invitar acompañante',
                 style: textStyle.titleLarge?.copyWith(color: AppColors.piedra),
               ),
-            )
-          : SizedBox(height: 10, width: 10),
+            ),
     );
   }
 }

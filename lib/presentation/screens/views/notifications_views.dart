@@ -42,21 +42,29 @@ class _NotificationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final notifications = context
-        .watch<NotificationsBloc>()
-        .state
-        .notifications;
+    final state = context.watch<NotificationsBloc>().state;
+    final notifications = state.notifications;
 
-    if (context.watch<NotificationsBloc>().state.statusNotification ==
-        NotificationsStatus.loading) {
+    // 🔹 Mientras carga
+    if (state.statusNotification == NotificationsStatus.loading) {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // 🔹 Si no hay notificaciones
     if (notifications.isEmpty) {
-      return const Center(child: Text("No tienes  notificaciones  aún"));
+      return const Center(
+        child: Text(
+          "No tienes notificaciones aún 💤",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey,
+          ),
+        ),
+      );
     }
 
-    // 👉 Agrupamos las notificaciones por fecha (dd/MM/yyyy)
+    // 🔹 Si hay notificaciones
     final grouped = <String, List<PushMessage>>{};
     final formatter = DateFormat('dd/MM/yyyy');
 

@@ -81,9 +81,9 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   ) async {
     try {
       emit(state.copyWith(statusNotification: NotificationsStatus.loading));
+
       final remoteNotifications = await datasource.getAllNotification();
 
-      // 👉 Combinar: backend + las que ya estaban (sin duplicar)
       final all = [
         ...remoteNotifications,
         ...state.notifications.where(
@@ -99,10 +99,19 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       );
     } catch (e) {
       print("❌ Error cargando notificaciones: $e");
+      emit(state.copyWith(statusNotification: NotificationsStatus.error));
     }
   }
 
   void handleRemoteMessage(RemoteMessage message) {
+    // 👀 para debug, imprime todo lo que viene
+    print("📩 Nueva notificación recibida:");
+    print("   ID: ${message.messageId}");
+    print("   Título: ${message.notification?.title}");
+    print("   Cuerpo: ${message.notification?.body}");
+    print(
+      "   Data: ${message.data}",
+    ); // <-- aquí ves la data que mandes desde el backend
     if (message.notification == null) return;
     final notification = PushMessage(
       messageId:

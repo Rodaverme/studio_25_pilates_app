@@ -44,13 +44,13 @@ class NotificationsDatasourceImpl extends NotificationsDatasource {
             )
             .toList();
 
-        print('Estos son los instructores que existen ${messages.length}');
+        print('Estos son las notificaciones que existen ${messages.length}');
         return messages;
       }
-      throw Exception('Error al obtner los');
+      throw Exception('Error al obtner las notificacionee');
     } on DioException catch (e) {
       throw Exception(
-        'Error al obtener todos los planes: ${e.response?.data ?? e.message}',
+        'Error al obtener todos las notificaciones: ${e.response?.data ?? e.message}',
       );
     } catch (e) {
       throw Exception('Error inesperado: $e');

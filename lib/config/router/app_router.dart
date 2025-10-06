@@ -5,6 +5,7 @@ import 'package:studio_25_pilates_app/infrastructure/datasource/notifications_da
 import 'package:studio_25_pilates_app/infrastructure/datasource/ocurrence_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/payment_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/stats_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/infrastructure.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
@@ -13,6 +14,7 @@ import 'package:studio_25_pilates_app/presentation/providers/cubits/invitation/i
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/payment/my_payments/my_payments_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/stats/stats_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/screens/screens.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/calendar_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/class_view.dart';
@@ -34,21 +36,21 @@ final appRouter = GoRouter(
   redirect: (context, state) {
     final isAuth = context.read<AuthCubit>().state.isAuthenticated;
     final loggingIn = state.matchedLocation == '/';
-  final isRegister = state.matchedLocation == '/register';
-  final isRecover =state.matchedLocation == '/resetPassword';
+    final isRegister = state.matchedLocation == '/register';
+    final isRecover = state.matchedLocation == '/resetPassword';
 
-     if (!isAuth && !(loggingIn || isRegister || isRecover)) {
-    // 🔹 No autenticado → solo puede entrar a login, register o recover
-    return '/';
-  }
+    if (!isAuth && !(loggingIn || isRegister || isRecover)) {
+      // 🔹 No autenticado → solo puede entrar a login, register o recover
+      return '/';
+    }
 
-  if (isAuth && (loggingIn || isRegister || isRecover)) {
-    // 🔹 Ya autenticado → si va a login/register/recover lo mandamos al home
-    return '/Home';
-  }
+    if (isAuth && (loggingIn || isRegister || isRecover)) {
+      // 🔹 Ya autenticado → si va a login/register/recover lo mandamos al home
+      return '/Home';
+    }
 
-  // 🔹 En cualquier otro caso → no redirige
-  return null;
+    // 🔹 En cualquier otro caso → no redirige
+    return null;
   },
 
   routes: [
@@ -56,6 +58,8 @@ final appRouter = GoRouter(
       builder: (context, state, child) {
         return MultiBlocProvider(
           providers: [
+            BlocProvider(create: (_) => StatsCubit(StatsDatasourceImpl())),
+
             BlocProvider(
               create: (_) => ReservationCubit(ReservationDatasourceImpl()),
             ),
@@ -71,7 +75,10 @@ final appRouter = GoRouter(
             BlocProvider(
               create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
             ),
-            BlocProvider(create: (_) => AuthCubit(AuthDatasourceImpl())..getCurrentClient()),
+            BlocProvider(
+              create: (_) =>
+                  AuthCubit(AuthDatasourceImpl())..getCurrentClient(),
+            ),
 
             BlocProvider(
               create: (_) =>
@@ -250,7 +257,6 @@ final appRouter = GoRouter(
                 BlocProvider(
                   create: (context) => MyPaymentsCubit(PaymentDatasourceImpl()),
                 ),
-                
               ],
               child: const PerfilView(),
             );

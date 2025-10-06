@@ -37,7 +37,7 @@ class RegisterScreen extends StatelessWidget {
               child: BlocConsumer<RegisterCubit, RegisterState>(
                 listener: (context, state) {
                   if (state is RegisterSuccess) {
-                    context.go('/Home');
+                    context.go('/');
                   }
 
                   if (state is RegisterError) {
@@ -90,7 +90,7 @@ class RegisterScreen extends StatelessWidget {
                                       Text('Volver al'),
                                       TextButton(
                                         onPressed: () {
-                                          context.go('/Home');
+                                          context.go('/');
                                         },
                                         child: Text('Login'),
                                       ),

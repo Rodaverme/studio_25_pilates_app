@@ -34,7 +34,7 @@ class PlanCubit extends Cubit<PlanState> {
       emit(state.copyWith(status: PlanStatus.loaded, myPlan: myPlan));
     } catch (e) {
       emit(
-        state.copyWith(status: PlanStatus.error, errorMessage: e.toString()),
+        state.copyWith(myPlan: null),
       );
     }
   }
@@ -46,7 +46,7 @@ class PlanCubit extends Cubit<PlanState> {
       emit(state.copyWith(status: PlanStatus.loaded, statusPlan: statusPlan));
     } catch (e) {
       emit(
-        state.copyWith(status: PlanStatus.error, errorMessage: e.toString()),
+        state.copyWith(statusPlan: null),
       );
     }
   }

@@ -6,6 +6,7 @@ import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/stats/stats_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/custom_bottom_navigation.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/shared/full_screen_loader.dart';
 
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final ocurrenceCubit = context.read<OcurrencesCubit>();
     final reservedCubit = context.read<ReservationCubit>().loadReservations();
     final notificationCubit = context.read<NotificationsBloc>();
+    final stats = context.read<StatsCubit>();
     // final sendToken = await NotificationsDatasourceImpl().sendToken(
     //   TokenService.getToken().toString(),
     // );
@@ -43,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
               planCubit.loadPlans(),
               planCubit.loadMyPlan(),
               planCubit.loadStatusPlan(),
+              stats.loadStats(DateTime(2025, 1, 1), DateTime.now()),
               ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime.now()),
               notificationCubit.add(LoadNotifications()),
 

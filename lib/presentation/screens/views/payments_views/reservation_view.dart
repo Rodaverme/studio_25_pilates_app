@@ -18,6 +18,44 @@ import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_ty
 
 enum ReservationType { classReservation, planPurchase }
 
+/// 🔹 Overlay de carga con fondo de imagen
+class LoadingOverlay extends StatelessWidget {
+  final Widget child;
+  const LoadingOverlay({super.key, required this.child});
+
+  bool _isLoading(BuildContext context) {
+    final reservation = context.watch<ReservationCubit>().state.status;
+    final plan = context.watch<PlanCubit>().state.status;
+    final ocurrence = context.watch<OcurrencesCubit>().state.status;
+    return reservation == ReservationStatus.loading ||
+        plan == PlanStatus.loading ||
+        ocurrence == OcurrenceStatus.loading;
+    // ignore: unrelated_type_equality_checks
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = _isLoading(context);
+    if (!isLoading) return child;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // ✅ Fondo con la imagen
+        Positioned.fill(
+          child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+        ),
+        // ✅ Indicador de carga centrado
+        const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.cafeNoir,
+            strokeWidth: 3,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class ReservationView extends StatelessWidget {
   final ReservationType type;
   final String? classId;
@@ -33,6 +71,11 @@ class ReservationView extends StatelessWidget {
          'planId es requerido cuando el tipo es planPurchase',
        );
 
+  void _navigate(BuildContext context, String route) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    Future.microtask(() => context.go(route));
+  }
+
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
@@ -44,69 +87,110 @@ class ReservationView extends StatelessWidget {
       decimalDigits: 0,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Confirmar Pago', style: textStyle.titleLarge),
-      ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 👉 Resumen dinámico
-                        _buildSummary(textStyle, context, currencyFormatter),
+    return MultiBlocListener(
+      listeners: [
+        // 👂 Escucha reservas de clases
+        BlocListener<ReservationCubit, ReservationState>(
+          listener: (context, state) {
+            switch (state.status) {
+              case ReservationStatus.reserved:
+                _navigate(context, '/Home/succesPay/$classId');
+                break;
+              case ReservationStatus.error:
+                _navigate(context, '/Home/errorPay/$classId');
+                break;
+              default:
+                break;
+            }
+          },
+        ),
 
-                        const SizedBox(height: 40),
-                        Text('Método de Pago', style: textStyle.titleLarge),
-                        const SizedBox(height: 10),
-                        PaymentMethodSelector(
-                          creditCards: creditCards,
-                          type: type,
+        // 👂 Escucha compras de planes
+        BlocListener<PlanCubit, PlanState>(
+          listener: (context, state) {
+            switch (state.status) {
+              case PlanStatus.purchase:
+                _navigate(context, '/Home/succesPay/$planId');
+                break;
+              case PlanStatus.error:
+                _navigate(context, '/Home/errorPay/$planId');
+                break;
+              default:
+                break;
+            }
+          },
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Confirmar Pago', style: textStyle.titleLarge),
+        ),
+        body: LoadingOverlay(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/Logo6.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSummary(
+                              textStyle,
+                              context,
+                              currencyFormatter,
+                            ),
+                            const SizedBox(height: 40),
+                            Text('Método de Pago', style: textStyle.titleLarge),
+                            const SizedBox(height: 10),
+                            PaymentMethodSelector(
+                              creditCards: creditCards,
+                              type: type,
+                            ),
+                            const SizedBox(height: 20),
+                            Align(
+                              alignment: Alignment.center,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: const Text('Políticas de Cancelación'),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: const Text('Términos y condiciones'),
+                              ),
+                            ),
+                          ],
                         ),
-
-                        const SizedBox(height: 20),
-
-                        Align(
-                          alignment: Alignment.center,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text('Políticas de Cancelación'),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text('Términos y condiciones'),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    _TotalPay(
+                      textStyle: textStyle,
+                      statePay: statePay,
+                      currencyFormatter: currencyFormatter,
+                      type: type,
+                      ocurrenceId: classId,
+                      planId: planId,
+                    ),
+                  ],
                 ),
-
-                // 👉 Total a pagar + botón de confirmar
-                _TotalPay(
-                  textStyle: textStyle,
-                  statePay: statePay,
-                  currencyFormatter: currencyFormatter,
-                  type: type,
-                  ocurrenceId: classId,
-                  planId: planId,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -114,13 +198,13 @@ class ReservationView extends StatelessWidget {
   Widget _buildSummary(
     TextTheme textStyle,
     BuildContext context,
-    final NumberFormat currencyFormatter,
+    NumberFormat currencyFormatter,
   ) {
     switch (type) {
       case ReservationType.classReservation:
         final ocurrenceState = context.watch<OcurrencesCubit>().state;
         if (ocurrenceState.status == OcurrenceStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox.shrink();
         }
         if (ocurrenceState.ocurrenceById == null) {
           return Text("No se encontró la clase", style: textStyle.bodyLarge);
@@ -129,11 +213,10 @@ class ReservationView extends StatelessWidget {
           textStyle: textStyle,
           ocurrence: ocurrenceState.ocurrenceById!,
         );
-
       case ReservationType.planPurchase:
         final planState = context.watch<PlanCubit>().state;
         if (planState.status == PlanStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox.shrink();
         }
         if (planState.planById == null) {
           return Text("No se encontró el plan", style: textStyle.bodyLarge);
@@ -251,17 +334,31 @@ class _SumaryClass extends StatelessWidget {
                 Text('Resumen de la Clase', style: textStyle.titleLarge),
                 const SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        ocurrence.classSession!.nombre,
-                        style: textStyle.titleMedium,
+                      SizedBox(
+                        width:
+                            MediaQuery.of(context).size.width *
+                            0.45, // 🔹 limita el ancho del texto
+                        child: Text(
+                          ocurrence.classSession!.nombre,
+                          style: textStyle.titleMedium,
+                          maxLines: 1, // 🔹 evita overflow
+                          overflow: TextOverflow.ellipsis, // 🔹 agrega "..."
+                          softWrap: false,
+                        ),
                       ),
-                      Text(
-                        ocurrence.classSession!.instructor,
-                        style: textStyle.titleMedium,
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        child: Text(
+                          ocurrence.classSession!.instructor,
+                          style: textStyle.titleMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.fade,
+                          softWrap: true,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Text('Fecha', style: textStyle.titleLarge),
@@ -492,116 +589,81 @@ class ConfirmPayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        // 👇 Escucha reservas de clases
-        BlocListener<ReservationCubit, ReservationState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            if (state.status == ReservationStatus.reserved) {
-              context.go('/Home/succesPay/$ocurrenceId');
-            } else if (state.status == ReservationStatus.error) {
-              context.go('/Home/errorPay/$ocurrenceId');
-            }
-          },
-        ),
+    final isLoading =
+        context.watch<ReservationCubit>().state.status ==
+            ReservationStatus.loading ||
+        context.watch<PlanCubit>().state.status == PlanStatus.loading;
 
-        // 👇 Escucha compras de planes
-        BlocListener<PlanCubit, PlanState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            if (state.status == PlanStatus.purchase) {
-              context.go('/Home/succesPay/$ocurrenceId');
-            } else if (state.status == PlanStatus.error) {
-              context.go('/Home/errorPay/$ocurrenceId');
-            }
-          },
-        ),
-      ],
-      child: BlocBuilder<ReservationCubit, ReservationState>(
-        builder: (context, state) {
-          final isLoading =
-              state.status == ReservationStatus.loading ||
-              context.watch<PlanCubit>().state.status == PlanStatus.loading;
+    return FilledButton(
+      onPressed: isLoading
+          ? null
+          : () {
+              final paymentState = context.read<PaymentCubit>().state;
 
-          return FilledButton(
-            onPressed: isLoading
-                ? null
-                : () {
-                    final paymentState = context.read<PaymentCubit>().state;
+              if (paymentState is PaymentSelected) {
+                final method = paymentState.method;
+                final reservationState = context.read<ReservationCubit>().state;
+                final aplanId = reservationState.checkReservation?.planId;
 
-                    if (paymentState is PaymentSelected) {
-                      final method = paymentState.method;
-                      final reservationState = context
-                          .read<ReservationCubit>()
-                          .state;
-                      final aplanId = reservationState.checkReservation?.planId;
-
-                      if (type == ReservationType.classReservation) {
-                        if (method.type == PaymentMethodType.credit) {
-                          // 👉 Caso pago con créditos
-                          context.read<ReservationCubit>().createReservation(
-                            ocurrenceId: int.parse(ocurrenceId!),
-                            paymentMethod: "plan", // 👈 forzado
-                            planId: aplanId, // 👈 obligatorio
-                          );
-                        } else if (method.type == PaymentMethodType.card ||
-                            method.type == PaymentMethodType.newCard) {
-                          // 👉 Caso tarjeta
-                          final cardId = method.card?.id;
-                          if (cardId == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Selecciona una tarjeta'),
-                              ),
-                            );
-                            return;
-                          }
-                          context.read<ReservationCubit>().createReservation(
-                            ocurrenceId: int.parse(ocurrenceId!),
-                            paymentMethod: method.type.name,
-                            cardId: cardId,
-                          );
-                        } else {
-                          // 👉 Caso efectivo
-                          context.read<ReservationCubit>().createReservation(
-                            ocurrenceId: int.parse(ocurrenceId!),
-                            paymentMethod: method.type.name,
-                          );
-                        }
-                      } else if (type == ReservationType.planPurchase) {
-                        // 👉 Compra de plan
-                        final cardId = method.card?.id;
-                        if (cardId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Selecciona una tarjeta'),
-                            ),
-                          );
-                          return;
-                        }
-                        context.read<PlanCubit>().planPurchase(
-                          int.parse(planId!),
-                          cardId,
-                        );
-                      }
-                    } else {
+                if (type == ReservationType.classReservation) {
+                  if (method.type == PaymentMethodType.credit) {
+                    context.read<ReservationCubit>().createReservation(
+                      ocurrenceId: int.parse(ocurrenceId!),
+                      paymentMethod: "plan",
+                      planId: aplanId,
+                    );
+                  } else if (method.type == PaymentMethodType.card ||
+                      method.type == PaymentMethodType.newCard) {
+                    final cardId = method.card?.id;
+                    if (cardId == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Selecciona un método de pago'),
-                        ),
+                        const SnackBar(content: Text('Selecciona una tarjeta')),
                       );
+                      return;
                     }
-                  },
-            style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
-            ),
-            child: isLoading
-                ? const CircularProgressIndicator(strokeWidth: 2)
-                : const Text('Confirmar Pago'),
-          );
-        },
+                    context.read<ReservationCubit>().createReservation(
+                      ocurrenceId: int.parse(ocurrenceId!),
+                      paymentMethod: method.type.name,
+                      cardId: cardId,
+                    );
+                  } else {
+                    context.read<ReservationCubit>().createReservation(
+                      ocurrenceId: int.parse(ocurrenceId!),
+                      paymentMethod: method.type.name,
+                    );
+                  }
+                } else if (type == ReservationType.planPurchase) {
+                  final cardId = method.card?.id;
+                  if (cardId == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Selecciona una tarjeta')),
+                    );
+                    return;
+                  }
+                  context.read<PlanCubit>().planPurchase(
+                    int.parse(planId!),
+                    cardId,
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Selecciona un método de pago')),
+                );
+              }
+            },
+      style: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
       ),
+      child: isLoading
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : const Text('Confirmar Pago'),
     );
   }
 }

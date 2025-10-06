@@ -9,6 +9,7 @@ import 'package:studio_25_pilates_app/infrastructure/repositories/reservation_re
 
 class OcurrenceDatasourceImpl extends OcurrenceDatasouce {
   final Dio dio = DioClient.Dio_create();
+  
   String _formatDate(DateTime date) {
     return "${date.year.toString().padLeft(4, '0')}"
         "-${date.month.toString().padLeft(2, '0')}"

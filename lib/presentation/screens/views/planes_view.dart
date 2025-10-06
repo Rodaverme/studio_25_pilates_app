@@ -47,7 +47,7 @@ class PlanesView extends StatelessWidget {
                           isActive: isActive,
                           textStyle: Theme.of(context).textTheme,
                           plan: plan,
-                          status: isActive ? status : null,
+                          status: (isActive && status != null) ? status : null,
                         ),
                       );
                     }).toList(),

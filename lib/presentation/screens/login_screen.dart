@@ -191,7 +191,7 @@ class _LoginForm extends StatelessWidget {
                 ),
               ),
               child: isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const Text('Ingresando...',style: TextStyle(fontSize: 15),)
                   : const Text('Continuar', style: TextStyle(fontSize: 15)),
             ),
           ),

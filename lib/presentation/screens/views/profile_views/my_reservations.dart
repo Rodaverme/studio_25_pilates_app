@@ -6,8 +6,22 @@ import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 
-class MyReservations extends StatelessWidget {
+class MyReservations extends StatefulWidget {
   const MyReservations({super.key});
+
+  @override
+  State<MyReservations> createState() => _MyReservationsState();
+}
+
+class _MyReservationsState extends State<MyReservations> {
+  @override
+  void initState() {
+    super.initState();
+    final cubit = context.read<ReservationCubit>();
+    for (final r in cubit.state.reservations) {
+      cubit.loadCheckReservation(r.ocurrence!.id);
+    }
+  }
 
   // ✅ Clasifica la fecha en secciones
   String _getSectionTitle(DateTime date) {
@@ -140,6 +154,9 @@ class MyReservations extends StatelessWidget {
                         // 👇 Reservas dentro de este grupo
                         ...sectionReservations.map((reservation) {
                           final ocurrence = reservation.ocurrence;
+                          final check = state.checkReservation;
+                          final canInvite = check?.canInvite ?? false;
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: ReservedHistory(
@@ -150,6 +167,7 @@ class MyReservations extends StatelessWidget {
                               },
                               instructor: ocurrence.classSession.instructor,
                               level: ocurrence.classSession.nivel,
+                              canInvite: canInvite,
                             ),
                           );
                         }),
@@ -187,6 +205,7 @@ class ReservedHistory extends StatelessWidget {
     required this.ocurrence,
     required this.instructor,
     required this.level,
+    required this.canInvite,
   });
 
   final TextTheme textStyle;
@@ -194,6 +213,7 @@ class ReservedHistory extends StatelessWidget {
   final Ocurrence ocurrence;
   final String instructor;
   final String level;
+  final bool canInvite;
 
   @override
   Widget build(BuildContext context) {
@@ -204,15 +224,6 @@ class ReservedHistory extends StatelessWidget {
     final bool isInPlan = ocurrence.isInPlan;
 
     // 🔎 Lógica para saber si puede invitar
-    final now = DateTime.now();
-    final start = ocurrence.startTime;
-    final isToday =
-        start.year == now.year &&
-        start.month == now.month &&
-        start.day == now.day;
-    final isFuture = start.isAfter(now);
-
-    final canInvite = (isToday && start.isAfter(now)) || isFuture;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),

@@ -8,7 +8,7 @@ import 'package:studio_25_pilates_app/domain/entities/entities.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
-
+import 'package:studio_25_pilates_app/presentation/providers/cubits/stats/stats_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
@@ -28,6 +28,7 @@ class _HomeViewState extends State<HomeView> {
       DateTime.now(),
       DateTime.now(),
     );
+    context.read<StatsCubit>().loadStats(DateTime(2025, 1, 1), DateTime.now());
   }
 
   @override
@@ -37,166 +38,222 @@ class _HomeViewState extends State<HomeView> {
 
     return Scaffold(
       appBar: AppBar(),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
-          ),
-          ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Saludo
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'Hola, ${client?.name}',
-                        style: textStyle.titleLarge,
+      body: LoadingWrapper(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+            ),
+            ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 👋 Saludo
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Hola, ${client?.name ?? ''}',
+                          style: textStyle.titleLarge,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    // Tarjetas Info
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        _InfoCard(label: 'Clases este mes', value: '12'),
-                        SizedBox(width: 20),
-                        _InfoCard(value: '4', label: 'racha'),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                      // 📊 Tarjetas de estadísticas
+                      BlocBuilder<StatsCubit, StatsState>(
+                        builder: (context, statsState) {
+                          if (statsState.status == StatsStatus.error) {
+                            return const Center(
+                              child: Text('Error al cargar estadísticas'),
+                            );
+                          }
 
-                    // Próxima clase
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'Mi Próxima Clase',
-                        style: textStyle.titleLarge,
-                      ),
-                    ),
-                    BlocBuilder<ReservationCubit, ReservationState>(
-                      builder: (context, state) {
-                        if (state.status == ReservationStatus.loading) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        if (state.status == ReservationStatus.error) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
+                          final stats = statsState.stats;
+                          final clasesMes = stats?.totalClasses ?? 0;
+                          final racha = stats?.streak ?? 0;
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _InfoCard(
+                                label: 'Clases este mes',
+                                value: '$clasesMes',
                               ),
-                              child: CustomCardsType2(
-                                height: 130,
-                                width: double.maxFinite,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        'Ocurrió un error al cargar las reservas, inténtalo de nuevo ',
+                              const SizedBox(width: 20),
+                              _InfoCard(label: 'Racha', value: '$racha'),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+
+                      // 🧘‍♀️ Próxima clase
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Mi Próxima Clase',
+                          style: textStyle.titleLarge,
+                        ),
+                      ),
+                      BlocBuilder<ReservationCubit, ReservationState>(
+                        builder: (context, state) {
+                          if (state.status == ReservationStatus.error) {
+                            return _ErrorCard(
+                              'Error al cargar las reservas, inténtalo de nuevo.',
+                            );
+                          }
+
+                          final now = DateTime.now();
+                          final upcoming =
+                              state.reservations
+                                  .where(
+                                    (r) => r.ocurrence!.startTime.isAfter(now),
+                                  )
+                                  .toList()
+                                ..sort(
+                                  (a, b) => a.ocurrence!.startTime.compareTo(
+                                    b.ocurrence!.startTime,
+                                  ),
+                                );
+
+                          if (upcoming.isEmpty) {
+                            return CustomCardsType2(
+                              height: 130,
+                              width: double.maxFinite,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Center(
+                                    child: Text('No tienes reservas próximas'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => context.go('/calendar'),
+                                    style: const ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(
+                                        AppColors.almendra,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-
-                        final now = DateTime.now();
-                        final upcoming =
-                            state.reservations
-                                .where(
-                                  (r) => r.ocurrence!.startTime.isAfter(now),
-                                )
-                                .toList()
-                              ..sort(
-                                (a, b) => a.ocurrence!.startTime.compareTo(
-                                  b.ocurrence!.startTime,
-                                ),
-                              );
-
-                        if (upcoming.isEmpty) {
-                          return CustomCardsType2(
-                            height: 130,
-                            width: double.maxFinite,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: Text('No tienes reservas próximas '),
-                                ),
-                                FilledButton(
-                                  onPressed: () {
-                                    context.go('/calendar');
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: WidgetStatePropertyAll(
-                                      AppColors.almendra,
+                                    child: const Text(
+                                      'Empieza reservando tu primera clase',
                                     ),
                                   ),
-                                  child: Text(
-                                    'Empieza reservando tu primera clase',
-                                  ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return _NextClass(
+                            textStyle: textStyle,
+                            clase: upcoming.first,
                           );
-                        }
-
-                        return _NextClass(
-                          textStyle: textStyle,
-                          clase: upcoming.first,
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text('Clases de Hoy'),
-                    ),
-
-                    // 🔹 Ahora ClassesCarousel maneja sus propios estados
-                    const SizedBox(height: 380, child: ClassesCarousel()),
-
-                    const SizedBox(height: 10),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text('Acciones Rápidas'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('Mis Clases'),
-                          ),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('Calendario'),
-                          ),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('Tarjetas'),
-                          ),
-                        ],
+                        },
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 20),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text('Clases de Hoy'),
+                      ),
+
+                      const SizedBox(height: 380, child: ClassesCarousel()),
+                      const SizedBox(height: 10),
+
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text('Acciones Rápidas'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text('Mis Clases'),
+                            ),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text('Calendario'),
+                            ),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text('Tarjetas'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 🔹 Wrapper global para manejar estado de carga unificado
+class LoadingWrapper extends StatelessWidget {
+  final Widget child;
+
+  const LoadingWrapper({super.key, required this.child});
+
+  bool _isLoading(BuildContext context) {
+    final reservationLoading =
+        context.watch<ReservationCubit>().state.status ==
+        ReservationStatus.loading;
+    final occLoading =
+        context.watch<OcurrencesCubit>().state.status ==
+        OcurrenceStatus.loading;
+    final statsLoading =
+        context.watch<StatsCubit>().state.status == StatsStatus.loading;
+
+    return reservationLoading || occLoading || statsLoading;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = _isLoading(context);
+    if (!isLoading) return child;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // ✅ Fondo con la imagen
+        Positioned.fill(
+          child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
+        ),
+        // ✅ Indicador de carga centrado
+        const Center(
+          child: CircularProgressIndicator(color: AppColors.cafeNoir, strokeWidth: 3),
+        ),
+      ],
+    );
+  }
+}
+
+/// 🔹 Error card reutilizable
+class _ErrorCard extends StatelessWidget {
+  final String message;
+
+  const _ErrorCard(this.message);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: CustomCardsType2(
+          height: 130,
+          width: double.maxFinite,
+          child: Center(child: Text(message)),
+        ),
       ),
     );
   }
@@ -210,17 +267,15 @@ class _NextClass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final start = clase.ocurrence?.startTime;
-    final horaInicio = DateFormat("HH:mm").format(start!);
+    final start = clase.ocurrence!.startTime;
+    final horaInicio = DateFormat("HH:mm").format(start);
 
-    // Obtenemos solo la parte de la fecha (año, mes, día) para comparar
     final today = DateTime.now();
     final isToday =
         start.year == today.year &&
         start.month == today.month &&
         start.day == today.day;
 
-    // Texto de la fecha
     final fechaTexto = isToday
         ? "Hoy $horaInicio"
         : "${DateFormat('dd/MM/yyyy').format(start)} - $horaInicio";
@@ -238,6 +293,7 @@ class _NextClass extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
+              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
@@ -343,39 +399,15 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
 
     return BlocBuilder<OcurrencesCubit, OcurrencesState>(
       builder: (context, state) {
-        if (state.status == OcurrenceStatus.loading) {
-          return const Center(child: CircularProgressIndicator(strokeWidth: 4));
-        }
-
         if (state.status == OcurrenceStatus.error) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: CustomCardsType2(
-                height: 360,
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(
-                        'Ocurrió un error al cargar las clases, inténtalo de nuevo ',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+          return _ErrorCard('Error al cargar las clases, inténtalo de nuevo.');
         }
 
-        // 👉 Filtramos las ocurrencias para mostrar solo las que no han pasado
         final now = DateTime.now();
         final reservationLimit = now.add(const Duration(minutes: 15));
-        final validOcurrences = state.ocurrences.where((o) {
-          // ajusta `endDate` o `startDate` según lo que quieras usar
-          return o.startTime.isAfter(reservationLimit);
-        }).toList();
+        final validOcurrences = state.ocurrences
+            .where((o) => o.startTime.isAfter(reservationLimit))
+            .toList();
 
         if (validOcurrences.isEmpty) {
           return const Center(child: Text('No hay clases disponibles'));
@@ -398,11 +430,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                       LessonsToday(
                         ocurrence: validOcurrences[first],
                         textStyle: textStyle,
-                        onTap: () {
-                          context.push(
-                            '/Home/class/${validOcurrences[first].id}',
-                          );
-                        },
+                        onTap: () => context.push(
+                          '/Home/class/${validOcurrences[first].id}',
+                        ),
                         instructor:
                             validOcurrences[first].classSession!.instructor,
                         level: validOcurrences[first].classSession!.nivel,
@@ -412,11 +442,9 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
                         LessonsToday(
                           ocurrence: validOcurrences[second],
                           textStyle: textStyle,
-                          onTap: () {
-                            context.push(
-                              '/Home/class/${validOcurrences[second].id}',
-                            );
-                          },
+                          onTap: () => context.push(
+                            '/Home/class/${validOcurrences[second].id}',
+                          ),
                           instructor:
                               validOcurrences[second].classSession!.instructor,
                           level: validOcurrences[second].classSession!.nivel,
@@ -430,7 +458,7 @@ class _ClassesCarouselState extends State<ClassesCarousel> {
             SmoothPageIndicator(
               controller: _pageController,
               count: pagesCount,
-              effect: ExpandingDotsEffect(
+              effect: const ExpandingDotsEffect(
                 activeDotColor: AppColors.cafeNoir,
                 dotHeight: 8,
                 dotWidth: 8,
