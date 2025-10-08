@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+
+class CustomCardsType2 extends StatelessWidget {
+  const CustomCardsType2({
+    super.key,
+    this.width,
+    this.height,
+    required this.child,
+  });
+
+  final double? width;
+  final double? height;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.piedra.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: AppColors.arena),
+      ),
+      child: child,
+    );
+  }
+}

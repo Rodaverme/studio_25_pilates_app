@@ -1,10 +1,226 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
+import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/login/login_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
+
+import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text('login'),centerTitle: true,));
+    final textStyle = Theme.of(context).textTheme;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => FormsCubit()),
+        BlocProvider(
+          create: (context) => LoginCubit(
+            authCubit: context.read<AuthCubit>(),
+            authRepository: AuthRespositoryImpl(
+              datasource: AuthDatasourceImpl(),
+            ),
+          ),
+        ),
+      ],
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text('Login', style: textStyle.titleLarge),
+          centerTitle: true,
+        ),
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle(
+            statusBarColor: Color.fromRGBO(137, 107, 90, 1),
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/Logo6.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SafeArea(
+                child: BlocConsumer<LoginCubit, LoginState>(
+                  listener: (context, state) async {
+                    if (state is LoginSuccess) {
+                      final authState = context.read<AuthCubit>().state;
+                      print(
+                        "🔥 Token guardado en AuthCubit: ${authState.client?.name}",
+                      );
+                      context.go('/Home');
+                    }
+                    if (state is LoginError) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
+                    }
+                  },
+                  builder: (context, state) {
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight,
+                            ),
+                            child: IntrinsicHeight(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 30),
+                                    Text(
+                                      'Bienvenida',
+                                      style: textStyle.titleLarge,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('ESTUDIO'),
+                                        SizedBox(width: 10),
+                                        Image.asset(
+                                          'assets/images/Logo.png',
+                                          height: 80,
+                                          width: 80,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text('PILATES'),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text('Inicia sesión para continuar'),
+                                    const SizedBox(height: 70),
+                                    Expanded(
+                                      child: _LoginForm(
+                                        textStyle: textStyle,
+                                        isLoading: state is LoginLoading,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
+  const _LoginForm({required this.textStyle, required this.isLoading});
+
+  final TextTheme textStyle;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final formsCubit = context.watch<FormsCubit>();
+    final password = formsCubit.state.password;
+    final email = formsCubit.state.email;
+    return Form(
+      child: Column(
+        children: [
+          TextFormField(
+            onChanged: formsCubit.emailChange,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecorations.authInputDecoration(
+              hintText: 'Correoelectrónico@dominio.com',
+              labelText: 'Ingrese su correo',
+              errorText: email.errorMessage,
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            onChanged: formsCubit.passwordChange,
+            autocorrect: false,
+            obscureText: true,
+            keyboardType: TextInputType.visiblePassword,
+            decoration: InputDecorations.authInputDecoration(
+              hintText: '*********',
+              labelText: 'Ingrese su contraseña',
+              errorText: password.errorMessage,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () async {
+                formsCubit.onSubmit();
+                if (!email.isValid || !password.isValid) return;
+                context.read<LoginCubit>().login(email.value, password.value);
+                context.read<NotificationsBloc>().requestPermission();
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
+                padding: const WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(vertical: 20),
+                ),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+              ),
+              child: isLoading
+                  ? const Text('Ingresando...',style: TextStyle(fontSize: 15),)
+                  : const Text('Continuar', style: TextStyle(fontSize: 15)),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () => context.push('/resetPassword'),
+            child: const Text('¿Olvidaste tu contraseña?'),
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('¿Aun no tienes cuenta?'),
+              TextButton(
+                onPressed: () async {
+                  FocusScope.of(context).unfocus();
+                  await Future.delayed(Duration(milliseconds: 1));
+                  context.push('/register');
+                },
+                child: Text(
+                  'Registrate',
+                  style: textStyle.titleMedium?.copyWith(fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
   }
 }

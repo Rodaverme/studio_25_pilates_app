@@ -1,0 +1,26 @@
+import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
+import 'package:studio_25_pilates_app/infrastructure/models/ocurrences/check_response.dart';
+
+class ChekReservationMapper {
+  static CheckReservation toEntity(CheckResponse json) {
+    return CheckReservation(
+      available: json.available,
+      startTime: json.startTime,
+      canReserve: json.canReserve,
+      capacity: json.capacity,
+      classId: json.classId,
+      creditsRemaining: json.creditsRemaining,
+      date: json.date,
+      endTime: json.endTime,
+      isInPlan: json.isInPlan,
+      alreadyReserved: json.alreadyReserved,
+      occurrenceId: json.occurrenceId,
+      planExpiresAt: json.planExpiresAt,
+      reserved: json.reserved,
+      reservationsRemaining: json.reservationsRemaining,
+      planId: json.planId ?? 0,
+      invitationRemaining: json.invitationRemaining,
+      canInvite: json.canInvite
+    );
+  }
+}

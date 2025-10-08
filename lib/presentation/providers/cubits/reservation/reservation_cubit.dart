@@ -1,0 +1,78 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:studio_25_pilates_app/domain/entities/check_reservation.dart';
+import 'package:studio_25_pilates_app/domain/entities/entities.dart';
+import 'package:studio_25_pilates_app/infrastructure/datasource/reservation_datasource_impl.dart';
+
+part 'reservation_state.dart';
+
+class ReservationCubit extends Cubit<ReservationState> {
+  final ReservationDatasourceImpl datasource;
+  ReservationCubit(this.datasource) : super(ReservationState());
+
+  Future<void> createReservation({
+    required int ocurrenceId,
+    required String paymentMethod,
+    int? cardId,
+    int? planId,
+  }) async {
+    emit(state.copyWith(status: ReservationStatus.loading));
+    try {
+      await datasource.createReservation(
+        ocurrenceId,
+        paymentMethod,
+        cardId,
+        planId,
+      );
+
+      emit(state.copyWith(status: ReservationStatus.reserved));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ReservationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> loadReservations() async {
+    emit(state.copyWith(status: ReservationStatus.loading));
+    try {
+      final reservations = await datasource.getResevation();
+      emit(
+        state.copyWith(
+          status: ReservationStatus.loaded,
+          reservations: reservations,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ReservationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> loadCheckReservation(int ocurrenceId) async {
+    emit(state.copyWith(status: ReservationStatus.loading));
+    try {
+      final checkReservation = await datasource.reservationCheck(ocurrenceId);
+      emit(
+        state.copyWith(
+          status: ReservationStatus.loaded,
+          checkReservation: checkReservation,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ReservationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+}
