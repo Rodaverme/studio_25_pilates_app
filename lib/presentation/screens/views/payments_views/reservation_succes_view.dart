@@ -6,28 +6,99 @@ import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 
 class ReservationSuccessView extends StatelessWidget {
-  final String occurrenceId;
-  const ReservationSuccessView({super.key, required this.occurrenceId});
+  final String? occurrenceId;
+  final String? planId;
+  const ReservationSuccessView({
+    super.key,
+    this.occurrenceId,
+    this.planId,
+  });
+
+  bool get isPlan => planId != null; // 👈 para lógica condicional
 
   @override
   Widget build(BuildContext context) {
-    final textSytle = Theme.of(context).textTheme.titleLarge;
+    final textStyle = Theme.of(context).textTheme.titleLarge;
 
-    // Accedemos al estado del cubit
+    // 🔹 Si el flujo fue una compra de plan
+    if (isPlan) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(child: CustomPaint(painter: FondoPainter())),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Compra de Plan Exitosa",
+                      style: textStyle?.copyWith(fontSize: 25),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color.fromRGBO(228, 214, 188, 1),
+                          width: 6,
+                        ),
+                      ),
+                      child: ThickCheck(size: 150, color: AppColors.almendra),
+                    ),
+                    const SizedBox(height: 30),
+                    Text(
+                      "Tu plan #$planId está activo y listo para usar.",
+                      textAlign: TextAlign.center,
+                      style: textStyle,
+                    ),
+                    const SizedBox(height: 10),
+                    Text("¡Gracias por tu compra!", style: textStyle),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => context.go('/Home'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.almendra,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          "Ir al inicio",
+                          style: textStyle?.copyWith(color: AppColors.piedra),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 🔹 Si el flujo fue reserva de clase
     final ocurrencesState = context.watch<OcurrencesCubit>().state;
     final ocurrences = ocurrencesState.occurrencesDay;
 
-    // Buscar la ocurrencia con el id recibido
     final occurrence = ocurrences.firstWhere(
       (o) => o.id.toString() == occurrenceId,
+      orElse: () => throw Exception('Ocurrencia no encontrada'),
     );
 
     final horaInicio = DateFormat("HH:mm").format(occurrence.startTime);
+
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: FondoPainter())),
-
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -35,23 +106,19 @@ class ReservationSuccessView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
                       "Reserva Realizada",
-                      style: textSytle?.copyWith(fontSize: 25),
+                      style: textStyle?.copyWith(fontSize: 25),
                     ),
                   ),
-
                   const SizedBox(height: 50),
                   Text(
                     "Pago Exitoso",
-                    style: textSytle?.copyWith(fontSize: 25),
+                    style: textStyle?.copyWith(fontSize: 25),
                   ),
                   const SizedBox(height: 20),
-
-                  /// Check circular
                   Container(
                     width: 100,
                     height: 100,
@@ -64,30 +131,24 @@ class ReservationSuccessView extends StatelessWidget {
                     ),
                     child: ThickCheck(size: 150, color: AppColors.almendra),
                   ),
-
                   const SizedBox(height: 30),
-
-                  /// Mensaje dinámico
                   Text(
                     "Tu lugar en\n${occurrence.classSession?.nombre}\nestá reservado",
                     textAlign: TextAlign.center,
-                    style: textSytle,
+                    style: textStyle,
                   ),
                   const SizedBox(height: 8),
-                  Text("¡Nos vemos pronto!", style: textSytle),
-
+                  Text("¡Nos vemos pronto!", style: textStyle),
                   const SizedBox(height: 40),
-
-                  /// Detalle clase dinámico
                   Column(
                     children: [
-                      Text(occurrence.classSession!.nombre, style: textSytle),
+                      Text(occurrence.classSession!.nombre, style: textStyle),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            horaInicio, // o formatea el DateTime
+                            horaInicio,
                             style: const TextStyle(color: Colors.brown),
                           ),
                           Text(
@@ -98,33 +159,24 @@ class ReservationSuccessView extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const Spacer(),
-
-                  /// Botones
-                  Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => context.go('/Home'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.almendra,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            "Ir al inicio",
-                            style: textSytle?.copyWith(color: AppColors.piedra),
-                          ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => context.go('/Home'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.almendra,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                    ],
+                      child: Text(
+                        "Ir al inicio",
+                        style: textStyle?.copyWith(color: AppColors.piedra),
+                      ),
+                    ),
                   ),
-
                   const SizedBox(height: 30),
                 ],
               ),

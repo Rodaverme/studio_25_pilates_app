@@ -128,7 +128,9 @@ class PerfilView extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  _PerfilOptions(Icons.person_2, 'Mi perfil', () {}),
+                  _PerfilOptions(Icons.person_2, 'Mi perfil', () {
+                    context.push('/perfil/mi_perfil');
+                  }),
                   _PerfilOptions(Icons.class_outlined, 'Mis clases', () {
                     context.push('/perfil/mis_classes');
                   }),

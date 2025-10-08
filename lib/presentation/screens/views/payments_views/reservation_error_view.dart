@@ -4,13 +4,113 @@ import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
 
 class ReservationErrorView extends StatelessWidget {
-  final String ocurrenceId;
-  const ReservationErrorView({super.key, required this.ocurrenceId});
+  final String? ocurrenceId;
+  final String? planId;
+
+  const ReservationErrorView({super.key, this.ocurrenceId, this.planId});
+
+  bool get isPlan => planId != null;
 
   @override
   Widget build(BuildContext context) {
-    final textSytle = Theme.of(context).textTheme.titleLarge;
+    final textStyle = Theme.of(context).textTheme.titleLarge;
 
+    // 🔹 Si el error viene de una compra de plan
+    if (isPlan) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(child: CustomPaint(painter: FondoPainter())),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Error en la Compra del Plan",
+                      style: textStyle?.copyWith(fontSize: 25),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color.fromRGBO(228, 214, 188, 1),
+                          width: 6,
+                        ),
+                      ),
+                      child: ThickX(size: 150, color: Colors.red.shade700),
+                    ),
+                    const SizedBox(height: 30),
+                    Text(
+                      "Tu pago del plan #$planId no pudo ser procesado.",
+                      textAlign: TextAlign.center,
+                      style: textStyle,
+                    ),
+                    const SizedBox(height: 8),
+                    Text("Intenta nuevamente.", style: textStyle),
+                    const SizedBox(height: 40),
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => context.go('/Home'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.almendra,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Ir al inicio",
+                              style: textStyle?.copyWith(
+                                color: AppColors.piedra,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              // 👇 si quisieras redirigir al flujo de compra del plan
+                              context.go('/Home/plan/$planId');
+                            },
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(150, 55),
+                              backgroundColor: AppColors.almendra,
+                              foregroundColor: AppColors.piedra,
+                              side: BorderSide(color: Colors.red.shade300),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Reintentar Compra",
+                              style: textStyle?.copyWith(
+                                color: AppColors.piedra,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 🔹 Si el error fue en una reserva normal
     return Scaffold(
       body: Stack(
         children: [
@@ -26,23 +126,21 @@ class ReservationErrorView extends StatelessWidget {
                 children: [
                   const SizedBox(height: 40),
 
-                  /// Títulos
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
                       "Error en la Reserva",
-                      style: textSytle?.copyWith(fontSize: 25),
+                      style: textStyle?.copyWith(fontSize: 25),
                     ),
                   ),
 
                   const SizedBox(height: 50),
                   Text(
                     "Pago Fallido",
-                    style: textSytle?.copyWith(fontSize: 25, color: Colors.red),
+                    style: textStyle?.copyWith(fontSize: 25, color: Colors.red),
                   ),
                   const SizedBox(height: 20),
 
-                  /// X circular
                   Container(
                     width: 100,
                     height: 100,
@@ -58,18 +156,16 @@ class ReservationErrorView extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  /// Mensaje
                   Text(
                     "Tu pago no pudo\nser procesado",
                     textAlign: TextAlign.center,
-                    style: textSytle,
+                    style: textStyle,
                   ),
                   const SizedBox(height: 8),
-                  Text("Intenta nuevamente", style: textSytle),
+                  Text("Intenta nuevamente", style: textStyle),
 
                   const SizedBox(height: 40),
 
-                  /// Botones
                   Column(
                     children: [
                       SizedBox(
@@ -85,7 +181,7 @@ class ReservationErrorView extends StatelessWidget {
                           ),
                           child: Text(
                             "Ir al inicio",
-                            style: textSytle?.copyWith(color: AppColors.piedra),
+                            style: textStyle?.copyWith(color: AppColors.piedra),
                           ),
                         ),
                       ),
@@ -94,8 +190,9 @@ class ReservationErrorView extends StatelessWidget {
                         width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () {
-                            context.go('/Home/class/$ocurrenceId/reservation/$ocurrenceId');
-                            // Acción para reintentar el pago
+                            context.go(
+                              '/Home/class/$ocurrenceId/reservation/$ocurrenceId',
+                            );
                           },
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(150, 55),
@@ -108,7 +205,7 @@ class ReservationErrorView extends StatelessWidget {
                           ),
                           child: Text(
                             "Reintentar Pago",
-                            style: textSytle?.copyWith(color: AppColors.piedra),
+                            style: textStyle?.copyWith(color: AppColors.piedra),
                           ),
                         ),
                       ),

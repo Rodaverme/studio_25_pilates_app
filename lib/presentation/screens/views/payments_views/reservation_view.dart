@@ -110,10 +110,10 @@ class ReservationView extends StatelessWidget {
           listener: (context, state) {
             switch (state.status) {
               case PlanStatus.purchase:
-                _navigate(context, '/Home/succesPay/$planId');
+                _navigate(context, '/Home/succesPayPlan/$planId');
                 break;
               case PlanStatus.error:
-                _navigate(context, '/Home/errorPay/$planId');
+                _navigate(context, '/Home/errorPayPlan/$planId');
                 break;
               default:
                 break;

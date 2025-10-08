@@ -66,8 +66,13 @@ class _HomeViewState extends State<HomeView> {
                       BlocBuilder<StatsCubit, StatsState>(
                         builder: (context, statsState) {
                           if (statsState.status == StatsStatus.error) {
-                            return const Center(
-                              child: Text('Error al cargar estadísticas'),
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _InfoCard(label: 'Clases este mes', value: '0'),
+                                const SizedBox(width: 20),
+                                _InfoCard(label: 'Racha', value: '0'),
+                              ],
                             );
                           }
 
@@ -101,8 +106,28 @@ class _HomeViewState extends State<HomeView> {
                       BlocBuilder<ReservationCubit, ReservationState>(
                         builder: (context, state) {
                           if (state.status == ReservationStatus.error) {
-                            return _ErrorCard(
-                              'Error al cargar las reservas, inténtalo de nuevo.',
+                            return CustomCardsType2(
+                              height: 130,
+                              width: double.maxFinite,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Center(
+                                    child: Text('No tienes reservas próximas'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => context.go('/calendar'),
+                                    style: const ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(
+                                        AppColors.almendra,
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Empieza reservando tu primera clase',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           }
 
@@ -231,7 +256,10 @@ class LoadingWrapper extends StatelessWidget {
         ),
         // ✅ Indicador de carga centrado
         const Center(
-          child: CircularProgressIndicator(color: AppColors.cafeNoir, strokeWidth: 3),
+          child: CircularProgressIndicator(
+            color: AppColors.cafeNoir,
+            strokeWidth: 3,
+          ),
         ),
       ],
     );

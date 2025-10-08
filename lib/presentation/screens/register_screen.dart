@@ -1,12 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/auth_datasource_impl.dart';
 import 'package:studio_25_pilates_app/infrastructure/repositories/auth_respository_impl.dart';
-
+import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/forms/forms_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/login/login_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/register/register_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/utils/input_decorations.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -16,7 +20,7 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: Text('Registrate'), centerTitle: true),
+      appBar: AppBar(title: const Text('Regístrate'), centerTitle: true),
       body: Stack(
         children: [
           Positioned.fill(
@@ -24,10 +28,19 @@ class RegisterScreen extends StatelessWidget {
           ),
           MultiBlocProvider(
             providers: [
-              BlocProvider(create: (context) => FormsCubit()),
+              BlocProvider(create: (_) => FormsCubit()),
               BlocProvider(
-                create: (context) => RegisterCubit(
+                create: (_) => RegisterCubit(
                   authRespository: AuthRespositoryImpl(
+                    datasource: AuthDatasourceImpl(),
+                  ),
+                ),
+              ),
+              // 🔹 Agregamos también el LoginCubit, igual que en LoginScreen
+              BlocProvider(
+                create: (_) => LoginCubit(
+                  authCubit: context.read<AuthCubit>(),
+                  authRepository: AuthRespositoryImpl(
                     datasource: AuthDatasourceImpl(),
                   ),
                 ),
@@ -35,16 +48,25 @@ class RegisterScreen extends StatelessWidget {
             ],
             child: SafeArea(
               child: BlocConsumer<RegisterCubit, RegisterState>(
-                listener: (context, state) {
+                listener: (context, state) async {
                   if (state is RegisterSuccess) {
-                    context.go('/');
+                    final formsCubit = context.read<FormsCubit>();
+                    final email = formsCubit.state.email.value;
+                    final password = formsCubit.state.password.value;
+
+                    // 🔹 Luego del registro, hacer login automáticamente
+                    await context.read<LoginCubit>().login(email, password);
+                    context.read<NotificationsBloc>().requestPermission();
+
+                    // 🔹 Redirigir al Home
+                    context.go('/Home');
                   }
 
                   if (state is RegisterError) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                       SnackBar(
                         content: Text(
-                          'Erro al realizar el registro, vuelve a intentarlo',
+                          'Error al realizar el registro, vuelve a intentarlo ${state.message}',
                         ),
                       ),
                     );
@@ -63,42 +85,36 @@ class RegisterScreen extends StatelessWidget {
                           ),
                           child: IntrinsicHeight(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Spacer(),
-                                  SizedBox(height: 20),
+                                  const Spacer(),
+                                  const SizedBox(height: 20),
                                   Text(
                                     'Únete a nuestra comunidad',
                                     style: textStyle.titleLarge,
                                   ),
-                                  SizedBox(height: 60),
+                                  const SizedBox(height: 60),
 
                                   _RegisterForm(
                                     isLoading: state is RegisterLoading,
                                   ),
 
-                                  Spacer(),
+                                  const Spacer(),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
                                     children: [
-                                      Text('Volver al'),
+                                      const Text('¿Ya tienes cuenta?'),
                                       TextButton(
                                         onPressed: () {
                                           context.go('/');
                                         },
-                                        child: Text('Login'),
+                                        child: const Text('Login'),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 30),
-
-                                  Text('¿Aun no tienes cuenta?'),
+                                  const SizedBox(height: 30),
                                   TextButton(
                                     onPressed: () {},
                                     child: Text(
@@ -108,7 +124,7 @@ class RegisterScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 30),
+                                  const SizedBox(height: 30),
                                 ],
                               ),
                             ),
@@ -131,6 +147,7 @@ class _RegisterForm extends StatelessWidget {
   const _RegisterForm({required this.isLoading});
 
   final bool isLoading;
+
   @override
   Widget build(BuildContext context) {
     final formsCubit = context.watch<FormsCubit>();
@@ -138,82 +155,83 @@ class _RegisterForm extends StatelessWidget {
     final password = formsCubit.state.password;
     final confirmedPassword = formsCubit.state.confirmedPassword;
     final email = formsCubit.state.email;
+
     return Form(
       child: Column(
         children: [
-          //Campo de nombre
           TextFormField(
             onChanged: formsCubit.usernameChange,
-            keyboardType: TextInputType.text,
             decoration: InputDecorations.authInputDecoration(
               hintText: 'Nombre',
               labelText: 'Ingrese su nombre',
               errorText: username.errorMessage,
             ),
           ),
-          SizedBox(height: 20),
-          //Campo de email
+          const SizedBox(height: 20),
           TextFormField(
             onChanged: formsCubit.emailChange,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecorations.authInputDecoration(
-              hintText: 'Correoelectrónico@dominio.com',
+              hintText: 'Correo electrónico',
               labelText: 'Ingrese su correo',
               errorText: email.errorMessage,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           TextFormField(
             onChanged: formsCubit.passwordChange,
             obscureText: true,
-            keyboardType: TextInputType.visiblePassword,
             decoration: InputDecorations.authInputDecoration(
               hintText: '*********',
               labelText: 'Ingrese su contraseña',
               errorText: password.errorMessage,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           TextFormField(
             onChanged: formsCubit.confirmedPasswordChange,
             obscureText: true,
-            keyboardType: TextInputType.visiblePassword,
             decoration: InputDecorations.authInputDecoration(
               hintText: '*********',
               labelText: 'Confirmar contraseña',
               errorText: confirmedPassword.errorMessage,
             ),
           ),
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () {
-                if (!username.isValid ||
-                    !email.isValid ||
-                    !password.isValid ||
-                    !confirmedPassword.isValid) {
-                  return;
-                }
-                context.read<RegisterCubit>().register(
-                  username.value,
-                  email.value,
-                  password.value,
-                  confirmedPassword.value,
-                );
-              },
+              onPressed: isLoading
+                  ? null
+                  : () {
+                      if (!username.isValid ||
+                          !email.isValid ||
+                          !password.isValid ||
+                          !confirmedPassword.isValid) {
+                        return;
+                      }
+
+                      context.read<RegisterCubit>().register(
+                            username.value,
+                            email.value,
+                            password.value,
+                            confirmedPassword.value,
+                          );
+                    },
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(AppColors.almendra),
-                padding: WidgetStatePropertyAll(
+                backgroundColor: const WidgetStatePropertyAll(AppColors.almendra),
+                padding: const WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 20),
                 ),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(15),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              child: Text('Crear Cuenta', style: TextStyle(fontSize: 15)),
+              child: isLoading
+                  ? const Text('Creando cuenta...', style: TextStyle(fontSize: 15))
+                  : const Text('Crear Cuenta', style: TextStyle(fontSize: 15)),
             ),
           ),
         ],

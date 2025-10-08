@@ -26,6 +26,7 @@ import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_classes.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_pays.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_perfil.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_reservations.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/perfil_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/planes_view.dart';
@@ -100,14 +101,39 @@ final appRouter = GoRouter(
               path: '/succesPay/:id',
               builder: (context, state) {
                 final ocurrenceId = state.pathParameters['id']!;
-                return ReservationSuccessView(occurrenceId: ocurrenceId);
+                
+                return ReservationSuccessView(
+                  occurrenceId: ocurrenceId,
+                  
+                );
               },
             ),
             GoRoute(
               path: '/errorPay/:id',
               builder: (context, state) {
                 final ocurrenceId = state.pathParameters['id']!;
-                return ReservationErrorView(ocurrenceId: ocurrenceId);
+                return ReservationErrorView(
+                  ocurrenceId: ocurrenceId,
+                );
+              },
+            ),
+            GoRoute(
+              path: '/succesPayPlan/:id',
+              builder: (context, state) {
+                final planId = state.pathParameters['id']!;
+                return ReservationSuccessView(
+                  planId: planId,
+                  
+                );
+              },
+            ),
+            GoRoute(
+              path: '/errorPayPlan/:id',
+              builder: (context, state) {
+                final planId = state.pathParameters['id']!;
+                return ReservationErrorView(
+                  planId: planId,
+                );
               },
             ),
 
@@ -237,6 +263,7 @@ final appRouter = GoRouter(
                 );
               },
             ),
+            
           ],
         ),
         GoRoute(
@@ -277,6 +304,10 @@ final appRouter = GoRouter(
                     MyPaymentsCubit(PaymentDatasourceImpl())..loadpayments(),
                 child: const MyPayments(),
               ),
+            ),
+            GoRoute(
+              path: '/mi_perfil',
+              builder: (context, state) => MyPerfil(),
             ),
           ],
         ),
