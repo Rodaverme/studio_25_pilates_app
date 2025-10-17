@@ -60,12 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (fmctoken != null) {
         await NotificationsDatasourceImpl().sendToken(fmctoken);
-        print('📲 Token de notificación enviado: $fmctoken');
-      } else {
-        print('⚠️ No se pudo obtener el token de FCM');
-      }
-
-      print('Envio exitoso');
+      } else {}
     } catch (_) {}
 
     if (mounted) {

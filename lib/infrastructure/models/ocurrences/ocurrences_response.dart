@@ -81,6 +81,7 @@ class OcurrenceResponse {
 
 class Datum {
   int? id;
+  String? classSessionTitle;
   String? classSessionId;
   dynamic specialScheduleId;
   DateTime? date;
@@ -110,6 +111,7 @@ class Datum {
     this.isInPlan,
     this.classSession,
     this.duracion,
+    this.classSessionTitle,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) {
@@ -168,6 +170,7 @@ class Datum {
       duracion: json["duration_in_minutes"] != null
           ? (json["duration_in_minutes"] as num).toDouble()
           : null,
+      classSessionTitle: json["class_session_title"] ?? '',
     );
   }
 
@@ -190,5 +193,6 @@ class Datum {
     "is_in_plan": isInPlan,
     "class_session": classSession?.toJson(),
     "duration_in_minutes": duracion,
+    "class_session_title": classSessionTitle,
   };
 }

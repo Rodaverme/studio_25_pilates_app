@@ -27,7 +27,7 @@ class AppTheme {
     /// 📝 Estilos de texto
     textTheme: const TextTheme(
       titleLarge: TextStyle(
-        fontWeight: FontWeight.w900,
+        fontWeight: FontWeight.bold,
         fontSize: 20,
         color: AppColors.cafeNoir,
       ),
@@ -43,7 +43,7 @@ class AppTheme {
       ),
       bodyLarge: TextStyle(
         fontSize: 14,
-        fontWeight: FontWeight.w900,
+       
         color: AppColors.cafeNoir,
       ),
     ),

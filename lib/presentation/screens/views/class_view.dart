@@ -52,7 +52,7 @@ class ClassView extends StatelessWidget {
           final Ocurrence ocurrence = occState.ocurrenceById!;
 
           final fechaFormateada = DateFormat(
-            "d MMMM ",
+            "EEE, MMM dd",
             'es_ES',
           ).format(ocurrence.date);
           final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
@@ -157,146 +157,131 @@ class ClassView extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return SingleChildScrollView(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minHeight: constraints.maxHeight,
-                            ),
-                            child: IntrinsicHeight(
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 30,
-                                      vertical: 20,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Inicio",
-                                                style: textStyle.bodySmall
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                              ),
-                                              Text(
-                                                fechaFormateada,
-                                                style: textStyle.titleLarge
-                                                    ?.copyWith(fontSize: 15),
-                                              ),
-                                              Text(
-                                                horaInicio,
-                                                style: textStyle.titleLarge
-                                                    ?.copyWith(fontSize: 15),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "Duración",
-                                                style: textStyle.bodySmall
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                              ),
-                                              Text(
-                                                formatDuration(
-                                                  ocurrence.duracion,
-                                                ),
-                                                style: textStyle.titleLarge
-                                                    ?.copyWith(fontSize: 15),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                "Ubicación",
-                                                style: textStyle.bodySmall
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                              ),
-                                              Text(
-                                                ocurrence.classSession!.sala,
-                                                style: textStyle.titleLarge
-                                                    ?.copyWith(fontSize: 15),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  DescriptionClass(
-                                    textStyle: textStyle,
-                                    ocurrence: ocurrence,
-                                    currencyFormatter: currencyFormatter,
-                                    check: check,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 35,
-                                      ),
-                                      child: Text(
-                                        'Profesor',
-                                        style: textStyle.titleLarge,
+
+                    // CONTENIDO DESPLAZABLE ARRIBA
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // --- Info superior compacta ---
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Inicio",
+                                      style: textStyle.bodySmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
-                                  InstructorDescription(
-                                    ocurrence: ocurrence,
-                                    textStyle: textStyle,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  PlacesAvailable(
-                                    textStyle: textStyle,
-                                    reservedCount: available,
-                                    capacity: capacity,
-                                    progress: progress,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  SubmitButton(
-                                    canInvite: check?.canInvite ?? false,
-                                    canReserve: canReserve,
-                                    classId: classId,
-                                    reservationId: reservationId,
-                                    textStyle: textStyle,
-                                    invitationReserved: invitationRemaining,
-                                  ),
-                                ],
+                                    Text(
+                                      fechaFormateada,
+                                      style: textStyle.titleLarge?.copyWith(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      horaInicio,
+                                      style: textStyle.titleLarge?.copyWith(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Duración",
+                                      style: textStyle.bodySmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      formatDuration(ocurrence.duracion),
+                                      style: textStyle.titleLarge?.copyWith(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      "Ubicación",
+                                      style: textStyle.bodySmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      ocurrence.classSession!.sala,
+                                      style: textStyle.titleLarge?.copyWith(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
+                          const SizedBox(height: 15),
+
+                          DescriptionClass(
+                            textStyle: textStyle,
+                            ocurrence: ocurrence,
+                            currencyFormatter: currencyFormatter,
+                            check: check,
+                          ),
+                          const SizedBox(height: 50),
+
+                          InstructorDescription(
+                            ocurrence: ocurrence,
+                            textStyle: textStyle,
+                          ),
+                          const SizedBox(height: 50),
+
+                          PlacesAvailable(
+                            textStyle: textStyle,
+                            reservedCount: available,
+                            capacity: capacity,
+                            progress: progress,
+                          ),
+
+                          // Añadimos un espacio grande para que el scroll no tape el botón
+                          const SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
+
+                    // BOTÓN FIJO ABAJO
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 20,
+                        ),
+                        child: SubmitButton(
+                          canInvite: check?.canInvite ?? false,
+                          canReserve: canReserve,
+                          classId: classId,
+                          reservationId: reservationId,
+                          textStyle: textStyle,
+                          invitationReserved: invitationRemaining,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -399,45 +384,42 @@ class DescriptionClass extends StatelessWidget {
       return html.replaceAll(regex, '').trim();
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Descripción', style: textStyle.titleLarge),
-                Text(
-                  check?.alreadyReserved == true
-                      ? 'Reservado'
-                      : (check?.isInPlan == false
-                            ? '\$${currencyFormatter.format(int.parse(ocurrence.classSession!.price))}'
-                            : ''),
-                  style: textStyle.titleLarge?.copyWith(
-                    color: AppColors.almendra,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          CustomCardsType1(
-            height: 150,
-            width: double.maxFinite,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Text(
-                cleanHtml(ocurrence.classSession!.descripcion),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Descripción', style: textStyle.titleLarge),
+              Text(
+                check?.alreadyReserved == true
+                    ? 'Reservado'
+                    : (check?.isInPlan == false
+                          ? '\$${currencyFormatter.format(int.parse(ocurrence.classSession!.price))}'
+                          : ''),
                 style: textStyle.titleLarge?.copyWith(
                   color: AppColors.almendra,
                 ),
               ),
+            ],
+          ),
+        ),
+        CustomCardsType1(
+          height: 150,
+          width: double.maxFinite,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text(
+              cleanHtml(ocurrence.classSession!.descripcion),
+              style: textStyle.titleLarge?.copyWith(
+                color: AppColors.almendra,
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -454,44 +436,50 @@ class InstructorDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: CustomCardsType2(
-        width: double.maxFinite,
-        height: 170,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ocurrence.classSession!.instructor,
-                    style: textStyle.titleLarge?.copyWith(fontSize: 22),
-                  ),
-                  const SizedBox(height: 5),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      ocurrence.classSession!.bioInstructor,
-                      maxLines: 3,
-                      style: textStyle.titleLarge?.copyWith(
-                        color: AppColors.almendra,
-                        height: 1.2,
-                        fontSize: 18,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text('Instructor', style: textStyle.titleLarge),
+        ),
+        CustomCardsType2(
+          width: double.maxFinite,
+          height: 170,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ocurrence.classSession!.instructor,
+                      style: textStyle.titleLarge?.copyWith(fontSize: 22),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(height: 5),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        ocurrence.classSession!.bioInstructor,
+                        maxLines: 3,
+                        style: textStyle.titleLarge?.copyWith(
+                          color: AppColors.almendra,
+                          height: 1.2,
+                          fontSize: 18,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

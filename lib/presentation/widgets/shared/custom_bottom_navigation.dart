@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studio_25_pilates_app/config/theme/app_theme.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 
 class CustomBottomNavigation extends StatelessWidget {
@@ -61,6 +62,9 @@ class CustomBottomNavigation extends StatelessWidget {
     final int unreadCount = notifications.where((n) => !n.isRead).length;
 
     return BottomNavigationBar(
+      
+      selectedItemColor: AppColors.cafeNoir,
+      selectedLabelStyle: TextStyle(color: AppColors.cafeNoir,fontWeight: FontWeight.bold),
       type: BottomNavigationBarType.fixed,
       currentIndex: getCurrentIndex(context),
       onTap: (value) => onItemTapped(context, value),
@@ -77,15 +81,14 @@ class CustomBottomNavigation extends StatelessWidget {
           label: 'Calendario',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.star_border),
+          icon: Icon(Icons.star),
           label: 'Planes',
         ),
-
         BottomNavigationBarItem(
           icon: Stack(
             children: [
-              const Icon(Icons.notifications_active_outlined),
-              if (unreadCount > 0) // 👈 Solo si hay no leídas
+              const Icon(Icons.notifications_active),
+              if (unreadCount >= 0) // 👈 Solo si hay no leídas
                 Positioned(
                   right: 0,
                   top: 0,
@@ -113,7 +116,7 @@ class CustomBottomNavigation extends StatelessWidget {
                 ),
             ],
           ),
-          label: 'Notificaciones',
+          label: 'Mensajes',
         ),
         const BottomNavigationBarItem(
           icon: Icon(Icons.person_2_outlined),

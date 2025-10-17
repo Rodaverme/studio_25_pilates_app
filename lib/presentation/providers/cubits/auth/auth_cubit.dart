@@ -42,10 +42,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthState());
   }
 
-  // ======================================================
-  // 🧾 NUEVAS FUNCIONES PARA EL FORMULARIO DE PERFIL
-  // ======================================================
-
+ 
   /// 🔸 Actualiza los datos del usuario
   Future<void> updateUser({
     required String name,

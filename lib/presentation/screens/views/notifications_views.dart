@@ -24,7 +24,7 @@ class _NotificationsViewsState extends State<NotificationsViews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificaciones')),
+      appBar: AppBar(title: const Text('Mensajes')),
       body: Stack(
         children: [
           Positioned.fill(
@@ -54,7 +54,7 @@ class _NotificationView extends StatelessWidget {
     if (notifications.isEmpty) {
       return const Center(
         child: Text(
-          "No tienes notificaciones aún 💤",
+          "No hay notificaciones en este momento",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,

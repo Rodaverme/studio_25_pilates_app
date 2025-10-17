@@ -217,13 +217,15 @@ class ReservedHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 📅 Nuevo formato: Dom, Oct 04
+    final dateFormatted = DateFormat("EEE, MMM dd", 'es')
+        .format(ocurrence.startTime)
+        .replaceFirstMapped(RegExp(r'(^\w)'), (m) => m[0]!.toUpperCase());
+
     final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
     final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
-    final date = DateFormat("d MMMM yyyy", 'es').format(ocurrence.date);
 
     final bool isInPlan = ocurrence.isInPlan;
-
-    // 🔎 Lógica para saber si puede invitar
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -231,7 +233,7 @@ class ReservedHistory extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            height: 170,
+            height: 150,
             decoration: BoxDecoration(
               color: AppColors.piedra.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(15),
@@ -240,61 +242,62 @@ class ReservedHistory extends StatelessWidget {
                 width: isInPlan ? 3 : 1,
               ),
             ),
-            child: Row(
-              children: [
-                /// 👉 Parte izquierda (info de la clase)
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  // 👉 Información principal
+                  Expanded(
+                    flex: 2,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Flexible(
-                          child: Text(
-                            ocurrence.classSession!.nombre,
-                            style: textStyle.titleLarge?.copyWith(
-                              color: AppColors.almendra,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+                        // 🧘‍♀️ Nombre de la clase
                         Text(
-                          instructor,
+                          ocurrence.classSession!.nombre,
                           style: textStyle.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                             color: AppColors.almendra,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 10),
+
+                        const SizedBox(height: 6),
+
+                        // 📅 Fecha
                         Text(
-                          '$date ',
-                          style: textStyle.titleLarge?.copyWith(
+                          dateFormatted,
+                          style: textStyle.bodyLarge?.copyWith(
                             color: AppColors.almendra,
                           ),
                         ),
+
+                        // ⏰ Horario
                         Text(
                           '$horaInicio - $horaFinal',
-                          style: textStyle.titleLarge?.copyWith(
+                          style: textStyle.bodyLarge?.copyWith(
                             color: AppColors.almendra,
                           ),
+                        ),
+
+                        // 👩‍🏫 Instructor
+                        Text(
+                          instructor,
+                          style: textStyle.bodyLarge?.copyWith(
+                            color: AppColors.almendra,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                ),
 
-                /// 👉 Parte derecha (botones)
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 30,
-                    ),
+                  // 👉 Botones
+                  Expanded(
+                    flex: 1,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -302,36 +305,37 @@ class ReservedHistory extends StatelessWidget {
                           onPressed: () {},
                           child: Text(level, style: textStyle.bodySmall),
                         ),
-
-                        // 🔎 Condicional para Invitar o Eliminar
-                        canInvite
-                            ? ElevatedButton(
-                                onPressed: onTap,
-                                style: ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(
-                                    AppColors.almendra,
-                                  ),
-                                ),
-                                child: Text(
-                                  'Invitar',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              )
-                            : SizedBox(),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: canInvite
+                              ? onTap
+                              : () {
+                                  context.push('/Home/class/${ocurrence.id}');
+                                },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(
+                              AppColors.almendra,
+                            ),
+                          ),
+                          child: Text(
+                            canInvite ? 'Invitar' : 'Ver',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
-          /// 👉 Estrella de destacado si está en plan
+          // ⭐ Estrella si está en plan
           if (isInPlan)
             const Positioned(
               top: 8,
               right: 8,
-              child: Icon(Icons.star, color: Colors.amber, size: 30),
+              child: Icon(Icons.star, color: Colors.amber, size: 28),
             ),
         ],
       ),

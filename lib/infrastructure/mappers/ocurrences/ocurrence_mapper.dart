@@ -9,6 +9,7 @@ class OccurrenceMapper {
   static Ocurrence toEntity(Datum json) {
     return Ocurrence(
       id: json.id ?? 1,
+
       date: json.date ?? DateTime.now(),
       startTime: json.startTime ?? DateTime.now(),
       endTime: json.endTime ?? DateTime.now(),
@@ -19,6 +20,7 @@ class OccurrenceMapper {
           ? ClassMapper.classApitoEntity(json.classSession!)
           : null,
       duracion: json.duracion ?? 1,
+      classSessionTitle: json.classSessionTitle,
     );
   }
 }
