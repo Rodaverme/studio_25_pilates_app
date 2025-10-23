@@ -7,7 +7,7 @@ import 'package:studio_25_pilates_app/domain/entities/ocurrence.dart';
 class WeekCalendar extends StatefulWidget {
   final Function(DateTime) onDaySelected;
   final Function(Map<String, dynamic>) onFilterChanged;
-  final List<Ocurrence> occurrences; // 👈 se inyectan ocurrencias dinámicas
+  final List<Ocurrence> occurrences;
 
   const WeekCalendar({
     super.key,
@@ -23,6 +23,9 @@ class WeekCalendar extends StatefulWidget {
 class _WeekCalendarState extends State<WeekCalendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+
+  String? _selectedInstructor;
+  String? _selectedNivel;
 
   @override
   void initState() {
@@ -56,25 +59,28 @@ class _WeekCalendarState extends State<WeekCalendar> {
   Widget build(BuildContext context) {
     final monthYear = DateFormat("MMMM yyyy", "es").format(_focusedDay);
 
-    // 👉 Sacamos instructores y niveles únicos de las ocurrencias
+    // 🧩 Sacamos instructores y niveles únicos desde el backend
     final instructors = widget.occurrences
         .map((o) => o.classSession?.instructor)
-        .where((i) => i!.isNotEmpty)
+        .where((i) => i != null && i.isNotEmpty)
         .toSet()
         .toList();
 
     final levels = widget.occurrences
         .map((o) => o.classSession?.nivel)
-        .where((n) => n!.isNotEmpty)
+        .where((n) => n != null && n.isNotEmpty)
         .toSet()
         .toList();
 
     return Column(
       children: [
+        /// 📅 Mes actual
         Text(
           monthYear[0].toUpperCase() + monthYear.substring(1),
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+
+        /// 📆 Días de la semana
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: CustomCardsType1(
@@ -92,14 +98,14 @@ class _WeekCalendarState extends State<WeekCalendar> {
                     children: _daysOfWeek.map((day) {
                       final isSelected =
                           _selectedDay != null &&
-                          day.day == _selectedDay!.day &&
-                          day.month == _selectedDay!.month &&
-                          day.year == _selectedDay!.year;
+                              day.day == _selectedDay!.day &&
+                              day.month == _selectedDay!.month &&
+                              day.year == _selectedDay!.year;
 
                       final isToday =
                           day.day == DateTime.now().day &&
-                          day.month == DateTime.now().month &&
-                          day.year == DateTime.now().year;
+                              day.month == DateTime.now().month &&
+                              day.year == DateTime.now().year;
 
                       return GestureDetector(
                         onTap: () {
@@ -140,8 +146,10 @@ class _WeekCalendarState extends State<WeekCalendar> {
             ),
           ),
         ),
+
         const SizedBox(height: 10),
 
+        /// 📅 Día seleccionado
         if (_selectedDay != null)
           Text(
             DateFormat("EEEE, d 'de' MMMM", "es").format(_selectedDay!),
@@ -150,140 +158,81 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
         const SizedBox(height: 20),
 
-        // 👇 Control de filtros dinámicos
-        CustomSegmentedControl(
-          instructors: instructors,
-          levels: levels,
-          onFilterChanged: (filter) {
-            setState(() {});
-            widget.onFilterChanged(filter);
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class CustomSegmentedControl extends StatefulWidget {
-  final List<String?> instructors;
-  final List<String?> levels;
-  final Function(Map<String, dynamic>) onFilterChanged;
-
-  const CustomSegmentedControl({
-    super.key,
-    required this.instructors,
-    required this.levels,
-    required this.onFilterChanged,
-  });
-
-  @override
-  State<CustomSegmentedControl> createState() => _CustomSegmentedControlState();
-}
-
-class _CustomSegmentedControlState extends State<CustomSegmentedControl> {
-  int _selectedIndex = 1; // Clases activo por defecto
-  String? _selectedInstructor;
-  String? _selectedNivel;
-
-  final List<String> _items = ["Instructores", "Clases", "Niveles"];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // 👉 Botones de segmento
+        /// 🎚️ Filtros de Instructor y Nivel
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_items.length, (index) {
-                final bool isSelected = _selectedIndex == index;
-
-                return GestureDetector(
-                  onTap: () {
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: _selectedInstructor,
+                  decoration: InputDecoration(
+                    labelText: "Instructor",
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.9),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: AppColors.piedra, width: 1.5),
+                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  ),
+                  hint: const Text("Seleccionar"),
+                  items: instructors.map((i) {
+                    return DropdownMenuItem(
+                      value: i,
+                      child: Text(i ?? ''),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
                     setState(() {
-                      _selectedIndex = index;
+                      _selectedInstructor = value;
+                    });
+                    widget.onFilterChanged({
+                      "instructor": value,
+                      "nivel": _selectedNivel,
                     });
                   },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 10,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: _selectedNivel,
+                  decoration: InputDecoration(
+                    labelText: "Nivel",
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.9),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: AppColors.piedra, width: 1.5),
                     ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.piedra : AppColors.almendra,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.almendra, width: 2),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          _items[index],
-                          style: TextStyle(
-                            color: isSelected
-                                ? AppColors.almendra
-                                : AppColors.piedra,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (index != 1)
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: isSelected
-                                ? AppColors.almendra
-                                : AppColors.piedra,
-                            size: 18,
-                          ),
-                      ],
-                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   ),
-                );
-              }),
-            ),
+                  hint: const Text("Seleccionar"),
+                  items: levels.map((n) {
+                    return DropdownMenuItem(
+                      value: n,
+                      child: Text(n ?? ''),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedNivel = value;
+                    });
+                    widget.onFilterChanged({
+                      "instructor": _selectedInstructor,
+                      "nivel": value,
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
         ),
 
-        const SizedBox(height: 10),
-
-        // 👇 Dropdown dinámico según segmento
-        if (_selectedIndex == 0) // Instructores
-          DropdownButton<String>(
-            hint: const Text("Seleccionar Instructor"),
-            value: _selectedInstructor,
-            onChanged: (value) {
-              setState(() {
-                _selectedInstructor = value;
-              });
-              widget.onFilterChanged({
-                "instructor": value,
-                "nivel": _selectedNivel,
-              });
-            },
-            items: widget.instructors.map((i) {
-              return DropdownMenuItem(value: i, child: Text(i!));
-            }).toList(),
-          ),
-
-        if (_selectedIndex == 2) // Niveles
-          DropdownButton<String>(
-            hint: const Text("Seleccionar Nivel"),
-            value: _selectedNivel,
-            onChanged: (value) {
-              setState(() {
-                _selectedNivel = value;
-              });
-              widget.onFilterChanged({
-                "instructor": _selectedInstructor,
-                "nivel": value,
-              });
-            },
-            items: widget.levels.map((n) {
-              return DropdownMenuItem(value: n, child: Text(n!));
-            }).toList(),
-          ),
+        /// ❌ Botón de borrar filtros (opcional)
         if (_selectedInstructor != null || _selectedNivel != null)
           Padding(
             padding: const EdgeInsets.only(top: 10),

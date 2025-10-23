@@ -76,10 +76,7 @@ final appRouter = GoRouter(
             BlocProvider(
               create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
             ),
-            BlocProvider(
-              create: (_) =>
-                  AuthCubit(AuthDatasourceImpl())..getCurrentClient(),
-            ),
+            BlocProvider.value(value: context.read<AuthCubit>()),
 
             BlocProvider(
               create: (_) =>
@@ -101,39 +98,29 @@ final appRouter = GoRouter(
               path: '/succesPay/:id',
               builder: (context, state) {
                 final ocurrenceId = state.pathParameters['id']!;
-                
-                return ReservationSuccessView(
-                  occurrenceId: ocurrenceId,
-                  
-                );
+
+                return ReservationSuccessView(occurrenceId: ocurrenceId);
               },
             ),
             GoRoute(
               path: '/errorPay/:id',
               builder: (context, state) {
                 final ocurrenceId = state.pathParameters['id']!;
-                return ReservationErrorView(
-                  ocurrenceId: ocurrenceId,
-                );
+                return ReservationErrorView(ocurrenceId: ocurrenceId);
               },
             ),
             GoRoute(
               path: '/succesPayPlan/:id',
               builder: (context, state) {
                 final planId = state.pathParameters['id']!;
-                return ReservationSuccessView(
-                  planId: planId,
-                  
-                );
+                return ReservationSuccessView(planId: planId);
               },
             ),
             GoRoute(
               path: '/errorPayPlan/:id',
               builder: (context, state) {
                 final planId = state.pathParameters['id']!;
-                return ReservationErrorView(
-                  planId: planId,
-                );
+                return ReservationErrorView(planId: planId);
               },
             ),
 
@@ -263,7 +250,6 @@ final appRouter = GoRouter(
                 );
               },
             ),
-            
           ],
         ),
         GoRoute(

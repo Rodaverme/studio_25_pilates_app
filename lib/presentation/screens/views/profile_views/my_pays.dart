@@ -240,6 +240,7 @@ class PaymentHistory extends StatelessWidget {
                     style: textStyle.titleMedium?.copyWith(
                       color: AppColors.almendra,
                       fontWeight: FontWeight.bold,
+                      fontSize: 22
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

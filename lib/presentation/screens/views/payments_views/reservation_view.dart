@@ -146,6 +146,11 @@ class ReservationView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              'Resumen de la Clase',
+                              style: textStyle.titleLarge,
+                            ),
+                            const SizedBox(height: 10),
                             _buildSummary(
                               textStyle,
                               context,
@@ -159,13 +164,6 @@ class ReservationView extends StatelessWidget {
                               type: type,
                             ),
                             const SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.center,
-                              child: TextButton(
-                                onPressed: () {},
-                                child: const Text('Políticas de Cancelación'),
-                              ),
-                            ),
                             Align(
                               alignment: Alignment.center,
                               child: TextButton(
@@ -317,7 +315,7 @@ class _SumaryClass extends StatelessWidget {
     final horas = duracion.inHours;
     final minutos = duracion.inMinutes.remainder(60);
     final duracionFormateada =
-        "${horas > 0 ? "$horas Hora " : ""}${minutos > 0 ? "$minutos minuntos" : ""}";
+        "${horas > 0 ? "$horas Horas " : ""}${minutos > 0 ? "$minutos minuntos" : ""}";
 
     return CustomCardsType1(
       height: 250,
@@ -331,7 +329,6 @@ class _SumaryClass extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Resumen de la Clase', style: textStyle.titleLarge),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
@@ -344,7 +341,7 @@ class _SumaryClass extends StatelessWidget {
                             0.45, // 🔹 limita el ancho del texto
                         child: Text(
                           ocurrence.classSession!.nombre,
-                          style: textStyle.titleMedium,
+                          style: textStyle.titleLarge,
                           maxLines: 1, // 🔹 evita overflow
                           overflow: TextOverflow.ellipsis, // 🔹 agrega "..."
                           softWrap: false,
@@ -461,12 +458,12 @@ class PaymentMethodSelector extends StatelessWidget {
                                 }
                               }
                             : null,
-                        title: const Text('Créditos de clase'),
+                        title: const Text('Plan'),
                         controlAffinity: ListTileControlAffinity.trailing,
                         subtitle: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            '$creditsRemaining disponibles',
+                            '$creditsRemaining Clases disponibles',
                             style: textStyle.titleMedium,
                           ),
                         ),

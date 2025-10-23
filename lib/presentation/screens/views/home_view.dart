@@ -129,27 +129,30 @@ class _HomeViewState extends State<HomeView> {
                                 );
 
                           if (upcoming.isEmpty) {
-                            return CustomCardsType1(
-                              height: 130,
-                              width: double.maxFinite,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Center(
-                                    child: Text('No tienes reservas próximas'),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () => context.go('/calendar'),
-                                    style: const ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(
-                                        AppColors.almendra,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                              child: CustomCardsType1(
+                                height: 130,
+                                width: double.maxFinite,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Center(
+                                      child: Text('No tienes reservas próximas'),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () => context.go('/calendar'),
+                                      style: const ButtonStyle(
+                                        backgroundColor: WidgetStatePropertyAll(
+                                          AppColors.almendra,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Empieza reservando tu primera clase',
                                       ),
                                     ),
-                                    child: const Text(
-                                      'Empieza reservando tu primera clase',
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           }

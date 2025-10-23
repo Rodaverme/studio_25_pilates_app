@@ -49,7 +49,8 @@ class _CalendarViewState extends State<CalendarView> {
                   );
                 },
               ),
-
+              SizedBox(height: 20,)
+,
               /// 📌 Lista de clases
               Expanded(
                 child: BlocBuilder<OcurrencesCubit, OcurrencesState>(
@@ -95,7 +96,7 @@ class _CalendarViewState extends State<CalendarView> {
 
                       if (validOccurrences.isEmpty) {
                         return const Center(
-                          child: Text("No hay clases para este día"),
+                          child: Text("No hay clases disponibles para este día"),
                         );
                       }
 

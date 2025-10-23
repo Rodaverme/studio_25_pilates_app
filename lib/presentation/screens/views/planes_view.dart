@@ -18,9 +18,12 @@ class PlanesView extends StatelessWidget {
       appBar: AppBar(title: const Text('Planes'), centerTitle: true),
       body: Stack(
         children: [
+          /// 🌄 Fondo
           Positioned.fill(
             child: Image.asset('assets/images/Logo6.png', fit: BoxFit.cover),
           ),
+
+          /// 📄 Contenido adaptable
           BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
               if (state.status == PlanStatus.error) {
@@ -36,22 +39,38 @@ class PlanesView extends StatelessWidget {
                   return const Center(child: Text("No hay planes disponibles"));
                 }
 
-                return SingleChildScrollView(
-                  child: Column(
-                    children: plans.map((plan) {
-                      final isActive = myPlan != null && plan.id == myPlan.id;
-
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _CustomPlanes(
-                          isActive: isActive,
-                          textStyle: Theme.of(context).textTheme,
-                          plan: plan,
-                          status: (isActive && status != null) ? status : null,
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                      );
-                    }).toList(),
-                  ),
+                        child: IntrinsicHeight(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Column(
+                              children: plans.map((plan) {
+                                final isActive =
+                                    myPlan != null && plan.id == myPlan.id;
+
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: _CustomPlanes(
+                                    isActive: isActive,
+                                    textStyle: Theme.of(context).textTheme,
+                                    plan: plan,
+                                    status:
+                                        (isActive && status != null) ? status : null,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 );
               }
 
@@ -89,7 +108,6 @@ class _CustomPlanes extends StatelessWidget {
     if (status != null) {
       final startDate = status!.startDate;
       final endDate = status!.expiresAt;
-
       final totalDays = endDate.difference(startDate).inDays;
       final usedDays = totalDays - status!.daysRemaining;
       progress = usedDays / totalDays;
@@ -99,7 +117,7 @@ class _CustomPlanes extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: isActive
           ? CustomCardsType1(
-              width: double.maxFinite,
+              width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -109,7 +127,6 @@ class _CustomPlanes extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(plan.name, style: textStyle.titleLarge),
-
                     if (status != null)
                       Text(
                         'Se renueva en ${status!.daysRemaining} días',
@@ -131,24 +148,26 @@ class _CustomPlanes extends StatelessWidget {
                         value: progress,
                         minHeight: 10,
                         color: AppColors.cafeNoir,
-                        backgroundColor: Colors.grey,
+                        backgroundColor: Colors.grey.shade400,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       const SizedBox(height: 10),
                     ],
 
                     Text(limpiarDescripcion(plan.description)),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             )
           : CustomCardsType2(
-              width: double.maxFinite,
+              width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    /// Cabecera con nombre y precio
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -168,9 +187,14 @@ class _CustomPlanes extends StatelessWidget {
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 30),
+
+                    /// Descripción
                     Text(limpiarDescripcion(plan.description)),
                     const SizedBox(height: 20),
+
+                    /// Botón seleccionar plan
                     Center(
                       child: GestureDetector(
                         onTap: () =>

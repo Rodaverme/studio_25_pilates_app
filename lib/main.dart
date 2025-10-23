@@ -19,6 +19,7 @@
 
     final authCubit = AuthCubit(AuthDatasourceImpl());
     await authCubit.checkAuthStatus();
+    
 
     runApp(
       MultiBlocProvider(
