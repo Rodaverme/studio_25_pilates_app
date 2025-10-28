@@ -24,6 +24,7 @@ import 'package:studio_25_pilates_app/presentation/screens/views/notifications_v
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_error_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_cards.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_classes.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_pays.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_perfil.dart';
@@ -275,6 +276,21 @@ final appRouter = GoRouter(
             );
           },
           routes: [
+            GoRoute(
+              path: '/mis_tarjetas',
+              builder: (context, state) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        CreditCardCubit(CreditCardDatasourceImpl())
+                          ..loadMyCard(),
+                  ),
+               BlocProvider(create: (_) => PaymentCubit()),
+                ],
+                child: const MyCards(),
+              ),
+            ),
+
             GoRoute(
               path: '/mis_classes',
               builder: (context, state) => const MyClasses(),

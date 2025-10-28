@@ -30,14 +30,14 @@ class MyClasses extends StatelessWidget {
                 final myPlan = state.myPlan; // 👈 el plan activo
 
                 if (plans.isEmpty || myPlan == null) {
-                  return const Center(
-                    child: Text("No tienes planes activos"),
-                  );
+                  return const Center(child: Text("No tienes planes activos"));
                 }
 
                 // ✅ Filtramos el plan que coincide con myPlan
-                final activePlan =
-                    plans.firstWhere((p) => p.id == myPlan.id, orElse: () => myPlan);
+                final activePlan = plans.firstWhere(
+                  (p) => p.id == myPlan.id,
+                  orElse: () => myPlan,
+                );
 
                 final classes = activePlan.classes;
 
@@ -50,19 +50,17 @@ class MyClasses extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    
                     // 👇 Nombre del plan
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        activePlan.name,
-                        style: textStyle.titleLarge?.copyWith(
-                          fontSize: 25,
-                          color: AppColors.almendra,
-                        ),
-                      ),
-                    ),
-
+                    // Padding(
+                    //   padding: const EdgeInsets.all(16.0),
+                    //   child: Text(
+                    //     activePlan.name,
+                    //     style: textStyle.titleLarge?.copyWith(
+                    //       fontSize: 25,
+                    //       color: AppColors.almendra,
+                    //     ),
+                    //   ),
+                    // ),
                     Expanded(
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -115,8 +113,6 @@ class Lessons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isInPlan = true; // Siempre está en plan
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
@@ -127,7 +123,7 @@ class Lessons extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.piedra.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.amber, width: 3),
+              border: Border.all(color: AppColors.arena, width: 2),
             ),
             child: Row(
               children: [
@@ -183,12 +179,6 @@ class Lessons extends StatelessWidget {
               ],
             ),
           ),
-          if (isInPlan)
-            const Positioned(
-              top: 8,
-              right: 8,
-              child: Icon(Icons.star, color: Colors.amber, size: 30),
-            ),
         ],
       ),
     );

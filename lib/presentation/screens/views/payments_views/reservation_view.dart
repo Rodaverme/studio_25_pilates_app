@@ -146,10 +146,6 @@ class ReservationView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Resumen de la Clase',
-                              style: textStyle.titleLarge,
-                            ),
                             const SizedBox(height: 10),
                             _buildSummary(
                               textStyle,
@@ -305,98 +301,110 @@ class _SumaryClass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fechaFormateada = DateFormat(
-      "d MMMM ",
-      'es_ES',
-    ).format(ocurrence.date);
+    final fechaFormateada = DateFormat("d MMMM", 'es_ES').format(ocurrence.date);
     final horaInicio = DateFormat("HH:mm").format(ocurrence.startTime);
     final horaFinal = DateFormat("HH:mm").format(ocurrence.endTime);
     final duracion = ocurrence.endTime.difference(ocurrence.startTime);
     final horas = duracion.inHours;
     final minutos = duracion.inMinutes.remainder(60);
     final duracionFormateada =
-        "${horas > 0 ? "$horas Horas " : ""}${minutos > 0 ? "$minutos minuntos" : ""}";
+        "${horas > 0 ? "$horas Horas " : ""}${minutos > 0 ? "$minutos minutos" : ""}";
 
-    return CustomCardsType1(
-      height: 250,
-      width: double.maxFinite,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Columna izquierda
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width:
-                            MediaQuery.of(context).size.width *
-                            0.45, // 🔹 limita el ancho del texto
-                        child: Text(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Resumen de la Clase',
+          style: textStyle.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        CustomCardsType1(
+          height: 230,
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: IntrinsicHeight( // 🔹 Igualar altura entre columnas
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  /// 🧩 Columna Izquierda
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
                           ocurrence.classSession!.nombre,
-                          style: textStyle.titleLarge,
-                          maxLines: 1, // 🔹 evita overflow
-                          overflow: TextOverflow.ellipsis, // 🔹 agrega "..."
-                          softWrap: false,
+                          style: textStyle.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.cafeNoir,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        child: Text(
+                        Text(
                           ocurrence.classSession!.instructor,
-                          style: textStyle.titleMedium,
-                          maxLines: 2,
-                          overflow: TextOverflow.fade,
-                          softWrap: true,
+                          style: textStyle.titleMedium?.copyWith(
+                            color: AppColors.cafeNoir.withOpacity(0.8),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text('Fecha', style: textStyle.titleLarge),
-                      Text(fechaFormateada, style: textStyle.titleMedium),
-                      const SizedBox(height: 10),
-                      Text('Duración', style: textStyle.titleLarge),
-                      Text(duracionFormateada, style: textStyle.titleMedium),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            // Columna derecha
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 35),
-                  child: FilledButton(
-                    onPressed: () {},
-                    child: Text(
-                      ocurrence.classSession!.nivel,
-                      style: textStyle.bodySmall,
+                        const SizedBox(height: 16),
+                        Text('Fecha', style: textStyle.titleLarge),
+                        Text(fechaFormateada, style: textStyle.titleMedium),
+                        const SizedBox(height: 10),
+                        Text('Duración', style: textStyle.titleLarge),
+                        Text(duracionFormateada, style: textStyle.titleMedium),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 44),
-                Text('Hora', style: textStyle.titleLarge),
-                Text('$horaInicio - $horaFinal', style: textStyle.titleMedium),
-                const SizedBox(height: 10),
-                Text('Ubicación', style: textStyle.titleLarge),
-                Text(
-                  ocurrence.classSession!.sala,
-                  style: textStyle.titleMedium,
-                ),
-              ],
+
+                  /// 🧩 Separador horizontal
+                  const SizedBox(width: 30),
+
+                  /// 🧩 Columna Derecha
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: FilledButton.tonal(
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 4),
+                              
+                            ),
+                            onPressed: () {},
+                            child: Text(
+                              ocurrence.classSession!.nivel,
+                              style: textStyle.bodySmall?.copyWith(
+                                color: AppColors.cafeNoir,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text('Hora', style: textStyle.titleLarge),
+                        Text('$horaInicio - $horaFinal',
+                            style: textStyle.titleMedium),
+                        const SizedBox(height: 10),
+                        Text('Ubicación', style: textStyle.titleLarge),
+                        Text(
+                          ocurrence.classSession!.sala,
+                          style: textStyle.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -678,62 +686,133 @@ class _SummaryPlan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCardsType1(
-      height: 250,
-      width: double.maxFinite,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Columna izquierda con info principal
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    // Función para limpiar etiquetas HTML del texto
+    String cleanHtml(String html) {
+      final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+      return html.replaceAll(regex, '').trim();
+    }
+
+    final descriptionText = cleanHtml(plan.description);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Resumen del plan',
+          style: textStyle.titleLarge?.copyWith(
+            color: AppColors.cafeNoir,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        /// Card principal
+        CustomCardsType1(
+          height: 220,
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Resumen del Plan', style: textStyle.titleLarge),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(plan.name, style: textStyle.titleMedium),
-                      const SizedBox(height: 10),
-                      Text('Creditos', style: textStyle.titleLarge),
-                      Text(
-                        '${plan.classLimit} Créditos',
-                        style: textStyle.titleMedium,
+                /// 👉 Nombre del plan y descripción
+                Column(
+                  children: [
+                    Text(
+                      plan.name,
+                      style: textStyle.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.cafeNoir,
                       ),
-                      const SizedBox(height: 10),
-                      Text('Precio', style: textStyle.titleLarge),
-                      Text(
-                        '\$${currencyFormatter.format(int.parse(context.read<PlanCubit>().state.planById!.price))}',
-                        style: textStyle.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: 60, // 🔹 Límite visual de altura para la descripción
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Text(
+                          descriptionText,
+                          textAlign: TextAlign.center,
+                          style: textStyle.bodyMedium?.copyWith(
+                            color: AppColors.cafeNoir.withOpacity(0.8),
+                          ),
+                          softWrap: true,
+                          overflow: TextOverflow.fade,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
+
+                const Divider(height: 25, thickness: 1),
+
+                /// 👉 Fila con los tres datos principales
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _PlanInfoItem(
+                      label: 'Clases',
+                      value: '${plan.classLimit}',
+                      textStyle: textStyle,
+                    ),
+                    _PlanInfoItem(
+                      label: 'Precio',
+                      value:
+                          '\$${currencyFormatter.format(int.parse(context.read<PlanCubit>().state.planById!.price))}',
+                      textStyle: textStyle,
+                    ),
+                    _PlanInfoItem(
+                      label: 'Invitados',
+                      value: '${plan.classLimit}',
+                      textStyle: textStyle,
+                    ),
+                  ],
                 ),
               ],
             ),
-
-            // Columna derecha con descripción
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Text(
-                  plan.description,
-                  style: textStyle.bodyMedium,
-                  textAlign: TextAlign.justify,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 6,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
+
+/// Widget auxiliar
+class _PlanInfoItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final TextTheme textStyle;
+
+  const _PlanInfoItem({
+    required this.label,
+    required this.value,
+    required this.textStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: textStyle.titleLarge?.copyWith(
+            color: AppColors.cafeNoir,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: textStyle.bodyMedium?.copyWith(
+            color: AppColors.cafeNoir.withOpacity(0.8),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+

@@ -121,7 +121,7 @@ class ShowNotification extends StatelessWidget {
       width: double.maxFinite,
       child: ListTile(
         title: Text(notification.title),
-        subtitle: Text(notification.body),
+        subtitle: Text(limpiarDescripcion(notification.body),style: TextStyle(fontSize: 15),),
         leading: notification.imageUrl != null
             ? Image.network(notification.imageUrl!)
             : null,
@@ -129,14 +129,28 @@ class ShowNotification extends StatelessWidget {
             ? const Icon(Icons.mark_email_read, color: Colors.green)
             : const Icon(Icons.mark_email_unread, color: Colors.blue),
         onTap: () async {
-          await NotificationsDatasourceImpl().markAsRead(
-            int.parse(notification.messageId),
-          );
-          if (context.mounted) {
-            context.read<NotificationsBloc>().add(LoadNotifications());
+          if (notification.fromBackend) {
+            await NotificationsDatasourceImpl().markAsRead(
+              int.parse(notification.messageId),
+            );
+            if (context.mounted) {
+              context.read<NotificationsBloc>().add(LoadNotifications());
+            }
+          } else {
+            // Solo actualiza su estado local
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Notificación local (no registrada en backend)"),
+              ),
+            );
           }
         },
       ),
     );
+  }
+
+  String limpiarDescripcion(String raw) {
+    final sinHtml = raw.replaceAll(RegExp(r'<[^>]*>'), '');
+    return sinHtml.replaceAll(r'\n', '\n');
   }
 }

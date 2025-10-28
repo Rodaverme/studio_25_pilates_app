@@ -130,7 +130,9 @@ class _HomeViewState extends State<HomeView> {
 
                           if (upcoming.isEmpty) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
                               child: CustomCardsType1(
                                 height: 130,
                                 width: double.maxFinite,
@@ -138,7 +140,9 @@ class _HomeViewState extends State<HomeView> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Center(
-                                      child: Text('No tienes reservas próximas'),
+                                      child: Text(
+                                        'No tienes reservas próximas',
+                                      ),
                                     ),
                                     FilledButton(
                                       onPressed: () => context.go('/calendar'),
@@ -178,7 +182,9 @@ class _HomeViewState extends State<HomeView> {
                         child: Row(
                           children: [
                             TextButton(
-                              onPressed: () {context.go('/perfil/mis_classes');},
+                              onPressed: () {
+                                context.go('/perfil/mis_classes');
+                              },
                               child: const Text('Mis Clases'),
                             ),
                             const Spacer(),
@@ -190,7 +196,9 @@ class _HomeViewState extends State<HomeView> {
                             ),
                             const Spacer(),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.go('/perfil/mis_tarjetas');
+                              },
                               child: const Text('Tarjetas'),
                             ),
                           ],
