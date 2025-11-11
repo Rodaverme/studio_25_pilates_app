@@ -6,6 +6,7 @@ class PushMessage {
   final Map<String, dynamic>? data;
   final String? imageUrl;
   final DateTime? readAt;
+  final bool fromBackend;
 
   PushMessage({
     required this.messageId,
@@ -15,6 +16,7 @@ class PushMessage {
     this.data,
     this.imageUrl,
     this.readAt,
+    this.fromBackend = true
   });
   bool get isRead => readAt != null; // 👈 helper rápido
 

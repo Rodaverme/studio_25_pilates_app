@@ -24,6 +24,6 @@ abstract class AuthRepository{
   Future<Map<String, String>> getDocumentTypes();
   Future<Map<String, String>> getOrganizationTypes();
   Future<Map<String, String>> getGendertypes();
-
+ 
   Future<void> logOut();
 }

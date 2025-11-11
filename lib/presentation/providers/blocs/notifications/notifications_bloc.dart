@@ -1,6 +1,4 @@
-// import 'dart:io';
-
-import 'dart:io';
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,16 +10,16 @@ import 'package:studio_25_pilates_app/infrastructure/datasource/notifications_da
 part 'notifications_event.dart';
 part 'notifications_state.dart';
 
+/// 👇 Manejo de mensajes en segundo plano
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
   print("Handling a background message: ${message.messageId}");
 }
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   final NotificationsDatasourceImpl datasource;
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  StreamSubscription<RemoteMessage>? _foregroundSubscription;
 
   NotificationsBloc(this.datasource) : super(const NotificationsState()) {
     on<NotificationStatusChanged>(_notificationStatusChanged);
@@ -31,28 +29,30 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       emit(state.copyWith(notifications: []));
     });
 
-    //Verificar estado de las notificaciones
+    // Verificar estado inicial
     _initialStatusCheck();
-    //Listener para notificaciones en foreground
+
+    // Escuchar mensajes cuando la app está abierta
     _onForegroundMessage();
   }
 
+  /// Inicializa Firebase si aún no está inicializado
   static Future<void> initializeFCM() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
 
-  //Metodo que notifica el evento de cambio del estado
+  /// Cambia el estado de autorización y obtiene token si procede
   Future<void> _notificationStatusChanged(
     NotificationStatusChanged event,
     Emitter<NotificationsState> emit,
   ) async {
     emit(state.copyWith(status: event.status));
-
     _getFCMToken();
   }
 
+  /// Recibe una notificación y la agrega localmente (ya no se usa en foreground)
   void _notificationReciveChanged(
     NotificationRecived event,
     Emitter<NotificationsState> emit,
@@ -62,19 +62,20 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     );
   }
 
-  //metodo que muestra el estado inicial
+  /// Verifica el estado de permisos inicial
   void _initialStatusCheck() async {
     final settings = await messaging.getNotificationSettings();
     add(NotificationStatusChanged(settings.authorizationStatus));
   }
 
-  // metodo que  obtiene el token si el estado es autorizado
+  /// Obtiene el token de notificación FCM
   void _getFCMToken() async {
     if (state.status != AuthorizationStatus.authorized) return;
     final token = await messaging.getToken();
     print(' Este es el token de notificacion $token');
   }
 
+  /// Carga todas las notificaciones del backend
   Future<void> _onLoadNotifications(
     LoadNotifications event,
     Emitter<NotificationsState> emit,
@@ -84,12 +85,15 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
       final remoteNotifications = await datasource.getAllNotification();
 
-      final all = [
-        ...remoteNotifications,
-        ...state.notifications.where(
-          (n) => !remoteNotifications.any((r) => r.messageId == n.messageId),
-        ),
-      ];
+      // Filtramos las locales que no estén en backend
+      final localOnly = state.notifications
+          .where((n) => !n.fromBackend)
+          .where(
+            (n) => !remoteNotifications.any((r) => r.messageId == n.messageId),
+          )
+          .toList();
+
+      final all = [...remoteNotifications, ...localOnly];
 
       emit(
         state.copyWith(
@@ -98,44 +102,30 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
         ),
       );
     } catch (e) {
-      print("❌ Error cargando notificaciones: $e");
       emit(state.copyWith(statusNotification: NotificationsStatus.error));
     }
   }
 
+  /// Manejo de mensajes entrantes (foreground o background)
   void handleRemoteMessage(RemoteMessage message) {
-    // 👀 para debug, imprime todo lo que viene
-    print("📩 Nueva notificación recibida:");
-    print("   ID: ${message.messageId}");
-    print("   Título: ${message.notification?.title}");
-    print("   Cuerpo: ${message.notification?.body}");
-    print(
-      "   Data: ${message.data}",
-    ); // <-- aquí ves la data que mandes desde el backend
     if (message.notification == null) return;
-    final notification = PushMessage(
-      messageId:
-          message.messageId?.replaceAll(':', '').replaceAll('%', '') ?? '',
-      title: message.notification!.title ?? '',
-      body: message.notification!.body ?? '',
-      sentDate: message.sentTime ?? DateTime.now(),
-      data: message.data,
-      imageUrl: Platform.isAndroid
-          ? message.notification!.android?.imageUrl
-          : message.notification!.apple?.imageUrl,
-      readAt: null,
-    );
 
-    add(NotificationRecived(message: notification));
+    // Evitar errores si el Bloc ya fue cerrado
+    if (isClosed) return;
 
+    // 👇 Ya NO agregamos la notificación manualmente.
+    // Solo recargamos desde backend (así evitamos duplicados)
     add(LoadNotifications());
   }
 
+  /// Escucha notificaciones en foreground
   void _onForegroundMessage() {
-    FirebaseMessaging.onMessage.listen(handleRemoteMessage);
+    _foregroundSubscription = FirebaseMessaging.onMessage.listen((message) {
+      handleRemoteMessage(message);
+    });
   }
 
-  //permiso requeridos y usados para el FMC
+  /// Solicita permisos para recibir notificaciones
   void requestPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
@@ -149,6 +139,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     add(NotificationStatusChanged(settings.authorizationStatus));
   }
 
+  /// Obtiene una notificación específica por ID
   PushMessage? getMessageById(String pushMessageId) {
     final exist = state.notifications.any(
       (element) => element.messageId == pushMessageId,
@@ -157,5 +148,12 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     return state.notifications.firstWhere(
       (element) => element.messageId == pushMessageId,
     );
+  }
+
+  /// Cancela el listener de FCM al cerrar el Bloc
+  @override
+  Future<void> close() {
+    _foregroundSubscription?.cancel();
+    return super.close();
   }
 }

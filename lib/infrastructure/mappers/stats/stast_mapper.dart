@@ -8,5 +8,6 @@ class StastMapper {
     totoalReservation: json.reservations.total,
     totalClasses: json.plans.active.classLimit,
     totaltime: json.reservations.hoursTrained,
+    attendeed: json.reservations.attended
   );
 }

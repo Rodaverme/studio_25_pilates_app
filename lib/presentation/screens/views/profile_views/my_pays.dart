@@ -51,7 +51,7 @@ class MyPayments extends StatelessWidget {
     final textStyle = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Mis pagos")),
+      appBar: AppBar(title: const Text("Transacciones")),
       body: Stack(
         children: [
           Positioned.fill(
@@ -147,7 +147,7 @@ class MyPayments extends StatelessWidget {
               if (state.status == MyPaymentsStatus.error) {
                 return Center(
                   child: Text(
-                     "No tienes pagos aún",
+                    "No tienes pagos aún",
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.cafeNoir,
                     ),
@@ -180,81 +180,117 @@ class PaymentHistory extends StatelessWidget {
       "d MMM yyyy, HH:mm",
       'es',
     ).format(payment.createdAt);
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'es_CO',
+      name: '',
+      decimalDigits: 0,
+    );
+
+    // Ícono según estado
+    IconData statusIcon;
+    Color statusColor;
+
+    switch (payment.status) {
+      case "completed":
+        statusIcon = Icons.check_circle;
+        statusColor = Colors.green;
+        break;
+      case "cancelled":
+        statusIcon = Icons.cancel;
+        statusColor = Colors.redAccent;
+        break;
+      default:
+        statusIcon = Icons.warning_amber_rounded;
+        statusColor = Colors.amber;
+        break;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
         width: double.infinity,
-        height: 150,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.piedra.withValues(alpha: 0.7),
+          border: Border.all(color: AppColors.cafeNoir),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: payment.status == "completed"
-                ? Colors.green
-                : Colors.redAccent,
-            width: 2,
-          ),
+          // 🔸 Eliminado el borde de color
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 👉 Parte izquierda (info de pago)
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        payment.description,
-                        style: textStyle.titleLarge?.copyWith(
-                          color: AppColors.almendra,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Monto: ${payment.amount} ${payment.currency}",
-                      style: textStyle.bodyMedium?.copyWith(
-                        color: AppColors.almendra,
-                      ),
-                    ),
-                    Text(
-                      "Método: ${payment.method}",
-                      style: textStyle.bodyMedium?.copyWith(
-                        color: AppColors.almendra,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      date,
-                      style: textStyle.bodySmall?.copyWith(
-                        color: AppColors.almendra,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // 🟢 Icono de estado
+            Padding(
+              padding: const EdgeInsets.only(right: 12, top: 4),
+              child: Icon(statusIcon, color: statusColor, size: 28),
             ),
 
-            // 👉 Parte derecha (estado)
+            // 💳 Información del pago
             Expanded(
-              flex: 1,
-              child: Center(
-                child: Chip(
-                  label: Text(
-                    payment.status.toUpperCase(),
-                    style: const TextStyle(color: Colors.white),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 👉 Lo que se compró
+                  Text(
+                    payment.plan != null
+                        ? payment.plan!.name
+                        : payment.reservation != null
+                        ? '${payment.reservation!.ocurrence?.classSessionTitle}'
+                        : 'Pago',
+                    style: textStyle.titleMedium?.copyWith(
+                      color: AppColors.almendra,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  backgroundColor: payment.status == "completed"
-                      ? Colors.green
-                      : Colors.redAccent,
-                ),
+                  const SizedBox(height: 6),
+
+                  // 👉 Precio'\$${currencyFormatter.format(int.parse(context.read<OcurrencesCubit>().state.ocurrenceById!.price))}'
+                  Text(
+                    "\$${currencyFormatter.format(int.parse(payment.amount))} ${payment.currency}",
+                    style: textStyle.bodyMedium?.copyWith(
+                      color: AppColors.almendra,
+                    ),
+                  ),
+
+                  // 👉 Método de pago
+                  Text(
+                    payment.method,
+                    style: textStyle.bodyMedium?.copyWith(
+                      color: AppColors.almendra,
+                    ),
+                  ),
+
+                  // 👉 Fecha
+                  Text(
+                    date,
+                    style: textStyle.bodyMedium?.copyWith(
+                      color: AppColors.almendra,
+                    ),
+                  ),
+
+                  // 👉 Referencia (más pequeña)
+                  const SizedBox(height: 4),
+                  Text(
+                    payment.description,
+                    style: textStyle.bodySmall?.copyWith(
+                      color: AppColors.almendra.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+
+                  // 👉 Estado (completed / cancelled / pending)
+                  const SizedBox(height: 8),
+                  Text(
+                    payment.status.toUpperCase(),
+                    style: textStyle.bodyMedium?.copyWith(
+                      color: statusColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

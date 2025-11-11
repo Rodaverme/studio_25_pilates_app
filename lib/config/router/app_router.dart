@@ -24,6 +24,7 @@ import 'package:studio_25_pilates_app/presentation/screens/views/notifications_v
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/create_new_card_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_error_view.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/payments_views/reservation_succes_view.dart';
+import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_cards.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_classes.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_pays.dart';
 import 'package:studio_25_pilates_app/presentation/screens/views/profile_views/my_perfil.dart';
@@ -76,10 +77,7 @@ final appRouter = GoRouter(
             BlocProvider(
               create: (_) => CreditCardCubit(CreditCardDatasourceImpl()),
             ),
-            BlocProvider(
-              create: (_) =>
-                  AuthCubit(AuthDatasourceImpl())..getCurrentClient(),
-            ),
+            BlocProvider.value(value: context.read<AuthCubit>()),
 
             BlocProvider(
               create: (_) =>
@@ -101,39 +99,29 @@ final appRouter = GoRouter(
               path: '/succesPay/:id',
               builder: (context, state) {
                 final ocurrenceId = state.pathParameters['id']!;
-                
-                return ReservationSuccessView(
-                  occurrenceId: ocurrenceId,
-                  
-                );
+
+                return ReservationSuccessView(occurrenceId: ocurrenceId);
               },
             ),
             GoRoute(
               path: '/errorPay/:id',
               builder: (context, state) {
                 final ocurrenceId = state.pathParameters['id']!;
-                return ReservationErrorView(
-                  ocurrenceId: ocurrenceId,
-                );
+                return ReservationErrorView(ocurrenceId: ocurrenceId);
               },
             ),
             GoRoute(
               path: '/succesPayPlan/:id',
               builder: (context, state) {
                 final planId = state.pathParameters['id']!;
-                return ReservationSuccessView(
-                  planId: planId,
-                  
-                );
+                return ReservationSuccessView(planId: planId);
               },
             ),
             GoRoute(
               path: '/errorPayPlan/:id',
               builder: (context, state) {
                 final planId = state.pathParameters['id']!;
-                return ReservationErrorView(
-                  planId: planId,
-                );
+                return ReservationErrorView(planId: planId);
               },
             ),
 
@@ -263,7 +251,6 @@ final appRouter = GoRouter(
                 );
               },
             ),
-            
           ],
         ),
         GoRoute(
@@ -289,6 +276,21 @@ final appRouter = GoRouter(
             );
           },
           routes: [
+            GoRoute(
+              path: '/mis_tarjetas',
+              builder: (context, state) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        CreditCardCubit(CreditCardDatasourceImpl())
+                          ..loadMyCard(),
+                  ),
+               BlocProvider(create: (_) => PaymentCubit()),
+                ],
+                child: const MyCards(),
+              ),
+            ),
+
             GoRoute(
               path: '/mis_classes',
               builder: (context, state) => const MyClasses(),

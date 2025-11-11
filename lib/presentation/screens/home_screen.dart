@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studio_25_pilates_app/infrastructure/datasource/notifications_datasource_impl.dart';
 import 'package:studio_25_pilates_app/presentation/providers/blocs/notifications/notifications_bloc.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/cubits.dart';
@@ -32,44 +33,47 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadInitialData() async {
     final planCubit = context.read<PlanCubit>();
     final ocurrenceCubit = context.read<OcurrencesCubit>();
-    final reservedCubit = context.read<ReservationCubit>().loadReservations();
+    final reservationCubit = context.read<ReservationCubit>();
     final notificationCubit = context.read<NotificationsBloc>();
+    
     final stats = context.read<StatsCubit>();
-    // final sendToken = await NotificationsDatasourceImpl().sendToken(
-    //   TokenService.getToken().toString(),
-    // );
+    final authCubit = context.read<AuthCubit>();
 
     try {
-      await Future.wait(
-        [
-              planCubit.loadPlans(),
-              planCubit.loadMyPlan(),
-              planCubit.loadStatusPlan(),
-              stats.loadStats(DateTime(2025, 1, 1), DateTime.now()),
-              ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime.now()),
-              notificationCubit.add(LoadNotifications()),
-
-              reservedCubit,
-            ]
-            as Iterable<Future>,
-      );
-
-      notificationCubit;
+      await Future.wait([
+        authCubit.getCurrentClient(),
+        planCubit.loadPlans(),
+        planCubit.loadMyPlan(),
+        planCubit.loadStatusPlan(),
+        stats.loadStats(DateTime(2025, 1, 1), DateTime.now()),
+        ocurrenceCubit.loadOcurrence(DateTime.now(), DateTime.now()),
+        reservationCubit.loadReservations(),
+        // 👇 Las notificaciones no devuelven Future, así que se llaman aparte
+        Future(() => notificationCubit.add(LoadNotifications())),
+      ]);
 
       final fmctoken = await FirebaseMessaging.instance.getToken();
-
       if (fmctoken != null) {
         await NotificationsDatasourceImpl().sendToken(fmctoken);
-        print('📲 Token de notificación enviado: $fmctoken');
-      } else {
-        print('⚠️ No se pudo obtener el token de FCM');
       }
+    } catch (e) {
+      // ✅ Si el error sugiere token inválido, cerramos sesión y redirigimos al login
+      if (e.toString().contains('Token not provided')) {
+        authCubit.logout();
 
-      print('Envio exitoso');
-    } catch (_) {}
+        if (mounted) {
+          // 🔹 Forzamos redirección inmediata al login
+          context.go('/');
+        }
+        return; // importante para no seguir ejecutando
+      }
+    }
 
+    // ✅ Solo si todo salió bien
     if (mounted) {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

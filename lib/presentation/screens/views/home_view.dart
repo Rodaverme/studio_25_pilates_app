@@ -9,6 +9,7 @@ import 'package:studio_25_pilates_app/presentation/providers/cubits/auth/auth_cu
 import 'package:studio_25_pilates_app/presentation/providers/cubits/ocurrence/ocurrences_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/reservation/reservation_cubit.dart';
 import 'package:studio_25_pilates_app/presentation/providers/cubits/stats/stats_cubit.dart';
+import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type1.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/cards/custom_cards_type2.dart';
 import 'package:studio_25_pilates_app/presentation/widgets/lessons.dart';
 
@@ -28,7 +29,6 @@ class _HomeViewState extends State<HomeView> {
       DateTime.now(),
       DateTime.now(),
     );
-    context.read<StatsCubit>().loadStats(DateTime(2025, 1, 1), DateTime.now());
   }
 
   @override
@@ -37,7 +37,18 @@ class _HomeViewState extends State<HomeView> {
     final textStyle = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('ESTUDIO', style: textStyle.titleLarge),
+            SizedBox(width: 10),
+            Image.asset('assets/images/Logo.png', height: 70, width: 70),
+            SizedBox(width: 10),
+            Text('PILATES', style: textStyle.titleLarge),
+          ],
+        ),
+      ),
       body: LoadingWrapper(
         child: Stack(
           children: [
@@ -52,7 +63,21 @@ class _HomeViewState extends State<HomeView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 👋 Saludo
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     Text('ESTUDIO'),
+                      //     SizedBox(width: 10),
+                      //     Image.asset(
+                      //       'assets/images/Logo.png',
+                      //       height: 70,
+                      //       width: 70,
+                      //     ),
+                      //     SizedBox(width: 10),
+                      //     Text('PILATES'),
+                      //   ],
+                      // ),
+                      SizedBox(height: 40),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -60,40 +85,9 @@ class _HomeViewState extends State<HomeView> {
                           style: textStyle.titleLarge,
                         ),
                       ),
-                      const SizedBox(height: 20),
 
                       // 📊 Tarjetas de estadísticas
-                      BlocBuilder<StatsCubit, StatsState>(
-                        builder: (context, statsState) {
-                          if (statsState.status == StatsStatus.error) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _InfoCard(label: 'Clases este mes', value: '0'),
-                                const SizedBox(width: 20),
-                                _InfoCard(label: 'Racha', value: '0'),
-                              ],
-                            );
-                          }
-
-                          final stats = statsState.stats;
-                          final clasesMes = stats?.totalClasses ?? 0;
-                          final racha = stats?.streak ?? 0;
-
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _InfoCard(
-                                label: 'Clases este mes',
-                                value: '$clasesMes',
-                              ),
-                              const SizedBox(width: 20),
-                              _InfoCard(label: 'Racha', value: '$racha'),
-                            ],
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
 
                       // 🧘‍♀️ Próxima clase
                       Padding(
@@ -106,7 +100,7 @@ class _HomeViewState extends State<HomeView> {
                       BlocBuilder<ReservationCubit, ReservationState>(
                         builder: (context, state) {
                           if (state.status == ReservationStatus.error) {
-                            return CustomCardsType2(
+                            return CustomCardsType1(
                               height: 130,
                               width: double.maxFinite,
                               child: Column(
@@ -145,27 +139,34 @@ class _HomeViewState extends State<HomeView> {
                                 );
 
                           if (upcoming.isEmpty) {
-                            return CustomCardsType2(
-                              height: 130,
-                              width: double.maxFinite,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Center(
-                                    child: Text('No tienes reservas próximas'),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () => context.go('/calendar'),
-                                    style: const ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(
-                                        AppColors.almendra,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
+                              child: CustomCardsType1(
+                                height: 130,
+                                width: double.maxFinite,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Center(
+                                      child: Text(
+                                        'No tienes reservas próximas',
                                       ),
                                     ),
-                                    child: const Text(
-                                      'Empieza reservando tu primera clase',
+                                    FilledButton(
+                                      onPressed: () => context.go('/calendar'),
+                                      style: const ButtonStyle(
+                                        backgroundColor: WidgetStatePropertyAll(
+                                          AppColors.almendra,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Empieza reservando tu primera clase',
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           }
@@ -178,39 +179,53 @@ class _HomeViewState extends State<HomeView> {
                       ),
 
                       const SizedBox(height: 20),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Text('Clases de Hoy'),
+                        child: Text(
+                          'Acciones Rápidas',
+                          style: textStyle.titleLarge,
+                        ),
                       ),
 
-                      const SizedBox(height: 380, child: ClassesCarousel()),
-                      const SizedBox(height: 10),
-
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Text('Acciones Rápidas'),
-                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
                           children: [
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.go('/perfil/mis_classes');
+                              },
                               child: const Text('Mis Clases'),
                             ),
+
                             const Spacer(),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.go('/calendar');
+                              },
                               child: const Text('Calendario'),
                             ),
                             const Spacer(),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.go('/perfil/mis_tarjetas');
+                              },
                               child: const Text('Tarjetas'),
                             ),
                           ],
                         ),
                       ),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Clases de Hoy',
+                          style: textStyle.titleLarge,
+                        ),
+                      ),
+
+                      const SizedBox(height: 380, child: ClassesCarousel()),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -382,30 +397,6 @@ class _NextClass extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.value, required this.label});
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme;
-    final size = MediaQuery.of(context).size.width;
-    return SizedBox(
-      width: size * 0.45,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(value, style: textStyle.titleLarge),
-          Text(label, style: textStyle.bodyLarge),
-        ],
       ),
     );
   }

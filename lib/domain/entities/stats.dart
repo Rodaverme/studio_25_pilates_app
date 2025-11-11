@@ -4,6 +4,7 @@ class Stats {
   final int totoalReservation;
   final int totalClasses;
   final int totaltime;
+  final int attendeed;
 
   Stats({
     required this.clasessThisMonth,
@@ -11,5 +12,6 @@ class Stats {
     required this.totoalReservation,
     required this.totalClasses,
     required this.totaltime,
+    required this.attendeed
   });
 }
