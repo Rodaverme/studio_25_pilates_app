@@ -37,7 +37,18 @@ class _HomeViewState extends State<HomeView> {
     final textStyle = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('ESTUDIO', style: textStyle.titleLarge),
+            SizedBox(width: 10),
+            Image.asset('assets/images/Logo.png', height: 70, width: 70),
+            SizedBox(width: 10),
+            Text('PILATES', style: textStyle.titleLarge),
+          ],
+        ),
+      ),
       body: LoadingWrapper(
         child: Stack(
           children: [
@@ -52,7 +63,21 @@ class _HomeViewState extends State<HomeView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 👋 Saludo
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     Text('ESTUDIO'),
+                      //     SizedBox(width: 10),
+                      //     Image.asset(
+                      //       'assets/images/Logo.png',
+                      //       height: 70,
+                      //       width: 70,
+                      //     ),
+                      //     SizedBox(width: 10),
+                      //     Text('PILATES'),
+                      //   ],
+                      // ),
+                      SizedBox(height: 40),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -61,23 +86,8 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('ESTUDIO'),
-                          SizedBox(width: 10),
-                          Image.asset(
-                            'assets/images/Logo.png',
-                            height: 70,
-                            width: 70,
-                          ),
-                          SizedBox(width: 10),
-                          Text('PILATES'),
-                        ],
-                      ),
-
                       // 📊 Tarjetas de estadísticas
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 30),
 
                       // 🧘‍♀️ Próxima clase
                       Padding(
@@ -187,6 +197,7 @@ class _HomeViewState extends State<HomeView> {
                               },
                               child: const Text('Mis Clases'),
                             ),
+
                             const Spacer(),
                             TextButton(
                               onPressed: () {

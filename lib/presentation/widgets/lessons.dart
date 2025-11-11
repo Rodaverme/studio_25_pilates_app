@@ -61,27 +61,6 @@ class LessonsToday extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text(
-                      instructor,
-                      style: textStyle.titleLarge?.copyWith(
-                        color: AppColors.almendra,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '$horaInicio - $horaFinal',
-                      style: textStyle.titleLarge?.copyWith(
-                        color: AppColors.almendra,
-                      ),
-                    ),
-                    Text(
-                      '${0}/${ocurrence.classSession?.cupoMaximo} Cupos',
-                      style: textStyle.titleLarge?.copyWith(
-                        color: AppColors.almendra,
-                      ),
-                    ),
                     if (isInPlan) ...[
                       const SizedBox(height: 5),
                       Text(
@@ -93,6 +72,27 @@ class LessonsToday extends StatelessWidget {
                         ),
                       ),
                     ],
+                    const SizedBox(height: 8),
+                    Text(
+                      '${0}/${ocurrence.classSession?.cupoMaximo} Cupos',
+                      style: textStyle.bodyLarge?.copyWith(
+                        color: AppColors.almendra,
+                      ),
+                    ),
+                    Text(
+                      '$horaInicio - $horaFinal',
+                      style: textStyle.bodyLarge?.copyWith(
+                        color: AppColors.almendra,
+                      ),
+                    ),
+                    Text(
+                      instructor,
+                      style: textStyle.bodyLarge?.copyWith(
+                        color: AppColors.almendra,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),

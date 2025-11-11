@@ -245,7 +245,7 @@ class _TotalPay extends StatelessWidget {
   Widget build(BuildContext context) {
     String total = switch (statePay) {
       PaymentSelected(method: final m) => switch (m.type) {
-        PaymentMethodType.credit => '1 Crédito',
+        PaymentMethodType.credit => '1 Clase',
         PaymentMethodType.card =>
           type == ReservationType.classReservation
               ? '\$${currencyFormatter.format(int.parse(context.read<OcurrencesCubit>().state.ocurrenceById!.price))}'

@@ -35,11 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final ocurrenceCubit = context.read<OcurrencesCubit>();
     final reservationCubit = context.read<ReservationCubit>();
     final notificationCubit = context.read<NotificationsBloc>();
+    
     final stats = context.read<StatsCubit>();
     final authCubit = context.read<AuthCubit>();
 
     try {
       await Future.wait([
+        authCubit.getCurrentClient(),
         planCubit.loadPlans(),
         planCubit.loadMyPlan(),
         planCubit.loadStatusPlan(),

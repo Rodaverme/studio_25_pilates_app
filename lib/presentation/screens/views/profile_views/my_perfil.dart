@@ -135,7 +135,7 @@ class _MyPerfilState extends State<MyPerfil> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Perfil'),
+        title: const Text('Mis datos'),
         actions: [
           IconButton(
             icon: const Icon(Icons.vpn_key),

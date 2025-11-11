@@ -180,7 +180,7 @@ class _MyReservationsState extends State<MyReservations> {
               if (state.status == ReservationStatus.error) {
                 return Center(
                   child: Text(
-                    'No tienes reservas Aun',
+                    '',
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.cafeNoir,
                     ),

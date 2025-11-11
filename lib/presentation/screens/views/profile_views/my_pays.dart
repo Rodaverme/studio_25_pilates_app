@@ -249,7 +249,7 @@ class PaymentHistory extends StatelessWidget {
 
                   // 👉 Precio'\$${currencyFormatter.format(int.parse(context.read<OcurrencesCubit>().state.ocurrenceById!.price))}'
                   Text(
-                    "Precio: \$${currencyFormatter.format(int.parse(payment.amount))} ${payment.currency}",
+                    "\$${currencyFormatter.format(int.parse(payment.amount))} ${payment.currency}",
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.almendra,
                     ),
@@ -257,7 +257,7 @@ class PaymentHistory extends StatelessWidget {
 
                   // 👉 Método de pago
                   Text(
-                    "Método: ${payment.method}",
+                    payment.method,
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.almendra,
                     ),
@@ -265,7 +265,7 @@ class PaymentHistory extends StatelessWidget {
 
                   // 👉 Fecha
                   Text(
-                    "Fecha: $date",
+                    date,
                     style: textStyle.bodyMedium?.copyWith(
                       color: AppColors.almendra,
                     ),
@@ -274,7 +274,7 @@ class PaymentHistory extends StatelessWidget {
                   // 👉 Referencia (más pequeña)
                   const SizedBox(height: 4),
                   Text(
-                    "Ref: ${payment.description}",
+                    payment.description,
                     style: textStyle.bodySmall?.copyWith(
                       color: AppColors.almendra.withValues(alpha: 0.8),
                       fontSize: 12,

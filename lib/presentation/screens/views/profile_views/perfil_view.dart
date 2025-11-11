@@ -190,7 +190,7 @@ class PerfilView extends StatelessWidget {
                               children: [
                                 _PerfilOption(
                                   icon: Icons.person_2,
-                                  label: 'Mi perfil',
+                                  label: 'Mis datos',
                                   onTap: () =>
                                       context.push('/perfil/mi_perfil'),
                                 ),
@@ -214,7 +214,7 @@ class PerfilView extends StatelessWidget {
                                 ),
                                 _PerfilOption(
                                   icon: Icons.payments_outlined,
-                                  label: 'Pagos y planes',
+                                  label: 'Transacciones',
                                   onTap: () =>
                                       context.push('/perfil/mis_pagos'),
                                 ),
