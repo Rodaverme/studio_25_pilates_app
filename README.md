@@ -1,4 +1,3 @@
-# studio_25_pilates_app
 
 # Studio 25 Pilates App
 
